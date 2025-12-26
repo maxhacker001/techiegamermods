@@ -66,13 +66,13 @@
     <span>✓ Updated 2025</span>
   </div>
 
-  <!-- CENTERED BUTTON - NO LINE -->
+  <!-- CLEAN CENTERED YOUTUBE BUTTON (LIKE YOUR SECOND SCREENSHOT) -->
   <div style="text-align:center; margin:40px 0;">
     <a href="#" target="_blank" 
        id="youtubeBtn"
        class="download-btn"
        style="text-decoration:none;">
-      📺 Watch YouTube Tutorial
+      📺 Watch Tutorial on YouTube
     </a>
   </div>
 
@@ -102,7 +102,7 @@
 <script src="js/main.js"></script>
 <script src="js/security.js"></script>
 
-<!-- TUTORIAL PAGE SCRIPT + REDIRECT COUNTDOWN -->
+<!-- TUTORIAL PAGE SCRIPT + YOUTUBE REDIRECT COUNTDOWN -->
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const params = new URLSearchParams(window.location.search);
@@ -126,7 +126,7 @@
     if (tutorial.youtube) {
       youtubeBtn.href = tutorial.youtube;
 
-      // Tutorial redirect countdown
+      // Redirect countdown for YouTube
       youtubeBtn.addEventListener("click", (e) => {
         e.preventDefault();
         youtubeBtn.textContent = "Redirecting to video... 3";
@@ -138,7 +138,7 @@
           count--;
           if (count < 0) {
             clearInterval(interval);
-            window.location.href = tutorial.youtube;
+            window.open(tutorial.youtube, "_blank");
           }
         }, 1000);
       });
@@ -146,7 +146,7 @@
   });
 </script>
 
-<!-- CUSTOM SCROLLBAR SCRIPT -->
+<!-- CUSTOM SCROLLBAR + MATRIX RAIN (same as before) -->
 <script>
   const thumb = document.getElementById('scrollThumb');
   let isDragging = false;
@@ -252,4 +252,4 @@
 </script>
 
 </body>
-</html>
+  </html>
