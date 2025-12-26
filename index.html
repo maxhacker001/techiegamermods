@@ -326,9 +326,16 @@
     // Enter key
     searchInput.addEventListener('keyup', (e) => {
       if (e.key === 'Enter') {
-        doSearch();
-      }
-    });
+    // Initial render
+    doSearch(); 
+     // Apply active filter on page load (fixes mixed apps/games on refresh)
+    const activeFilter = document.querySelector('.filter-btn.active');
+    if (activeFilter && activeFilter.dataset.category) {
+      const cat = activeFilter.dataset.category;
+      const filtered = apps.filter(a => a.category === cat);
+      renderGrid(appsContainer, filtered);
+    }
+    
 
     // Show home
     function showHome() {
