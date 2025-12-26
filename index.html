@@ -393,10 +393,20 @@
     });
 
     // Hamburger toggle
-    menuToggle.addEventListener('click', () => {
-      sidebar.classList.toggle('open');
-      overlay.classList.toggle('open');
-    });
+menuToggle.addEventListener('click', () => {
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('open');
+});
+
+// Detect hash on load and show category
+window.addEventListener('load', () => {
+  const hash = window.location.hash.substring(1);
+  if (hash === 'apps') showCategory('apps');
+  else if (hash === 'games') showCategory('games');
+  else if (hash === 'tutorials') showCategory('tutorials');
+  else if (hash === 'blog') showBlog();
+  else if (hash === 'faq') showFAQ();
+});
   });
 </script>
 
