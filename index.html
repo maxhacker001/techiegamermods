@@ -316,6 +316,14 @@
     // Initial render
     doSearch();
 
+    // Apply active filter on page load (fixes mixed categories on refresh)
+    const activeBtn = document.querySelector('.filter-btn.active');
+    if (activeBtn && activeBtn.dataset.category) {
+      const cat = activeBtn.dataset.category;
+      const filtered = apps.filter(a => a.category === cat);
+      renderGrid(appsContainer, filtered);
+    }
+
     // Live search
     searchInput.addEventListener('input', doSearch);
 
@@ -341,7 +349,7 @@
       sidebarItems.forEach(item => item.classList.remove('active'));
       document.querySelector('.sidebar-item.home').classList.add('active');
       searchInput.value = '';
-      doSearch(); // reset to full view
+      doSearch();
     }
 
     // Show category
@@ -550,4 +558,4 @@
 </script>
 
 </body>
-    </html>
+  </html>
