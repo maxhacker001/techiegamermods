@@ -1,0 +1,21 @@
+{
+  "name": "Techie Gamer Mods",
+  "short_name": "TGM Mods",
+  "description": "Premium App & Game Mods - Clean • Safe • Verified",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#0b0f0c",
+  "theme_color": "#00ff9c",
+  "icons": [
+    {
+      "src": "images/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "images/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
