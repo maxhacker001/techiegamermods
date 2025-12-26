@@ -12,17 +12,17 @@
 <!-- MATRIX RAIN -->
 <canvas id="matrix-canvas"></canvas>
 
-<!-- HAMBURGER BUTTON (DRAWER) -->
+<!-- HAMBURGER BUTTON -->
 <div id="menuToggle">≡</div>
 
-<!-- SIDEBAR DRAWER (ADDED TO APP.HTML) -->
+<!-- SIDEBAR DRAWER -->
 <div id="sidebar">
   <a href="index.html" class="sidebar-item home">🏠 Home</a>
-  <a href="#" class="sidebar-item apps" data-category="apps">📱 App Mods</a>
-  <a href="#" class="sidebar-item games" data-category="games">🎮 Game Mods</a>
-  <a href="#" class="sidebar-item tutorials" data-category="tutorials">🔧 Modding Tutorials</a>
-  <a href="#" class="sidebar-item blog">📝 Blog</a>
-  <a href="#" class="sidebar-item faq">❓ FAQ</a>
+  <a href="index.html" class="sidebar-item apps">📱 App Mods</a>
+  <a href="index.html" class="sidebar-item games">🎮 Game Mods</a>
+  <a href="index.html" class="sidebar-item tutorials">🔧 Modding Tutorials</a>
+  <a href="index.html#blog" class="sidebar-item blog">📝 Blog</a>
+  <a href="index.html#faq" class="sidebar-item faq">❓ FAQ</a>
   <a href="#" class="sidebar-item mode-toggle">
     <span id="modeText">☀ Light Mode</span>
   </a>
@@ -202,7 +202,7 @@
       }, 1000);
     });
 
-    // DRAWER SCRIPT FOR APP.HTML
+    // DRAWER SCRIPT FOR APP.HTML (open/close only — links go to index.html)
     const menuToggle = document.getElementById('menuToggle');
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('overlay');
@@ -219,7 +219,7 @@
   });
 </script>
 
-<!-- MATRIX RAIN SCRIPT (no scrollbar script) -->
+<!-- MATRIX RAIN SCRIPT -->
 <script>
   const canvas = document.getElementById('matrix-canvas');
   const ctx = canvas.getContext('2d');
@@ -266,4 +266,4 @@
 </script>
 
 </body>
-  </html>
+        </html>
