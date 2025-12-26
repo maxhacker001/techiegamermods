@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title id="pageTitle">TECHIE GAMER MODS</title>
+  <title>TECHIE GAMER MODS</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -35,7 +35,7 @@
   <div class="nav">
     <div class="logo">
       <img src="images/logo.png" style="height:28px">
-      <span class="logo-text">TECHIE GAMER MODS</span>
+      <span>TECHIE GAMER MODS</span>
     </div>
   </div>
 </header>
@@ -43,18 +43,16 @@
 <div class="app-page">
 
   <div class="app-header">
-    <img id="appImage" src="images/logo.png" alt="App Icon">
+    <img id="appImage" src="images/logo.png" alt="Icon">
     <div>
       <h1 id="appName">Loading...</h1>
       <div class="meta">
-        <span id="appVersion">v0.0.0</span> • 
-        <span id="appSize">0 MB</span> • 
-        Premium Mod
+        <span id="appVersion">v0.0.0</span> • <span id="appType">Premium Mod</span>
       </div>
     </div>
   </div>
   
-  <div class="warning-box">
+  <div class="warning-box" id="warningBox">
     <strong>⚠ Important Notice</strong><br><br>
     Check YouTube comment section for app download link.<br>
     <span style="color:#9fbfb1">
@@ -63,22 +61,19 @@
   </div>
 
   <!-- YouTube Button -->
-  <a href="https://www.youtube.com/watch?v=YOUR_VIDEO_ID_HERE" target="_blank" 
-     id="youtubeBtn"
-     style="display:block; width:100%; padding:15px; margin:20px 0; background:var(--neon); color:black; 
-            text-align:center; text-decoration:none; border-radius:10px; font-weight:700; font-size:15px;">
+  <button class="download-btn" id="youtubeBtn" style="background:var(--neon); color:black; margin:20px 0;">
     📺 Watch Tutorial on YouTube
-  </a>
+  </button>
 
   <div class="info-box">
     <div><strong>Version</strong><br><span id="appVersion2">12.3.0</span></div>
-    <div><strong>Size</strong><br><span id="appSize2">78 MB</span></div>
-    <div><strong>Updated</strong><br><span id="updatedDate">Loading...</span></div>
+    <div><strong>Size</strong><br><span id="appSize">78 MB</span></div>
+    <div><strong>Updated</strong><br><span id="updatedDate">December 2025</span></div>
     <div><strong>Requires</strong><br>Android 5.0+</div>
   </div>
 
   <div class="features-box">
-    <h3 style="color:var(--neon); margin-bottom:10px;">🔓 Mod Features</h3>
+    <h3 style="color:var(--neon); margin-bottom:10px;" id="featuresTitle">🔓 Mod Features</h3>
     <ul id="features"></ul>
   </div>
 
@@ -90,13 +85,14 @@
     </div>
   </div>
 
-  <div class="trust-box">
+  <div class="trust-box" id="trustBox">
     <span>✓ VirusTotal Clean</span>
     <span>✓ No Malware</span>
     <span>✓ Signed APK</span>
     <span>✓ Daily Scans</span>
   </div>
 
+  <!-- Download Button (hidden for tutorials) -->
   <button class="download-btn" id="downloadBtn" data-link="#">
     ⬇ DOWNLOAD APK
   </button>
@@ -108,26 +104,25 @@
 
 </div>
 
-<!-- LIGHTBOX MODAL -->
-<div id="lightbox" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:9999; justify-content:center; align-items:center; flex-direction:column;">
-  <span id="lightboxClose" style="position:absolute; top:20px; right:30px; color:white; font-size:40px; cursor:pointer;">&times;</span>
-  <span id="lightboxPrev" style="position:absolute; left:20px; top:50%; transform:translateY(-50%); color:white; font-size:50px; cursor:pointer;">‹</span>
-  <span id="lightboxNext" style="position:absolute; right:20px; top:50%; transform:translateY(-50%); color:white; font-size:50px; cursor:pointer;">›</span>
-  <img id="lightboxImg" style="max-width:95%; max-height:80vh; border-radius:10px; box-shadow:0 0 30px rgba(0,255,156,0.8);">
-</div>
+<!-- FOOTER -->
+<footer>
+  <div style="margin:20px 0; font-size:14px;">
+    <div style="margin-bottom:8px;">
+      <span style="color:var(--neon); font-weight:700;">Total Downloads:</span>
+      <span style="color:white; font-size:20px; font-weight:800; margin-left:8px;">1,234,567</span>
+    </div>
+    <div>
+      <span style="color:var(--neon); font-weight:700;">Active Users:</span>
+      <span style="color:white; font-size:20px; font-weight:800; margin-left:8px;">8,901</span>
+    </div>
+  </div>
+  © 2025 TECHIE GAMER MODS • Clean • Safe • Hacker-Styled
+</footer>
 
 <script src="js/data.js"></script>
-<script src="js/main.js"></script>
-<script src="js/security.js"></script>
 
-<!-- APP PAGE SCRIPT + LIGHTBOX FIXED -->
 <script>
   document.addEventListener("DOMContentLoaded", () => {
-    const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-    const now = new Date();
-    const updatedElement = document.getElementById("updatedDate");
-    if (updatedElement) updatedElement.textContent = `${months[now.getMonth()]} ${now.getFullYear()}`;
-
     const params = new URLSearchParams(window.location.search);
     const appId = params.get("id");
     if (!appId) return;
@@ -135,12 +130,20 @@
     const app = apps.find(a => a.id === appId);
     if (!app) return;
 
+    const isTutorial = app.category === "tutorials";
+
     document.getElementById("appImage").src = app.image;
     document.getElementById("appName").textContent = app.name;
     document.getElementById("appVersion").textContent = `v${app.version}`;
     document.getElementById("appVersion2").textContent = app.version;
-    document.getElementById("appSize").textContent = app.size;
-    document.getElementById("appSize2").textContent = app.size;
+    document.getElementById("appSize").textContent = app.size || "—";
+    document.getElementById("appType").textContent = isTutorial ? "Tutorial Guide" : "Premium Mod";
+
+    // Warning box
+    document.getElementById("warningBox").style.display = isTutorial ? "none" : "block";
+
+    // Features title
+    document.getElementById("featuresTitle").textContent = isTutorial ? "📋 Video Outline" : "🔓 Mod Features";
 
     const featuresList = document.getElementById("features");
     featuresList.innerHTML = "";
@@ -168,12 +171,116 @@
       screenshotsGrid.innerHTML = "<p style='grid-column:1/-1; text-align:center; color:var(--muted);'>No screenshots yet</p>";
     }
 
-    // LIGHTBOX
-    const lightbox = document.getElementById('lightbox');
-    const lightboxImg = document.getElementById('lightboxImg');
-    const lightboxClose = document.getElementById('lightboxClose');
-    const lightboxPrev = document.getElementById('lightboxPrev');
-    const lightboxNext = document.getElementById('lightboxNext');
+    // Trust box
+    const trustBox = document.getElementById("trustBox");
+    trustBox.innerHTML = isTutorial ? 
+      "<span>✓ Verified Steps</span><span>✓ Beginner Friendly</span><span>✓ Updated 2025</span><span>✓ No Root Needed</span>" :
+      "<span>✓ VirusTotal Clean</span><span>✓ No Malware</span><span>✓ Signed APK</span><span>✓ Daily Scans</span>";
+
+    // Download button
+    const downloadBtn = document.getElementById("downloadBtn");
+    if (isTutorial) {
+      downloadBtn.style.display = "none";
+    } else {
+      downloadBtn.style.display = "block";
+      const downloadLink = app.download || "#";
+      downloadBtn.dataset.link = downloadLink;
+
+      downloadBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (downloadLink === "#") return;
+
+        downloadBtn.textContent = "Preparing download... 3";
+        downloadBtn.disabled = true;
+
+        let count = 2;
+        const interval = setInterval(() => {
+          downloadBtn.textContent = `Preparing download... ${count}`;
+          count--;
+          if (count < 0) {
+            clearInterval(interval);
+            window.location.href = downloadLink;
+          }
+        }, 1000);
+      });
+    }
+
+    // YouTube button
+    if (app.youtube) {
+      const youtubeBtn = document.getElementById("youtubeBtn");
+      youtubeBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        youtubeBtn.textContent = "Redirecting to video... 3";
+        youtubeBtn.disabled = true;
+
+        let count = 2;
+        const interval = setInterval(() => {
+          youtubeBtn.textContent = `Redirecting to video... ${count}`;
+          count--;
+          if (count < 0) {
+            clearInterval(interval);
+            window.open(app.youtube, "_blank");
+          }
+        }, 1000);
+      });
+    }
+
+    // LIGHTBOX (same as before)
+    const lightbox = document.createElement('div');
+    lightbox.id = 'lightbox';
+    lightbox.style.display = 'none';
+    lightbox.style.position = 'fixed';
+    lightbox.style.top = '0';
+    lightbox.style.left = '0';
+    lightbox.style.width = '100%';
+    lightbox.style.height = '100%';
+    lightbox.style.background = 'rgba(0,0,0,0.95)';
+    lightbox.style.zIndex = '9999';
+    lightbox.style.justifyContent = 'center';
+    lightbox.style.alignItems = 'center';
+    lightbox.style.flexDirection = 'column';
+
+    const lightboxClose = document.createElement('span');
+    lightboxClose.textContent = '×';
+    lightboxClose.style.position = 'absolute';
+    lightboxClose.style.top = '20px';
+    lightboxClose.style.right = '30px';
+    lightboxClose.style.color = 'white';
+    lightboxClose.style.fontSize = '40px';
+    lightboxClose.style.cursor = 'pointer';
+
+    const lightboxPrev = document.createElement('span');
+    lightboxPrev.textContent = '‹';
+    lightboxPrev.style.position = 'absolute';
+    lightboxPrev.style.left = '20px';
+    lightboxPrev.style.top = '50%';
+    lightboxPrev.style.transform = 'translateY(-50%)';
+    lightboxPrev.style.color = 'white';
+    lightboxPrev.style.fontSize = '50px';
+    lightboxPrev.style.cursor = 'pointer';
+
+    const lightboxNext = document.createElement('span');
+    lightboxNext.textContent = '›';
+    lightboxNext.style.position = 'absolute';
+    lightboxNext.style.right = '20px';
+    lightboxNext.style.top = '50%';
+    lightboxNext.style.transform = 'translateY(-50%)';
+    lightboxNext.style.color = 'white';
+    lightboxNext.style.fontSize = '50px';
+    lightboxNext.style.cursor = 'pointer';
+
+    const lightboxImg = document.createElement('img');
+    lightboxImg.style.maxWidth = '95%';
+    lightboxImg.style.maxHeight = '80vh';
+    lightboxImg.style.borderRadius = '10px';
+    lightboxImg.style.boxShadow = '0 0 30px rgba(0,255,156,0.8)';
+
+    lightbox.appendChild(lightboxClose);
+    lightbox.appendChild(lightboxPrev);
+    lightbox.appendChild(lightboxNext);
+    lightbox.appendChild(lightboxImg);
+    document.body.appendChild(lightbox);
+
     let currentIndex = 0;
 
     function openLightbox(index) {
@@ -228,7 +335,7 @@
   });
 </script>
 
-<!-- MATRIX RAIN -->
+<!-- MATRIX RAIN SCRIPT -->
 <script>
   const canvas = document.getElementById('matrix-canvas');
   const ctx = canvas.getContext('2d');
@@ -275,4 +382,4 @@
 </script>
 
 </body>
-    </html>
+                                                           </html>
