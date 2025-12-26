@@ -709,35 +709,3 @@ body.light .logo-text {
   color: #00b366 !important; /* darker green for light background */
   text-shadow: 0 0 10px #00b366, 0 0 20px #00b366;
    }
-
-/* Force proper grid for categories and search results */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
-  padding: 20px;
-}
-
-/* Mobile adjustment */
-@media (max-width: 600px) {
-  .grid {
-    grid-template-columns: 1fr;
-    padding: 15px;
-  }
-}
-
-/* Ensure cards look good */
-.card {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(0,255,156,0.3);
-  border-radius: 15px;
-  padding: 20px;
-  text-align: center;
-  transition: all 0.3s;
-  backdrop-filter: blur(5px);
-}
-
-.card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 0 30px rgba(0,255,156,0.4);
-}
