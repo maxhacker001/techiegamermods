@@ -47,19 +47,20 @@
     <div>
       <h1 id="appName">Loading...</h1>
       <div class="meta">
-        <span id="appVersion">2025</span> • Tutorial
+        <span id="appVersion">2025</span> • Tutorial Guide
       </div>
     </div>
   </div>
   
   <div class="warning-box">
     <strong>📌 Guide</strong><br><br>
-    Check the video for full step-by-step guide.
+    Full step-by-step tutorial in the video below.
   </div>
 
   <div class="info-box">
     <div><strong>Version</strong><br><span id="appVersion2">2025</span></div>
     <div><strong>Updated</strong><br>December 2025</div>
+    <div><strong>Requires</strong><br>Android 5.0+</div>
   </div>
 
   <div class="features-box">
@@ -79,11 +80,12 @@
     <span>✓ Verified Steps</span>
     <span>✓ Beginner Friendly</span>
     <span>✓ Updated 2025</span>
+    <span>✓ No Root Needed</span>
   </div>
 
-  <!-- BIG CENTERED YOUTUBE BUTTON WITH COUNTDOWN -->
+  <!-- BIG YOUTUBE BUTTON WITH COUNTDOWN -->
   <div style="text-align:center; margin:40px 0;">
-    <button class="download-btn" id="youtubeBtn" style="background:var(--neon); color:black; font-size:16px;">
+    <button class="download-btn" id="youtubeBtn" style="background:var(--neon); color:black; font-size:18px; padding:18px;">
       📺 Watch Tutorial on YouTube
     </button>
   </div>
@@ -112,7 +114,6 @@
 
 <script src="js/data.js"></script>
 
-<!-- TUTORIAL PAGE SCRIPT + YOUTUBE COUNTDOWN + LIGHTBOX -->
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const params = new URLSearchParams(window.location.search);
@@ -173,7 +174,7 @@
       });
     }
 
-    // LIGHTBOX for screenshots
+    // LIGHTBOX
     const lightbox = document.createElement('div');
     lightbox.id = 'lightbox';
     lightbox.style.display = 'none';
