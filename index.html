@@ -380,7 +380,7 @@
       document.querySelector('.sidebar-item.faq').classList.add('active');
     }
 
-    // Sidebar clicks
+    // Sidebar clicks + initial filter on load
     sidebarItems.forEach(item => {
       item.addEventListener('click', (e) => {
         e.preventDefault();
@@ -392,6 +392,16 @@
         sidebar.classList.remove('open');
         overlay.classList.remove('open');
       });
+    });
+
+    // Run initial filter on page load (fixes mixed apps/games on refresh)
+    document.addEventListener('DOMContentLoaded', () => {
+      const activeBtn = document.querySelector('.filter-btn.active');
+      if (activeBtn && activeBtn.dataset.category) {
+        const cat = activeBtn.dataset.category;
+        const filtered = apps.filter(a => a.category === cat);
+        renderGrid(appsContainer, filtered);
+      }
     });
 
     // Overlay close
