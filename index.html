@@ -254,48 +254,50 @@
     const searchBtn = document.getElementById('searchBtn');
     const appsContainer = document.getElementById('appsContainer');
 
+    // Render grid function
     function renderGrid(gridElement, list, isTutorial = false) {
-  gridElement.innerHTML = "";
-  if (list.length === 0) {
-    gridElement.innerHTML = "<p style='grid-column:1/-1; text-align:center; color:var(--muted); margin:50px;'>No mods found 😔</p>";
-    return;
-  }
-  list.forEach(app => {
-    const img = document.createElement('img');
-    img.src = app.image;
-    img.alt = app.name;
-    img.style.width = '70px';
-    img.style.height = '70px';
-    img.style.borderRadius = '14px';
-    img.style.marginBottom = '10px';
-    img.onerror = () => img.src = 'images/logo.png';
+      gridElement.innerHTML = "";
+      if (list.length === 0) {
+        gridElement.innerHTML = "<p style='grid-column:1/-1; text-align:center; color:var(--muted); margin:50px;'>No mods found 😔</p>";
+        return;
+      }
+      list.forEach(app => {
+        const img = document.createElement('img');
+        img.src = app.image;
+        img.alt = app.name;
+        img.style.width = '70px';
+        img.style.height = '70px';
+        img.style.borderRadius = '14px';
+        img.style.marginBottom = '10px';
+        img.onerror = () => img.src = 'images/logo.png';
 
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.appendChild(img);
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.appendChild(img);
 
-    const h3 = document.createElement('h3');
-    h3.textContent = app.name;
-    card.appendChild(h3);
+        const h3 = document.createElement('h3');
+        h3.textContent = app.name;
+        card.appendChild(h3);
 
-    const p = document.createElement('p');
-    p.textContent = `${app.version} • ${app.size}`;
-    card.appendChild(p);
+        const p = document.createElement('p');
+        p.textContent = `${app.version} • ${app.size}`;
+        card.appendChild(p);
 
-    const a = document.createElement('a');
-    if (isTutorial) {
-      a.href = 'tutorial.html?id=' + app.id;
-      a.textContent = 'Watch Tutorial';
-    } else {
-      a.href = 'app.html?id=' + app.id;
-      a.textContent = 'View Mod';
+        const a = document.createElement('a');
+        if (isTutorial) {
+          a.href = 'tutorial.html?id=' + app.id;
+          a.textContent = 'Watch Tutorial';
+        } else {
+          a.href = 'app.html?id=' + app.id;
+          a.textContent = 'View Mod';
+        }
+        card.appendChild(a);
+
+        gridElement.appendChild(card);
+      });
     }
-    card.appendChild(a);
 
-    gridElement.appendChild(card);
-  });
-}
-    // CLEAN SEARCH — HIDE TRENDING + FILTERS
+    // CLEAN SEARCH — HIDE TRENDING + FILTERS WHEN SEARCHING
     function doSearch() {
       const q = searchInput.value.toLowerCase().trim();
       const filtered = q ? apps.filter(app => app.name.toLowerCase().includes(q)) : apps;
@@ -326,16 +328,9 @@
     // Enter key
     searchInput.addEventListener('keyup', (e) => {
       if (e.key === 'Enter') {
-    // Initial render
-    doSearch(); 
-     // Apply active filter on page load (fixes mixed apps/games on refresh)
-    const activeFilter = document.querySelector('.filter-btn.active');
-    if (activeFilter && activeFilter.dataset.category) {
-      const cat = activeFilter.dataset.category;
-      const filtered = apps.filter(a => a.category === cat);
-      renderGrid(appsContainer, filtered);
-    }
-    
+        doSearch();
+      }
+    });
 
     // Show home
     function showHome() {
@@ -346,7 +341,7 @@
       sidebarItems.forEach(item => item.classList.remove('active'));
       document.querySelector('.sidebar-item.home').classList.add('active');
       searchInput.value = '';
-      doSearch(); // reset to full view
+      doSearch();
     }
 
     // Show category
@@ -387,7 +382,7 @@
       document.querySelector('.sidebar-item.faq').classList.add('active');
     }
 
-    // Sidebar clicks + initial filter on load
+    // Sidebar clicks
     sidebarItems.forEach(item => {
       item.addEventListener('click', (e) => {
         e.preventDefault();
@@ -399,16 +394,6 @@
         sidebar.classList.remove('open');
         overlay.classList.remove('open');
       });
-    });
-
-    // Run initial filter on page load (fixes mixed apps/games on refresh)
-    document.addEventListener('DOMContentLoaded', () => {
-      const activeBtn = document.querySelector('.filter-btn.active');
-      if (activeBtn && activeBtn.dataset.category) {
-        const cat = activeBtn.dataset.category;
-        const filtered = apps.filter(a => a.category === cat);
-        renderGrid(appsContainer, filtered);
-      }
     });
 
     // Overlay close
@@ -565,4 +550,4 @@
 </script>
 
 </body>
-          </html>
+  </html>
