@@ -60,11 +60,6 @@
     </span>
   </div>
 
-  <!-- YouTube Button -->
-  <button class="download-btn" id="youtubeBtn" style="background:var(--neon); color:black; margin:20px 0;">
-    📺 Watch Tutorial on YouTube
-  </button>
-
   <div class="info-box">
     <div><strong>Version</strong><br><span id="appVersion2">12.3.0</span></div>
     <div><strong>Size</strong><br><span id="appSize">78 MB</span></div>
@@ -92,7 +87,14 @@
     <span>✓ Daily Scans</span>
   </div>
 
-  <!-- Download Button (hidden for tutorials) -->
+  <!-- YOUTUBE BUTTON AT BOTTOM (for both mods & tutorials) -->
+  <div style="text-align:center; margin:30px 0;">
+    <button class="download-btn" id="youtubeBtn" style="background:var(--neon); color:black; font-size:18px;">
+      📺 Watch Tutorial on YouTube
+    </button>
+  </div>
+
+  <!-- DOWNLOAD BUTTON (only for mods) -->
   <button class="download-btn" id="downloadBtn" data-link="#">
     ⬇ DOWNLOAD APK
   </button>
@@ -205,9 +207,20 @@
       });
     }
 
-    // YouTube button
+    // YouTube button (always shown, countdown resets on back)
+    const youtubeBtn = document.getElementById("youtubeBtn");
+    youtubeBtn.style.display = app.youtube ? "block" : "none";
+
+    const originalText = "📺 Watch Tutorial on YouTube";
+
+    function resetYouTubeButton() {
+      youtubeBtn.textContent = originalText;
+      youtubeBtn.disabled = false;
+    }
+
+    resetYouTubeButton(); // initial
+
     if (app.youtube) {
-      const youtubeBtn = document.getElementById("youtubeBtn");
       youtubeBtn.addEventListener("click", (e) => {
         e.preventDefault();
         youtubeBtn.textContent = "Redirecting to video... 3";
@@ -220,12 +233,17 @@
           if (count < 0) {
             clearInterval(interval);
             window.open(app.youtube, "_blank");
+            // Reset after open
+            setTimeout(resetYouTubeButton, 1000);
           }
         }, 1000);
       });
     }
 
-    // LIGHTBOX (same as before)
+    // Reset button on page show (when going back)
+    window.addEventListener("pageshow", resetYouTubeButton);
+
+    // LIGHTBOX
     const lightbox = document.createElement('div');
     lightbox.id = 'lightbox';
     lightbox.style.display = 'none';
@@ -382,4 +400,4 @@
 </script>
 
 </body>
-                                                           </html>
+        </html>
