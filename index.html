@@ -297,7 +297,7 @@
       });
     }
 
-    // CLEAN SEARCH — HIDE TRENDING + FILTERS WHEN SEARCHING
+    // CLEAN SEARCH — HIDE TRENDING + FILTERS
     function doSearch() {
       const q = searchInput.value.toLowerCase().trim();
       const filtered = q ? apps.filter(app => app.name.toLowerCase().includes(q)) : apps;
@@ -341,7 +341,7 @@
       sidebarItems.forEach(item => item.classList.remove('active'));
       document.querySelector('.sidebar-item.home').classList.add('active');
       searchInput.value = '';
-      doSearch();
+      doSearch(); // reset to full view
     }
 
     // Show category
