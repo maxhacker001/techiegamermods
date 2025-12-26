@@ -35,17 +35,13 @@
   <div class="nav">
     <div class="logo">
       <img src="images/logo.png" style="height:28px">
-      <span>TECHIE GAMER MODS</span>
+      <span class="logo-text">TECHIE GAMER MODS</span>
     </div>
   </div>
 </header>
 
-<!-- Back Button -->
-<div style="max-width:900px; margin:0 auto 20px; padding:0 20px;">
-  <a href="index.html" style="color:var(--neon); text-decoration:none; font-size:14px; display:inline-flex; align-items:center; gap:6px;">
-    ← Back to Home
-  </a>
-</div>
+<!-- REMOVE DUPLICATE BACK BUTTON (drawer Home link does this job) -->
+<!-- We keep only the drawer for navigation -->
 
 <div class="app-page">
 
@@ -202,7 +198,7 @@
       }, 1000);
     });
 
-    // DRAWER SCRIPT FOR APP.HTML (open/close only — links go to index.html)
+    // DRAWER SCRIPT
     const menuToggle = document.getElementById('menuToggle');
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('overlay');
@@ -266,4 +262,4 @@
 </script>
 
 </body>
-        </html>
+                                                                          </html>
