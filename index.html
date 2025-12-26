@@ -1,4 +1,4 @@
-<!<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -18,11 +18,6 @@
 
 <!-- MATRIX RAIN -->
 <canvas id="matrix-canvas"></canvas>
-
-<!-- CUSTOM SCROLLBAR -->
-<div class="custom-scrollbar" id="customScrollbar">
-  <div class="scroll-thumb" id="scrollThumb"></div>
-</div>
 
 <!-- HAMBURGER BUTTON -->
 <div id="menuToggle">≡</div>
@@ -68,7 +63,7 @@
     </div>
 
     <!-- TRENDING MODS SECTION -->
-    <div class="trending-section">
+    <div class="trending-section" id="trendingSection">
       <h2 class="trending-title">🔥 Trending Mods</h2>
       <div class="trending-grid">
         <div class="trending-card">
@@ -99,7 +94,7 @@
     </div>
 
     <section>
-      <div class="filters">
+      <div class="filters" id="filtersSection">
         <button class="filter-btn active" data-category="apps">App Mods</button>
         <button class="filter-btn" data-category="games">Game Mods</button>
         <button class="filter-btn" data-category="tutorials">Modding Tutorials</button>
@@ -242,7 +237,7 @@
 <script src="js/main.js"></script>
 <script src="js/security.js"></script>
 
-<!-- FINAL WORKING SEARCH + DRAWER + SCROLLBAR SCRIPT -->
+<!-- FINAL WORKING SEARCH + DRAWER + FIXED INITIAL CATEGORY -->
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const homePage = document.getElementById('homePage');
@@ -302,15 +297,31 @@
       });
     }
 
-    // Search function
+    // CLEAN SEARCH — HIDE TRENDING + FILTERS WHEN SEARCHING
     function doSearch() {
       const q = searchInput.value.toLowerCase().trim();
-      const filtered = apps.filter(app => app.name.toLowerCase().includes(q));
+      const filtered = q ? apps.filter(app => app.name.toLowerCase().includes(q)) : apps;
+
+      if (q) {
+        document.getElementById('trendingSection').style.display = 'none';
+        document.getElementById('filtersSection').style.display = 'none';
+      } else {
+        document.getElementById('trendingSection').style.display = 'block';
+        document.getElementById('filtersSection').style.display = 'flex';
+      }
+
       renderGrid(appsContainer, filtered);
     }
 
-    // Initial render
+    // Initial render + fix active category on load
     doSearch();
+
+    const activeBtn = document.querySelector('.filter-btn.active');
+    if (activeBtn && activeBtn.dataset.category) {
+      const cat = activeBtn.dataset.category;
+      const filtered = apps.filter(a => a.category === cat);
+      renderGrid(appsContainer, filtered);
+    }
 
     // Live search
     searchInput.addEventListener('input', doSearch);
@@ -336,7 +347,8 @@
       faqPage.style.display = 'none';
       sidebarItems.forEach(item => item.classList.remove('active'));
       document.querySelector('.sidebar-item.home').classList.add('active');
-      doSearch(); // Preserve search
+      searchInput.value = '';
+      doSearch();
     }
 
     // Show category
@@ -431,63 +443,6 @@
   });
 </script>
 
-<!-- FAST SCROLLBAR SCRIPT -->
-<script>
-  const thumb = document.getElementById('scrollThumb');
-  let isDragging = false;
-  let startY = 0;
-  let startScroll = 0;
-
-  function updateThumb() {
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    const docHeight = document.body.scrollHeight - window.innerHeight;
-    const scrollPercent = docHeight > 0 ? scrollTop / docHeight : 0;
-    const thumbHeight = Math.max(150, window.innerHeight * 0.15);
-    const thumbTop = scrollPercent * (window.innerHeight - thumbHeight);
-    thumb.style.height = thumbHeight + 'px';
-    thumb.style.top = Math.max(0, Math.min(thumbTop, window.innerHeight - thumbHeight)) + 'px';
-  }
-
-  updateThumb();
-  window.addEventListener('scroll', updateThumb);
-  window.addEventListener('resize', updateThumb);
-
-  thumb.addEventListener('mousedown', (e) => {
-    isDragging = true;
-    startY = e.clientY;
-    startScroll = window.pageYOffset;
-    e.preventDefault();
-  });
-
-  document.addEventListener('mousemove', (e) => {
-    if (!isDragging) return;
-    const deltaY = e.clientY - startY;
-    const multiplier = 5;
-    window.scrollTo(0, startScroll + deltaY * multiplier);
-    updateThumb();
-  });
-
-  document.addEventListener('mouseup', () => isDragging = false);
-
-  thumb.addEventListener('touchstart', (e) => {
-    isDragging = true;
-    startY = e.touches[0].clientY;
-    startScroll = window.pageYOffset;
-    e.preventDefault();
-  });
-
-  document.addEventListener('touchmove', (e) => {
-    if (!isDragging) return;
-    const deltaY = e.touches[0].clientY - startY;
-    const multiplier = 6;
-    window.scrollTo(0, startScroll + deltaY * multiplier);
-    updateThumb();
-    e.preventDefault();
-  });
-
-  document.addEventListener('touchend', () => isDragging = false);
-</script>
-
 <!-- MATRIX RAIN SCRIPT -->
 <script>
   const canvas = document.getElementById('matrix-canvas');
@@ -535,4 +490,4 @@
 </script>
 
 </body>
-</html>
+      </html>
