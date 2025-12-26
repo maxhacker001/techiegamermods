@@ -104,32 +104,208 @@
     </section>
   </div>
 
-  <!-- CATEGORY PAGE, BLOG, FAQ — unchanged -->
+  <!-- CATEGORY PAGE (FULL SCREEN) -->
+  <div id="categoryPage" style="display:none;">
+    <header>
+      <div class="nav">
+        <div class="logo">
+          <img src="images/logo.png" style="height:28px">
+          <span>TECHIE GAMER MODS</span>
+        </div>
+      </div>
+    </header>
+
+    <div style="padding:20px;">
+      <h2 id="categoryTitle" style="color:var(--neon); text-align:center; margin:20px 0;">App Mods</h2>
+      <div class="grid" id="categoryGrid"></div>
+    </div>
+  </div>
+
+  <!-- BLOG PAGE -->
+  <div id="blogPage" style="display:none; padding:20px; max-width:900px; margin:0 auto;">
+    <header>
+      <div class="nav">
+        <div class="logo">
+          <img src="images/logo.png" style="height:28px">
+          <span>TECHIE GAMER MODS</span>
+        </div>
+      </div>
+    </header>
+
+    <h2 style="color:var(--neon); text-align:center; margin:30px 0;">📝 Blog</h2>
+    <div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:15px; border:1px solid var(--neon);">
+      <h3 style="color:var(--neon);">Latest Updates</h3>
+      <p>Stay tuned for new mod releases, tutorials, and tips!</p>
+      <p>December 2025 - New Spotify and CapCut mods released with latest features.</p>
+      <p>Follow us on WhatsApp for instant updates!</p>
+    </div>
+  </div>
+
+  <!-- FAQ PAGE -->
+  <div id="faqPage" style="display:none; padding:20px; max-width:900px; margin:0 auto;">
+    <header>
+      <div class="nav">
+        <div class="logo">
+          <img src="images/logo.png" style="height:28px">
+          <span>TECHIE GAMER MODS</span>
+        </div>
+      </div>
+    </header>
+
+    <h2 style="color:var(--neon); text-align:center; margin:30px 0;">❓ FAQ</h2>
+    <div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:15px; border:1px solid var(--neon); line-height:1.6;">
+      <h3 style="color:var(--neon);">Are the mods safe?</h3>
+      <p>Yes! All mods are scanned with VirusTotal and manually verified. No malware, no bans.</p>
+
+      <h3 style="color:var(--neon);">How to install?</h3>
+      <p>Uninstall original app → Install our mod → Open and enjoy premium features!</p>
+
+      <h3 style="color:var(--neon);">Will I get banned?</h3>
+      <p>Our mods use advanced protection. Thousands of users, zero bans reported.</p>
+
+      <h3 style="color:var(--neon);">New mods?</h3>
+      <p>We update daily. Join WhatsApp for instant notifications.</p>
+    </div>
+  </div>
 
 </div>
 
-<!-- FOOTER, WHATSAPP, PWA — unchanged -->
+<!-- FOOTER WITH COUNTERS -->
+<footer>
+  <div style="margin:20px 0; font-size:14px;">
+    <div style="margin-bottom:8px;">
+      <span style="color:var(--neon); font-weight:700;">Total Downloads:</span>
+      <span style="color:white; font-size:20px; font-weight:800; margin-left:8px;">1,234,567</span>
+    </div>
+    <div>
+      <span style="color:var(--neon); font-weight:700;">Active Users:</span>
+      <span style="color:white; font-size:20px; font-weight:800; margin-left:8px;">8,901</span>
+    </div>
+  </div>
+  © 2025 TECHIE GAMER MODS • Clean • Safe • Hacker-Styled
+</footer>
+
+<!-- FLOATING WHATSAPP BUTTON -->
+<a href="https://wa.me/1234567890" target="_blank" id="whatsapp-float" title="Chat on WhatsApp">
+  💬
+</a>
+
+<!-- PWA INSTALL PROMPT SCRIPT -->
+<script>
+  let deferredPrompt;
+  const installBtn = document.createElement('div');
+  installBtn.style.position = 'fixed';
+  installBtn.style.bottom = '80px';
+  installBtn.style.left = '50%';
+  installBtn.style.transform = 'translateX(-50%)';
+  installBtn.style.background = 'var(--neon)';
+  installBtn.style.color = 'black';
+  installBtn.style.padding = '12px 28px';
+  installBtn.style.borderRadius = '30px';
+  installBtn.style.fontWeight = '700';
+  installBtn.style.fontSize = '15px';
+  installBtn.style.boxShadow = '0 0 30px rgba(0,255,156,.6)';
+  installBtn.style.zIndex = '999';
+  installBtn.style.cursor = 'pointer';
+  installBtn.style.display = 'none';
+  installBtn.textContent = '📲 Install App';
+  document.body.appendChild(installBtn);
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    installBtn.style.display = 'block';
+  });
+
+  installBtn.addEventListener('click', () => {
+    installBtn.style.display = 'none';
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((choice) => {
+      if (choice.outcome === 'accepted') {
+        console.log('User installed the app');
+      }
+      deferredPrompt = null;
+    });
+  });
+
+  window.addEventListener('appinstalled', () => {
+    installBtn.style.display = 'none';
+  });
+</script>
 
 <script src="js/data.js"></script>
 <script src="js/main.js"></script>
 <script src="js/security.js"></script>
 
-<!-- FINAL CLEAN SEARCH SCRIPT -->
+<!-- FINAL WORKING SEARCH + DRAWER + SCROLLBAR SCRIPT -->
 <script>
   document.addEventListener("DOMContentLoaded", () => {
-    // ... your existing code (renderGrid, showHome, showCategory, showBlog, showFAQ, sidebar clicks, drawer toggle, hash detection, mode toggle, scrollbar, matrix) ...
+    const homePage = document.getElementById('homePage');
+    const categoryPage = document.getElementById('categoryPage');
+    const blogPage = document.getElementById('blogPage');
+    const faqPage = document.getElementById('faqPage');
+    const categoryTitle = document.getElementById('categoryTitle');
+    const categoryGrid = document.getElementById('categoryGrid');
+    const sidebarItems = document.querySelectorAll('.sidebar-item');
+    const overlay = document.getElementById('overlay');
+    const sidebar = document.getElementById('sidebar');
+    const menuToggle = document.getElementById('menuToggle');
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const appsContainer = document.getElementById('appsContainer');
 
-    // CLEAN SEARCH — HIDE EVERYTHING EXCEPT RESULTS
+    // Render grid function
+    function renderGrid(gridElement, list, isTutorial = false) {
+      gridElement.innerHTML = "";
+      if (list.length === 0) {
+        gridElement.innerHTML = "<p style='grid-column:1/-1; text-align:center; color:var(--muted); margin:50px;'>No mods found 😔</p>";
+        return;
+      }
+      list.forEach(app => {
+        const img = document.createElement('img');
+        img.src = app.image;
+        img.alt = app.name;
+        img.style.width = '70px';
+        img.style.height = '70px';
+        img.style.borderRadius = '14px';
+        img.style.marginBottom = '10px';
+        img.onerror = () => img.src = 'images/logo.png';
+
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.appendChild(img);
+
+        const h3 = document.createElement('h3');
+        h3.textContent = app.name;
+        card.appendChild(h3);
+
+        const p = document.createElement('p');
+        p.textContent = `${app.version} • ${app.size}`;
+        card.appendChild(p);
+
+        const a = document.createElement('a');
+        if (isTutorial) {
+          a.href = 'tutorial.html?id=' + app.id;
+          a.textContent = 'Watch Tutorial';
+        } else {
+          a.href = 'app.html?id=' + app.id;
+          a.textContent = 'View Mod';
+        }
+        card.appendChild(a);
+
+        gridElement.appendChild(card);
+      });
+    }
+
+    // CLEAN SEARCH — HIDE TRENDING + FILTERS
     function doSearch() {
       const q = searchInput.value.toLowerCase().trim();
       const filtered = q ? apps.filter(app => app.name.toLowerCase().includes(q)) : apps;
 
       if (q) {
-        // Hide trending and filters
         document.getElementById('trendingSection').style.display = 'none';
         document.getElementById('filtersSection').style.display = 'none';
       } else {
-        // Show them back
         document.getElementById('trendingSection').style.display = 'block';
         document.getElementById('filtersSection').style.display = 'flex';
       }
@@ -137,30 +313,241 @@
       renderGrid(appsContainer, filtered);
     }
 
-    // Initial
+    // Initial render
     doSearch();
 
-    // Events
+    // Live search
     searchInput.addEventListener('input', doSearch);
+
+    // GO button
     searchBtn.addEventListener('click', (e) => {
       e.preventDefault();
       doSearch();
     });
+
+    // Enter key
     searchInput.addEventListener('keyup', (e) => {
-      if (e.key === 'Enter') doSearch();
+      if (e.key === 'Enter') {
+        doSearch();
+      }
     });
 
-    // Clear search when going home
+    // Show home
     function showHome() {
-      // ... your existing showHome code ...
+      homePage.style.display = 'block';
+      categoryPage.style.display = 'none';
+      blogPage.style.display = 'none';
+      faqPage.style.display = 'none';
+      sidebarItems.forEach(item => item.classList.remove('active'));
+      document.querySelector('.sidebar-item.home').classList.add('active');
       searchInput.value = '';
-      doSearch();
+      doSearch(); // reset to full view
     }
 
-    // ... rest of your script unchanged (hash detection at bottom) ...
+    // Show category
+    function showCategory(cat) {
+      const filtered = apps.filter(a => a.category === cat);
+      const titleMap = {
+        apps: 'App Mods',
+        games: 'Game Mods',
+        tutorials: 'Modding Tutorials'
+      };
+      categoryTitle.textContent = titleMap[cat];
+      renderGrid(categoryGrid, filtered, cat === 'tutorials');
+      homePage.style.display = 'none';
+      categoryPage.style.display = 'block';
+      blogPage.style.display = 'none';
+      faqPage.style.display = 'none';
+      sidebarItems.forEach(item => item.classList.remove('active'));
+      document.querySelector(`.sidebar-item.${cat}`).classList.add('active');
+    }
+
+    // Show blog
+    function showBlog() {
+      homePage.style.display = 'none';
+      categoryPage.style.display = 'none';
+      blogPage.style.display = 'block';
+      faqPage.style.display = 'none';
+      sidebarItems.forEach(item => item.classList.remove('active'));
+      document.querySelector('.sidebar-item.blog').classList.add('active');
+    }
+
+    // Show FAQ
+    function showFAQ() {
+      homePage.style.display = 'none';
+      categoryPage.style.display = 'none';
+      blogPage.style.display = 'none';
+      faqPage.style.display = 'block';
+      sidebarItems.forEach(item => item.classList.remove('active'));
+      document.querySelector('.sidebar-item.faq').classList.add('active');
+    }
+
+    // Sidebar clicks
+    sidebarItems.forEach(item => {
+      item.addEventListener('click', (e) => {
+        e.preventDefault();
+        const cat = item.dataset.category;
+        if (item.classList.contains('home')) showHome();
+        else if (cat) showCategory(cat);
+        else if (item.classList.contains('blog')) showBlog();
+        else if (item.classList.contains('faq')) showFAQ();
+        sidebar.classList.remove('open');
+        overlay.classList.remove('open');
+      });
+    });
+
+    // Overlay close
+    overlay.addEventListener('click', () => {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('open');
+    });
+
+    // Hamburger toggle
+    menuToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('open');
+    });
+
+    // Detect hash on load and show category
+    window.addEventListener('load', () => {
+      const hash = window.location.hash.substring(1);
+      if (hash === 'apps') showCategory('apps');
+      else if (hash === 'games') showCategory('games');
+      else if (hash === 'tutorials') showCategory('tutorials');
+      else if (hash === 'blog') showBlog();
+      else if (hash === 'faq') showFAQ();
+    });
   });
 </script>
 
-<!-- ... dark/light mode, scrollbar, matrix — unchanged ... -->
+<!-- DARK/LIGHT MODE TOGGLE -->
+<script>
+  const modeToggle = document.querySelector('.mode-toggle');
+  const modeText = document.getElementById('modeText');
+  const body = document.body;
+
+  if (localStorage.getItem('theme') === 'light') {
+    body.classList.add('light');
+    modeText.textContent = '🌙 Dark Mode';
+  } else {
+    modeText.textContent = '☀ Light Mode';
+  }
+
+  modeToggle.addEventListener('click', (e) => {
+    e.preventDefault();
+    body.classList.toggle('light');
+    if (body.classList.contains('light')) {
+      localStorage.setItem('theme', 'light');
+      modeText.textContent = '🌙 Dark Mode';
+    } else {
+      localStorage.setItem('theme', 'dark');
+      modeText.textContent = '☀ Light Mode';
+    }
+  });
+</script>
+
+<!-- FAST SCROLLBAR SCRIPT -->
+<script>
+  const thumb = document.getElementById('scrollThumb');
+  let isDragging = false;
+  let startY = 0;
+  let startScroll = 0;
+
+  function updateThumb() {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const docHeight = document.body.scrollHeight - window.innerHeight;
+    const scrollPercent = docHeight > 0 ? scrollTop / docHeight : 0;
+    const thumbHeight = Math.max(150, window.innerHeight * 0.15);
+    const thumbTop = scrollPercent * (window.innerHeight - thumbHeight);
+    thumb.style.height = thumbHeight + 'px';
+    thumb.style.top = Math.max(0, Math.min(thumbTop, window.innerHeight - thumbHeight)) + 'px';
+  }
+
+  updateThumb();
+  window.addEventListener('scroll', updateThumb);
+  window.addEventListener('resize', updateThumb);
+
+  thumb.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    startY = e.clientY;
+    startScroll = window.pageYOffset;
+    e.preventDefault();
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    const deltaY = e.clientY - startY;
+    const multiplier = 5;
+    window.scrollTo(0, startScroll + deltaY * multiplier);
+    updateThumb();
+  });
+
+  document.addEventListener('mouseup', () => isDragging = false);
+
+  thumb.addEventListener('touchstart', (e) => {
+    isDragging = true;
+    startY = e.touches[0].clientY;
+    startScroll = window.pageYOffset;
+    e.preventDefault();
+  });
+
+  document.addEventListener('touchmove', (e) => {
+    if (!isDragging) return;
+    const deltaY = e.touches[0].clientY - startY;
+    const multiplier = 6;
+    window.scrollTo(0, startScroll + deltaY * multiplier);
+    updateThumb();
+    e.preventDefault();
+  });
+
+  document.addEventListener('touchend', () => isDragging = false);
+</script>
+
+<!-- MATRIX RAIN SCRIPT -->
+<script>
+  const canvas = document.getElementById('matrix-canvas');
+  const ctx = canvas.getContext('2d');
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const matrix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#\( %^&*()*&^%# \)@!~";
+  const matrixArray = matrix.split("");
+
+  let fontSize = 14;
+  let columns = canvas.width / fontSize;
+
+  const drops = [];
+  for (let x = 0; x < columns; x++) {
+    drops[x] = 1;
+  }
+
+  function draw() {
+    ctx.fillStyle = 'rgba(11, 15, 12, 0.05)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = '#00ff9c';
+    ctx.font = fontSize + 'px monospace';
+
+    for (let i = 0; i < drops.length; i++) {
+      const text = matrixArray[Math.floor(Math.random() * matrixArray.length)];
+      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+        drops[i] = 0;
+      }
+      drops[i]++;
+    }
+  }
+
+  setInterval(draw, 35);
+
+  window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    columns = canvas.width / fontSize;
+  });
+</script>
+
 </body>
-  </html>
+          </html>
