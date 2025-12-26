@@ -42,7 +42,45 @@
 
 <div class="app-page">
 
-  <!-- ... (all your existing app-header, warning, youtube, info, features, trust-box, download button — unchanged) ... -->
+  <div class="app-header">
+    <img id="appImage" src="images/logo.png" alt="App Icon">
+    <div>
+      <h1 id="appName">Loading...</h1>
+      <div class="meta">
+        <span id="appVersion">v0.0.0</span> • 
+        <span id="appSize">0 MB</span> • 
+        Premium Mod
+      </div>
+    </div>
+  </div>
+  
+  <div class="warning-box">
+    <strong>⚠ Important Notice</strong><br><br>
+    Check YouTube comment section for app download link.<br>
+    <span style="color:#9fbfb1">
+      NOTE: Uninstall former mod and reinstall the new one.
+    </span>
+  </div>
+
+  <!-- YouTube Button -->
+  <a href="https://www.youtube.com/watch?v=YOUR_VIDEO_ID_HERE" target="_blank" 
+     id="youtubeBtn"
+     style="display:block; width:100%; padding:15px; margin:20px 0; background:var(--neon); color:black; 
+            text-align:center; text-decoration:none; border-radius:10px; font-weight:700; font-size:15px;">
+    📺 Watch Tutorial on YouTube
+  </a>
+
+  <div class="info-box">
+    <div><strong>Version</strong><br><span id="appVersion2">12.3.0</span></div>
+    <div><strong>Size</strong><br><span id="appSize2">78 MB</span></div>
+    <div><strong>Updated</strong><br><span id="updatedDate">Loading...</span></div>
+    <div><strong>Requires</strong><br>Android 5.0+</div>
+  </div>
+
+  <div class="features-box">
+    <h3 style="color:var(--neon); margin-bottom:10px;">🔓 Mod Features</h3>
+    <ul id="features"></ul>
+  </div>
 
   <!-- Screenshots Gallery -->
   <div class="screenshots-section" style="margin:30px 0;">
@@ -52,33 +90,68 @@
     </div>
   </div>
 
-  <!-- ... rest unchanged ... -->
+  <div class="trust-box">
+    <span>✓ VirusTotal Clean</span>
+    <span>✓ No Malware</span>
+    <span>✓ Signed APK</span>
+    <span>✓ Daily Scans</span>
+  </div>
+
+  <button class="download-btn" id="downloadBtn" data-link="#">
+    ⬇ DOWNLOAD APK
+  </button>
+
+  <div class="ad-slot">
+    <span>— Advertisement —</span>
+    <div class="ad-box">Your ad here (728x90)</div>
+  </div>
 
 </div>
 
 <!-- LIGHTBOX MODAL -->
-<div id="lightbox" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:9999; justify-content:center; align-items:center;">
+<div id="lightbox" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:9999; justify-content:center; align-items:center; flex-direction:column;">
   <span id="lightboxClose" style="position:absolute; top:20px; right:30px; color:white; font-size:40px; cursor:pointer;">&times;</span>
-  <span id="lightboxPrev" style="position:absolute; left:20px; color:white; font-size:50px; cursor:pointer;">‹</span>
-  <span id="lightboxNext" style="position:absolute; right:20px; color:white; font-size:50px; cursor:pointer;">›</span>
-  <img id="lightboxImg" style="max-width:90%; max-height:90%; border-radius:10px; box-shadow:0 0 30px rgba(0,255,156,0.8);">
+  <span id="lightboxPrev" style="position:absolute; left:20px; top:50%; transform:translateY(-50%); color:white; font-size:50px; cursor:pointer;">‹</span>
+  <span id="lightboxNext" style="position:absolute; right:20px; top:50%; transform:translateY(-50%); color:white; font-size:50px; cursor:pointer;">›</span>
+  <img id="lightboxImg" style="max-width:95%; max-height:80vh; border-radius:10px; box-shadow:0 0 30px rgba(0,255,156,0.8);">
 </div>
 
 <script src="js/data.js"></script>
 <script src="js/main.js"></script>
 <script src="js/security.js"></script>
 
-<!-- APP PAGE SCRIPT + LIGHTBOX -->
+<!-- APP PAGE SCRIPT + LIGHTBOX FIXED -->
 <script>
   document.addEventListener("DOMContentLoaded", () => {
-    // ... your existing code (updated date, app data load, features, youtube, download countdown, drawer) ...
+    const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+    const now = new Date();
+    const updatedElement = document.getElementById("updatedDate");
+    if (updatedElement) updatedElement.textContent = `${months[now.getMonth()]} ${now.getFullYear()}`;
+
+    const params = new URLSearchParams(window.location.search);
+    const appId = params.get("id");
+    if (!appId) return;
+
+    const app = apps.find(a => a.id === appId);
+    if (!app) return;
+
+    document.getElementById("appImage").src = app.image;
+    document.getElementById("appName").textContent = app.name;
+    document.getElementById("appVersion").textContent = `v${app.version}`;
+    document.getElementById("appVersion2").textContent = app.version;
+    document.getElementById("appSize").textContent = app.size;
+    document.getElementById("appSize2").textContent = app.size;
+
+    const featuresList = document.getElementById("features");
+    featuresList.innerHTML = "";
+    app.features.forEach(f => featuresList.innerHTML += `<li>${f}</li>`);
 
     // Screenshots
     const screenshotsGrid = document.getElementById("screenshotsGrid");
-    let currentScreenshots = [];
+    const currentScreenshots = app.screenshots || [];
 
-    if (app.screenshots && app.screenshots.length > 0) {
-      app.screenshots.forEach((src, index) => {
+    if (currentScreenshots.length > 0) {
+      currentScreenshots.forEach((src, index) => {
         const img = document.createElement('img');
         img.src = src;
         img.alt = "Screenshot " + (index + 1);
@@ -91,12 +164,11 @@
         img.onerror = () => img.src = 'images/logo.png';
         screenshotsGrid.appendChild(img);
       });
-      currentScreenshots = app.screenshots;
     } else {
       screenshotsGrid.innerHTML = "<p style='grid-column:1/-1; text-align:center; color:var(--muted);'>No screenshots yet</p>";
     }
 
-    // LIGHTBOX FUNCTIONALITY
+    // LIGHTBOX
     const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightboxImg');
     const lightboxClose = document.getElementById('lightboxClose');
@@ -131,7 +203,6 @@
     lightboxPrev.onclick = showPrev;
     lightboxNext.onclick = showNext;
 
-    // Keyboard navigation
     document.addEventListener('keydown', (e) => {
       if (lightbox.style.display === 'flex') {
         if (e.key === 'ArrowLeft') showPrev();
@@ -140,18 +211,7 @@
       }
     });
 
-    // Swipe on mobile
-    let touchStartX = 0;
-    lightbox.addEventListener('touchstart', (e) => {
-      touchStartX = e.changedTouches[0].screenX;
-    });
-    lightbox.addEventListener('touchend', (e) => {
-      const touchEndX = e.changedTouches[0].screenX;
-      if (touchStartX - touchEndX > 50) showNext();
-      if (touchEndX - touchStartX > 50) showPrev();
-    });
-
-    // DRAWER SCRIPT (unchanged)
+    // DRAWER
     const menuToggle = document.getElementById('menuToggle');
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('overlay');
@@ -168,9 +228,50 @@
   });
 </script>
 
-<!-- MATRIX RAIN SCRIPT (unchanged) -->
+<!-- MATRIX RAIN -->
 <script>
-  // ... your matrix rain code ...
+  const canvas = document.getElementById('matrix-canvas');
+  const ctx = canvas.getContext('2d');
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const matrix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#\( %^&*()*&^%# \)@!~";
+  const matrixArray = matrix.split("");
+
+  let fontSize = 14;
+  let columns = canvas.width / fontSize;
+
+  const drops = [];
+  for (let x = 0; x < columns; x++) {
+    drops[x] = 1;
+  }
+
+  function draw() {
+    ctx.fillStyle = 'rgba(11, 15, 12, 0.05)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = '#00ff9c';
+    ctx.font = fontSize + 'px monospace';
+
+    for (let i = 0; i < drops.length; i++) {
+      const text = matrixArray[Math.floor(Math.random() * matrixArray.length)];
+      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+        drops[i] = 0;
+      }
+      drops[i]++;
+    }
+  }
+
+  setInterval(draw, 35);
+
+  window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    columns = canvas.width / fontSize;
+  });
 </script>
 
 </body>
