@@ -47,20 +47,19 @@
     <div>
       <h1 id="appName">Loading...</h1>
       <div class="meta">
-        <span id="appVersion">v0.0.0</span> • <span id="appType">Premium Mod</span>
+        <span id="appType">Tutorial Guide</span>
       </div>
     </div>
   </div>
   
-  <div class="warning-box" id="warningBox">
-    <strong>⚠ Important Notice</strong><br><br>
-    Check YouTube comment section for app download link.<br>
-    <span style="color:#9fbfb1">
-      NOTE: Uninstall former mod and reinstall the new one.
-    </span>
+  <!-- GUIDE BOX FOR TUTORIALS ONLY -->
+  <div class="warning-box" id="guideBox">
+    <strong>📌 Guide</strong><br><br>
+    Check the video for full step-by-step guide.
   </div>
 
-  <div class="info-box">
+  <!-- INFO BOX FOR MODS ONLY -->
+  <div class="info-box" id="infoBox">
     <div><strong>Version</strong><br><span id="appVersion2">12.3.0</span></div>
     <div><strong>Size</strong><br><span id="appSize">78 MB</span></div>
     <div><strong>Updated</strong><br><span id="updatedDate">December 2025</span></div>
@@ -68,7 +67,7 @@
   </div>
 
   <div class="features-box">
-    <h3 style="color:var(--neon); margin-bottom:10px;" id="featuresTitle">🔓 Mod Features</h3>
+    <h3 style="color:var(--neon); margin-bottom:10px;" id="featuresTitle">📋 Video Outline</h3>
     <ul id="features"></ul>
   </div>
 
@@ -81,14 +80,14 @@
   </div>
 
   <div class="trust-box" id="trustBox">
-    <span>✓ VirusTotal Clean</span>
-    <span>✓ No Malware</span>
-    <span>✓ Signed APK</span>
-    <span>✓ Daily Scans</span>
+    <span>✓ Verified Steps</span>
+    <span>✓ Beginner Friendly</span>
+    <span>✓ Updated 2025</span>
+    <span>✓ No Root Needed</span>
   </div>
 
-  <!-- YOUTUBE BUTTON AT BOTTOM (for both mods & tutorials) -->
-  <div style="text-align:center; margin:30px 0;">
+  <!-- YOUTUBE BUTTON AT BOTTOM -->
+  <div style="text-align:center; margin:40px 0;">
     <button class="download-btn" id="youtubeBtn" style="background:var(--neon); color:black; font-size:18px;">
       📺 Watch Tutorial on YouTube
     </button>
@@ -136,13 +135,18 @@
 
     document.getElementById("appImage").src = app.image;
     document.getElementById("appName").textContent = app.name;
-    document.getElementById("appVersion").textContent = `v${app.version}`;
-    document.getElementById("appVersion2").textContent = app.version;
-    document.getElementById("appSize").textContent = app.size || "—";
     document.getElementById("appType").textContent = isTutorial ? "Tutorial Guide" : "Premium Mod";
 
-    // Warning box
-    document.getElementById("warningBox").style.display = isTutorial ? "none" : "block";
+    // Guide box (tutorials only)
+    document.getElementById("guideBox").style.display = isTutorial ? "block" : "none";
+
+    // Info box (mods only)
+    document.getElementById("infoBox").style.display = isTutorial ? "none" : "block";
+
+    if (!isTutorial) {
+      document.getElementById("appVersion2").textContent = app.version;
+      document.getElementById("appSize").textContent = app.size || "—";
+    }
 
     // Features title
     document.getElementById("featuresTitle").textContent = isTutorial ? "📋 Video Outline" : "🔓 Mod Features";
@@ -207,7 +211,7 @@
       });
     }
 
-    // YouTube button (always shown, countdown resets on back)
+    // YouTube button
     const youtubeBtn = document.getElementById("youtubeBtn");
     youtubeBtn.style.display = app.youtube ? "block" : "none";
 
@@ -218,7 +222,7 @@
       youtubeBtn.disabled = false;
     }
 
-    resetYouTubeButton(); // initial
+    resetYouTubeButton();
 
     if (app.youtube) {
       youtubeBtn.addEventListener("click", (e) => {
@@ -233,14 +237,12 @@
           if (count < 0) {
             clearInterval(interval);
             window.open(app.youtube, "_blank");
-            // Reset after open
             setTimeout(resetYouTubeButton, 1000);
           }
         }, 1000);
       });
     }
 
-    // Reset button on page show (when going back)
     window.addEventListener("pageshow", resetYouTubeButton);
 
     // LIGHTBOX
@@ -400,4 +402,4 @@
 </script>
 
 </body>
-        </html>
+  </html>
