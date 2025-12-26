@@ -12,10 +12,24 @@
 <!-- MATRIX RAIN -->
 <canvas id="matrix-canvas"></canvas>
 
-<!-- CUSTOM SCROLLBAR -->
-<div class="custom-scrollbar" id="customScrollbar">
-  <div class="scroll-thumb" id="scrollThumb"></div>
+<!-- HAMBURGER BUTTON -->
+<div id="menuToggle">≡</div>
+
+<!-- SIDEBAR DRAWER -->
+<div id="sidebar">
+  <a href="index.html" class="sidebar-item home">🏠 Home</a>
+  <a href="index.html#apps" class="sidebar-item apps">📱 App Mods</a>
+  <a href="index.html#games" class="sidebar-item games">🎮 Game Mods</a>
+  <a href="index.html#tutorials" class="sidebar-item tutorials">🔧 Modding Tutorials</a>
+  <a href="index.html#blog" class="sidebar-item blog">📝 Blog</a>
+  <a href="index.html#faq" class="sidebar-item faq">❓ FAQ</a>
+  <a href="#" class="sidebar-item mode-toggle">
+    <span id="modeText">☀ Light Mode</span>
+  </a>
 </div>
+
+<!-- OVERLAY -->
+<div id="overlay"></div>
 
 <header>
   <div class="nav">
@@ -25,13 +39,6 @@
     </div>
   </div>
 </header>
-
-<!-- Back Button -->
-<div style="max-width:900px; margin:0 auto 20px; padding:0 20px;">
-  <a href="index.html" style="color:var(--neon); text-decoration:none; font-size:14px; display:inline-flex; align-items:center; gap:6px;">
-    ← Back to Home
-  </a>
-</div>
 
 <div class="app-page">
 
@@ -60,20 +67,25 @@
     <ul id="features"></ul>
   </div>
 
+  <!-- Screenshots Gallery -->
+  <div class="screenshots-section" style="margin:30px 0;">
+    <h3 style="color:var(--neon); margin-bottom:15px; text-align:center;">📸 Screenshots</h3>
+    <div class="grid" id="screenshotsGrid" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px;">
+      <!-- Filled by JS -->
+    </div>
+  </div>
+
   <div class="trust-box">
     <span>✓ Verified Steps</span>
     <span>✓ Beginner Friendly</span>
     <span>✓ Updated 2025</span>
   </div>
 
-  <!-- CLEAN CENTERED YOUTUBE BUTTON (LIKE YOUR SECOND SCREENSHOT) -->
+  <!-- BIG CENTERED YOUTUBE BUTTON WITH COUNTDOWN -->
   <div style="text-align:center; margin:40px 0;">
-    <a href="#" target="_blank" 
-       id="youtubeBtn"
-       class="download-btn"
-       style="text-decoration:none;">
+    <button class="download-btn" id="youtubeBtn" style="background:var(--neon); color:black; font-size:16px;">
       📺 Watch Tutorial on YouTube
-    </a>
+    </button>
   </div>
 
   <div class="ad-slot">
@@ -83,7 +95,7 @@
 
 </div>
 
-<!-- FOOTER WITH COUNTERS -->
+<!-- FOOTER -->
 <footer>
   <div style="margin:20px 0; font-size:14px;">
     <div style="margin-bottom:8px;">
@@ -99,10 +111,8 @@
 </footer>
 
 <script src="js/data.js"></script>
-<script src="js/main.js"></script>
-<script src="js/security.js"></script>
 
-<!-- TUTORIAL PAGE SCRIPT + YOUTUBE REDIRECT COUNTDOWN -->
+<!-- TUTORIAL PAGE SCRIPT + YOUTUBE COUNTDOWN + LIGHTBOX -->
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const params = new URLSearchParams(window.location.search);
@@ -121,16 +131,35 @@
     featuresList.innerHTML = "";
     tutorial.features.forEach(f => featuresList.innerHTML += `<li>${f}</li>`);
 
+    // Screenshots
+    const screenshotsGrid = document.getElementById("screenshotsGrid");
+    const currentScreenshots = tutorial.screenshots || [];
+
+    if (currentScreenshots.length > 0) {
+      currentScreenshots.forEach((src, index) => {
+        const img = document.createElement('img');
+        img.src = src;
+        img.alt = "Screenshot " + (index + 1);
+        img.style.width = '100%';
+        img.style.height = 'auto';
+        img.style.borderRadius = '8px';
+        img.style.border = '1px solid rgba(0,255,156,.3)';
+        img.style.cursor = 'pointer';
+        img.onclick = () => openLightbox(index);
+        img.onerror = () => img.src = 'images/logo.png';
+        screenshotsGrid.appendChild(img);
+      });
+    } else {
+      screenshotsGrid.innerHTML = "<p style='grid-column:1/-1; text-align:center; color:var(--muted);'>No screenshots yet</p>";
+    }
+
+    // YouTube button with countdown
     const youtubeBtn = document.getElementById("youtubeBtn");
-
     if (tutorial.youtube) {
-      youtubeBtn.href = tutorial.youtube;
-
-      // Redirect countdown for YouTube
       youtubeBtn.addEventListener("click", (e) => {
         e.preventDefault();
         youtubeBtn.textContent = "Redirecting to video... 3";
-        youtubeBtn.style.pointerEvents = "none";
+        youtubeBtn.disabled = true;
 
         let count = 2;
         const interval = setInterval(() => {
@@ -143,66 +172,115 @@
         }, 1000);
       });
     }
+
+    // LIGHTBOX for screenshots
+    const lightbox = document.createElement('div');
+    lightbox.id = 'lightbox';
+    lightbox.style.display = 'none';
+    lightbox.style.position = 'fixed';
+    lightbox.style.top = '0';
+    lightbox.style.left = '0';
+    lightbox.style.width = '100%';
+    lightbox.style.height = '100%';
+    lightbox.style.background = 'rgba(0,0,0,0.95)';
+    lightbox.style.zIndex = '9999';
+    lightbox.style.justifyContent = 'center';
+    lightbox.style.alignItems = 'center';
+    lightbox.style.flexDirection = 'column';
+
+    const lightboxClose = document.createElement('span');
+    lightboxClose.textContent = '×';
+    lightboxClose.style.position = 'absolute';
+    lightboxClose.style.top = '20px';
+    lightboxClose.style.right = '30px';
+    lightboxClose.style.color = 'white';
+    lightboxClose.style.fontSize = '40px';
+    lightboxClose.style.cursor = 'pointer';
+
+    const lightboxPrev = document.createElement('span');
+    lightboxPrev.textContent = '‹';
+    lightboxPrev.style.position = 'absolute';
+    lightboxPrev.style.left = '20px';
+    lightboxPrev.style.top = '50%';
+    lightboxPrev.style.transform = 'translateY(-50%)';
+    lightboxPrev.style.color = 'white';
+    lightboxPrev.style.fontSize = '50px';
+    lightboxPrev.style.cursor = 'pointer';
+
+    const lightboxNext = document.createElement('span');
+    lightboxNext.textContent = '›';
+    lightboxNext.style.position = 'absolute';
+    lightboxNext.style.right = '20px';
+    lightboxNext.style.top = '50%';
+    lightboxNext.style.transform = 'translateY(-50%)';
+    lightboxNext.style.color = 'white';
+    lightboxNext.style.fontSize = '50px';
+    lightboxNext.style.cursor = 'pointer';
+
+    const lightboxImg = document.createElement('img');
+    lightboxImg.style.maxWidth = '95%';
+    lightboxImg.style.maxHeight = '80vh';
+    lightboxImg.style.borderRadius = '10px';
+    lightboxImg.style.boxShadow = '0 0 30px rgba(0,255,156,0.8)';
+
+    lightbox.appendChild(lightboxClose);
+    lightbox.appendChild(lightboxPrev);
+    lightbox.appendChild(lightboxNext);
+    lightbox.appendChild(lightboxImg);
+    document.body.appendChild(lightbox);
+
+    let currentIndex = 0;
+
+    function openLightbox(index) {
+      currentIndex = index;
+      lightboxImg.src = currentScreenshots[currentIndex];
+      lightbox.style.display = 'flex';
+    }
+
+    function closeLightbox() {
+      lightbox.style.display = 'none';
+    }
+
+    function showPrev() {
+      currentIndex = (currentIndex - 1 + currentScreenshots.length) % currentScreenshots.length;
+      lightboxImg.src = currentScreenshots[currentIndex];
+    }
+
+    function showNext() {
+      currentIndex = (currentIndex + 1) % currentScreenshots.length;
+      lightboxImg.src = currentScreenshots[currentIndex];
+    }
+
+    lightboxClose.onclick = closeLightbox;
+    lightbox.onclick = (e) => {
+      if (e.target === lightbox) closeLightbox();
+    };
+    lightboxPrev.onclick = showPrev;
+    lightboxNext.onclick = showNext;
+
+    document.addEventListener('keydown', (e) => {
+      if (lightbox.style.display === 'flex') {
+        if (e.key === 'ArrowLeft') showPrev();
+        if (e.key === 'ArrowRight') showNext();
+        if (e.key === 'Escape') closeLightbox();
+      }
+    });
+
+    // DRAWER
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+
+    menuToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('open');
+    });
+
+    overlay.addEventListener('click', () => {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('open');
+    });
   });
-</script>
-
-<!-- CUSTOM SCROLLBAR + MATRIX RAIN (same as before) -->
-<script>
-  const thumb = document.getElementById('scrollThumb');
-  let isDragging = false;
-  let startY = 0;
-  let startScroll = 0;
-
-  function updateThumb() {
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    const docHeight = document.body.scrollHeight - window.innerHeight;
-    const scrollPercent = docHeight > 0 ? scrollTop / docHeight : 0;
-    const thumbHeight = Math.max(150, window.innerHeight * 0.15);
-    const thumbTop = scrollPercent * (window.innerHeight - thumbHeight);
-    thumb.style.height = thumbHeight + 'px';
-    thumb.style.top = Math.max(0, Math.min(thumbTop, window.innerHeight - thumbHeight)) + 'px';
-  }
-
-  updateThumb();
-  window.addEventListener('scroll', updateThumb);
-  window.addEventListener('resize', updateThumb);
-
-  thumb.addEventListener('mousedown', (e) => {
-    isDragging = true;
-    startY = e.clientY;
-    startScroll = window.pageYOffset;
-    e.preventDefault();
-  });
-
-  document.addEventListener('mousemove', (e) => {
-    if (!isDragging) return;
-    const deltaY = e.clientY - startY;
-    const multiplier = 5;
-    const scrollAmount = deltaY * multiplier;
-    window.scrollTo(0, startScroll + scrollAmount);
-    updateThumb();
-  });
-
-  document.addEventListener('mouseup', () => isDragging = false);
-
-  thumb.addEventListener('touchstart', (e) => {
-    isDragging = true;
-    startY = e.touches[0].clientY;
-    startScroll = window.pageYOffset;
-    e.preventDefault();
-  });
-
-  document.addEventListener('touchmove', (e) => {
-    if (!isDragging) return;
-    const deltaY = e.touches[0].clientY - startY;
-    const multiplier = 6;
-    const scrollAmount = deltaY * multiplier;
-    window.scrollTo(0, startScroll + scrollAmount);
-    updateThumb();
-    e.preventDefault();
-  });
-
-  document.addEventListener('touchend', () => isDragging = false);
 </script>
 
 <!-- MATRIX RAIN SCRIPT -->
