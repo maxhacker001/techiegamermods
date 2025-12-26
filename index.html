@@ -254,49 +254,47 @@
     const searchBtn = document.getElementById('searchBtn');
     const appsContainer = document.getElementById('appsContainer');
 
-    // Render grid function
     function renderGrid(gridElement, list, isTutorial = false) {
-      gridElement.innerHTML = "";
-      if (list.length === 0) {
-        gridElement.innerHTML = "<p style='grid-column:1/-1; text-align:center; color:var(--muted); margin:50px;'>No mods found 😔</p>";
-        return;
-      }
-      list.forEach(app => {
-        const img = document.createElement('img');
-        img.src = app.image;
-        img.alt = app.name;
-        img.style.width = '70px';
-        img.style.height = '70px';
-        img.style.borderRadius = '14px';
-        img.style.marginBottom = '10px';
-        img.onerror = () => img.src = 'images/logo.png';
+  gridElement.innerHTML = "";
+  if (list.length === 0) {
+    gridElement.innerHTML = "<p style='grid-column:1/-1; text-align:center; color:var(--muted); margin:50px;'>No mods found 😔</p>";
+    return;
+  }
+  list.forEach(app => {
+    const img = document.createElement('img');
+    img.src = app.image;
+    img.alt = app.name;
+    img.style.width = '70px';
+    img.style.height = '70px';
+    img.style.borderRadius = '14px';
+    img.style.marginBottom = '10px';
+    img.onerror = () => img.src = 'images/logo.png';
 
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.appendChild(img);
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.appendChild(img);
 
-        const h3 = document.createElement('h3');
-        h3.textContent = app.name;
-        card.appendChild(h3);
+    const h3 = document.createElement('h3');
+    h3.textContent = app.name;
+    card.appendChild(h3);
 
-        const p = document.createElement('p');
-        p.textContent = `${app.version} • ${app.size}`;
-        card.appendChild(p);
+    const p = document.createElement('p');
+    p.textContent = `${app.version} • ${app.size}`;
+    card.appendChild(p);
 
-        const a = document.createElement('a');
-        if (isTutorial) {
-          a.href = 'tutorial.html?id=' + app.id;
-          a.textContent = 'Watch Tutorial';
-        } else {
-          a.href = 'app.html?id=' + app.id;
-          a.textContent = 'View Mod';
-        }
-        card.appendChild(a);
-
-        gridElement.appendChild(card);
-      });
+    const a = document.createElement('a');
+    if (isTutorial) {
+      a.href = 'tutorial.html?id=' + app.id;
+      a.textContent = 'Watch Tutorial';
+    } else {
+      a.href = 'app.html?id=' + app.id;
+      a.textContent = 'View Mod';
     }
+    card.appendChild(a);
 
+    gridElement.appendChild(card);
+  });
+}
     // CLEAN SEARCH — HIDE TRENDING + FILTERS
     function doSearch() {
       const q = searchInput.value.toLowerCase().trim();
