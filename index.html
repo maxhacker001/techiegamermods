@@ -414,7 +414,21 @@
       sidebar.classList.toggle('open');
       overlay.classList.toggle('open');
     });
-  });
+    // Handle hash on load from app.html drawer
+    window.addEventListener('load', () => {
+      const hash = window.location.hash.substring(1);
+      if (hash === 'apps') {
+        showCategory('apps');
+      } else if (hash === 'games') {
+        showCategory('games');
+      } else if (hash === 'tutorials') {
+        showCategory('tutorials');
+      } else if (hash === 'blog') {
+        showBlog();
+      } else if (hash === 'faq') {
+        showFAQ();
+      }
+    });
 </script>
 
 <!-- DARK/LIGHT MODE TOGGLE -->
