@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Download - TECHIE GAMER MODS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<!-- MATRIX RAIN -->
+<canvas id="matrix-canvas"></canvas>
+
+<!-- HAMBURGER BUTTON -->
+<div id="menuToggle">≡</div>
+
+<!-- SIDEBAR DRAWER -->
+<div id="sidebar">
+  <a href="index.html" class="sidebar-item home">🏠 Home</a>
+  <a href="index.html#apps" class="sidebar-item apps">📱 App Mods</a>
+  <a href="index.html#games" class="sidebar-item games">🎮 Game Mods</a>
+  <a href="index.html#tutorials" class="sidebar-item tutorials">🔧 Modding Tutorials</a>
+  <a href="index.html#blog" class="sidebar-item blog">📝 Blog</a>
+  <a href="index.html#faq" class="sidebar-item faq">❓ FAQ</a>
+  <a href="#" class="sidebar-item mode-toggle">
+    <span id="modeText">☀ Light Mode</span>
+  </a>
+</div>
+
+<!-- OVERLAY -->
+<div id="overlay"></div>
+
+<header>
+  <div class="nav">
+    <div class="logo">
+      <img src="images/logo.png" style="height:28px">
+      <span>TECHIE GAMER MODS</span>
+    </div>
+  </div>
+</header>
+
+<div class="app-page">
+
+  <!-- DOWNLOAD PAGE TITLE -->
+  <div class="download-title" style="text-align:center; margin:30px 20px;">
+    <h1 id="downloadTitle">Download: Loading...</h1>
+    <p id="downloadDate" style="color:var(--muted);">Loading...</p>
+  </div>
+
+  <!-- RED BANNER -->
+  <div class="red-banner" style="background:#c00; color:white; padding:15px; text-align:center; font-size:20px; font-weight:bold; margin:0 20px 20px;">
+    <span id="redBannerText">Loading... - All Mod</span>
+  </div>
+
+  <!-- MOD VERSIONS -->
+  <div class="download-section" style="margin:0 20px 20px;">
+    <div id="modVersions">
+      <!-- Filled by JS -->
+    </div>
+  </div>
+
+  <!-- GREEN BANNER -->
+  <div class="green-banner" style="background:#0a0; color:white; padding:15px; text-align:center; font-size:18px; font-weight:bold; margin:0 20px 20px;">
+    Original file on Google Play
+  </div>
+
+  <!-- ORIGINAL VERSIONS -->
+  <div class="download-section" style="margin:0 20px 30px;">
+    <div id="originalVersions">
+      <!-- Filled by JS -->
+    </div>
+  </div>
+
+  <!-- NOTES -->
+  <div class="notes-section" style="background:rgba(255,255,255,0.05); padding:20px; margin:0 20px 30px; border-radius:15px; border:1px solid rgba(0,255,156,0.3);">
+    <p>You are now ready to download <span id="notesAppName">Loading...</span> for free. Here are some notes:</p>
+    <ul style="padding-left:20px; margin:15px 0;">
+      <li>Please read our MOD Info and installation instructions carefully for the game & app to work properly</li>
+      <li>Downloading via 3rd party software like IDM, ADM (Direct link) is currently blocked for abuse reasons.</li>
+    </ul>
+  </div>
+
+  <!-- RATING -->
+  <div style="text-align:center; margin:30px 0;">
+    <span style="font-size:30px; color:#ff0;">★★★★★</span>
+    <p style="color:var(--muted); margin:5px 0;">5/5 (2 votes)</p>
+  </div>
+
+  <!-- SOCIAL ICONS -->
+  <div class="social-section" style="text-align:center; margin:40px 0;">
+    <a href="https://wa.me/yournumber" target="_blank" style="margin:0 15px;">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" width="45" height="45">
+    </a>
+    <a href="https://youtube.com/yourchannel" target="_blank" style="margin:0 15px;">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg" alt="YouTube" width="45" height="45">
+    </a>
+    <a href="https://instagram.com/yourinsta" target="_blank" style="margin:0 15px;">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" alt="Instagram" width="45" height="45">
+    </a>
+    <a href="https://facebook.com/yourpage" target="_blank" style="margin:0 15px;">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook" width="45" height="45">
+    </a>
+  </div>
+
+  <!-- RECOMMENDED -->
+  <div class="recommended-section">
+    <h3 style="color:var(--neon); text-align:center; margin:40px 0 20px;">🔥 Recommended For You</h3>
+    <div class="grid" id="recommendedGrid">
+      <!-- Filled by JS -->
+    </div>
+  </div>
+
+  <div class="ad-slot">
+    <span>— Advertisement —</span>
+    <div class="ad-box">Your ad here (728x90)</div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div style="margin:20px 0; font-size:14px;">
+    <div style="margin-bottom:8px;">
+      <span style="color:var(--neon); font-weight:700;">Total Downloads:</span>
+      <span style="color:white; font-size:20px; font-weight:800; margin-left:8px;">1,234,567</span>
+    </div>
+    <div>
+      <span style="color:var(--neon); font-weight:700;">Active Users:</span>
+      <span style="color:white; font-size:20px; font-weight:800; margin-left:8px;">8,901</span>
+    </div>
+  </div>
+  © 2025 TECHIE GAMER MODS • Clean • Safe • Hacker-Styled
+</footer>
+
+<script src="js/data.js"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const params = new URLSearchParams(window.location.search);
+    const appId = params.get("id");
+    if (!appId) return;
+
+    const app = apps.find(a => a.id === appId);
+    if (!app) return;
+
+    // Title
+    document.getElementById("downloadTitle").textContent = `Download: \( {app.name} v \){app.version} MOD APK (${app.modTitle || "Premium Unlocked"})`;
+    document.getElementById("downloadDate").textContent = `${app.updated || "December 26, 2025"} (3 hours ago)`;
+    document.getElementById("redBannerText").textContent = `${app.name} - All Mod`;
+    document.getElementById("notesAppName").textContent = app.name;
+
+    // MOD Versions (you can add more in data.js if needed)
+    const modVersions = document.getElementById("modVersions");
+    modVersions.innerHTML = `
+      <div class="download-box">
+        <button class="download-btn">⬇ DOWNLOAD XAPK</button>
+        <p>v${app.version} - \( {app.modTitle || "Premium Unlocked"}<span style="float:right;"> \){app.size}</span></p>
+      </div>
+    `;
+
+    // Original versions (example - you can customize)
+    const originalVersions = document.getElementById("originalVersions");
+    originalVersions.innerHTML = `
+      <div class="download-box original">
+        <button class="download-btn">⬇ DOWNLOAD APK</button>
+        <p>Original - \( {app.version}<span style="float:right;"> \){app.size}</span></p>
+      </div>
+    `;
+
+    // Recommended (same as app.html)
+    const recommendedGrid = document.getElementById("recommendedGrid");
+    const recommendedApps = apps.filter(a => a.id !== appId).slice(0, 4);
+    recommendedApps.forEach(rec => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <img src="${rec.image}" style="width:70px;height:70px;border-radius:14px;margin-bottom:10px;" onerror="this.src='images/logo.png'">
+        <h3>${rec.name}</h3>
+        <p>${rec.version} • ${rec.size}</p>
+        <a href="app.html?id=${rec.id}">View Mod</a>
+      `;
+      recommendedGrid.appendChild(card);
+    });
+
+    // Drawer, light/dark, matrix — same as app.html
+  });
+</script>
+
+<!-- Add this CSS to style.css -->
+<style>
+.download-box {
+  background: rgba(255,255,255,0.05);
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 10px;
+  border: 1px solid rgba(0,255,156,0.3);
+}
+.download-box p {
+  margin: 10px 0 0;
+  color: white;
+}
+.original {
+  background: rgba(255,255,255,0.03);
+}
+</style>
+
+<!-- MATRIX RAIN & DRAWER & LIGHT/DARK — same as app.html -->
+
+</body>
+</html>
