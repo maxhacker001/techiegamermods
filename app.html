@@ -297,19 +297,20 @@ app.features.forEach(feature => {
       downloadBtn.style.display = "block";
       const downloadLink = app.download || "#";
       downloadBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        downloadBtn.textContent = "Preparing download... 3";
-        downloadBtn.disabled = true;
-        let count = 2;
-        const interval = setInterval(() => {
-          downloadBtn.textContent = `Preparing download... ${count}`;
-          count--;
-          if (count < 0) {
-            clearInterval(interval);
-            window.location.href = downloadLink;
-          }
-        }, 1000);
-      });
+  e.preventDefault();
+  downloadBtn.textContent = "Preparing download... 3";
+  downloadBtn.disabled = true;
+  let count = 2;
+  const interval = setInterval(() => {
+    downloadBtn.textContent = `Preparing download... ${count}`;
+    count--;
+    if (count < 0) {
+      clearInterval(interval);
+      // Redirect to download.html with app ID
+      window.location.href = `download.html?id=${app.id}`;
+    }
+  }, 1000);
+});
     }
 
     // Reset on back
