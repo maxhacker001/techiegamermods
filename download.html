@@ -147,17 +147,16 @@
 
     const isGame = app.category === "games";
 
-    // App icon in header
+    // FIXED: App icon in header
     document.getElementById("appImageHeader").src = app.image;
 
     // Title
-    let title = "Download: " + app.name + " v" + app.version + " MOD APK (" + (app.modTitle || "Premium Unlocked") + ")";
-    document.getElementById("downloadTitle").textContent = title;
+    document.getElementById("downloadTitle").textContent = "Download: " + app.name + " v" + app.version + " MOD APK (" + (app.modTitle || "Premium Unlocked") + ")";
     document.getElementById("downloadDate").textContent = (app.updated || "December 26, 2025") + " (3 hours ago)";
     document.getElementById("redBannerText").textContent = app.name + " - All Mod";
     document.getElementById("notesAppName").textContent = app.name;
 
-    // MOD Versions
+    // MOD Versions — MOD APK first, then XAPK or OBB/PATCH
     const modVersions = document.getElementById("modVersions");
     let secondButtonText = isGame ? "⬇ DOWNLOAD OBB/PATCH" : "⬇ DOWNLOAD XAPK";
 
@@ -172,7 +171,7 @@
       </div>
     `;
 
-    // Original version — redirects to Play Store
+    // Original version
     const originalVersions = document.getElementById("originalVersions");
     originalVersions.innerHTML = `
       <div class="download-box original">
@@ -181,7 +180,7 @@
       </div>
     `;
 
-    // Recommended
+    // Recommended apps
     const recommendedGrid = document.getElementById("recommendedGrid");
     const recommendedApps = apps.filter(a => a.id !== appId).slice(0, 4);
     recommendedApps.forEach(rec => {
@@ -211,7 +210,7 @@
       overlay.classList.remove('open');
     });
 
-    // Light/Dark mode sync
+    // Light/Dark mode
     const modeToggle = document.querySelector('.mode-toggle');
     const modeText = document.getElementById('modeText');
     const body = document.body;
@@ -302,4 +301,4 @@
 </style>
 
 </body>
-    </html>
+  </html>
