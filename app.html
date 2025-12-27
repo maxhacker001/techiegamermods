@@ -246,23 +246,37 @@
     window.addEventListener("pageshow", resetYouTubeButton);
 
     // LIGHTBOX (unchanged)
-    // ... (your lightbox code remains the same) ...
+    // ... (your lightbox code) ...
 
-    // DRAWER (unchanged)
-    // ... (your drawer code remains the same) ...
+    // DRAWER FIXED
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+
+    menuToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('open');
+    });
+
+    overlay.addEventListener('click', () => {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('open');
+    });
   });
 </script>
 
-<!-- DARK/LIGHT MODE TOGGLE (ADDED FOR app.html) -->
+<!-- DARK/LIGHT MODE TOGGLE (SYNCED ACROSS PAGES) -->
 <script>
   const modeToggle = document.querySelector('.mode-toggle');
   const modeText = document.getElementById('modeText');
   const body = document.body;
 
+  // Read saved theme
   if (localStorage.getItem('theme') === 'light') {
     body.classList.add('light');
     modeText.textContent = '🌙 Dark Mode';
   } else {
+    body.classList.remove('light');
     modeText.textContent = '☀ Light Mode';
   }
 
@@ -285,4 +299,4 @@
 </script>
 
 </body>
-                              </html>
+  </html>
