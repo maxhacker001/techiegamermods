@@ -12,13 +12,29 @@ const apps = [
     publisher: "Bytedance Pte. Ltd.",
     genre: "Video Players & Editors",
     playstore: "https://play.google.com/store/apps/details?id=com.lemon.lvoverseas",
-    description: "CapCut MOD APK is the ultimate all-in-one video editing app for Android. Our version unlocks all Pro features including premium effects, transitions, filters, and no watermark. Create stunning videos with professional tools completely free.",
+    description: `
+      <strong>UNLIMITED CREATIVITY FOR VIDEO EDITING</strong><br><br>
+      CapCut MOD APK is the ultimate all-in-one video editing app for Android devices. Our version unlocks all Pro features, including premium effects, transitions, filters, keyframe animation, chroma key, and no watermark. Create professional-quality videos with ease.<br><br>
+
+      <strong>ADVANCED KEYFRAME ANIMATION</strong><br><br>
+      Add precise control to your edits with keyframe animation. Animate text, stickers, effects, and layers frame by frame for stunning custom transitions and movements that make your videos stand out.<br><br>
+
+      <strong>THOUSANDS OF PREMIUM EFFECTS & TEMPLATES</strong><br><br>
+      Access a massive library of pro templates, trending effects, filters, stickers, and transitions. From smooth slow-motion to 4K export and beat sync, everything is unlocked and ready to use.<br><br>
+
+      <strong>PROFESSIONAL TOOLS WITHOUT LIMITS</strong><br><br>
+      Multi-layer editing, voice-over recording, speed control, stabilization, picture-in-picture (PIP), and AI tools like auto captions and background removal. Export in ultra-high quality without watermarks or ads.<br><br>
+
+      <strong>PERFECT FOR CONTENT CREATORS</strong><br><br>
+      Whether you're making TikTok videos, YouTube shorts, or Instagram reels, CapCut Pro gives you the tools used by top creators—all completely free in our MOD version.
+    `,
     features: [
       "Pro Unlocked",
       "No Watermark",
       "All Effects Enabled",
       "Premium Transitions",
-      "4K Export"
+      "4K Export",
+      "Keyframe Animation"
     ],
     screenshots: [
       "images/screenshots/capcut1.png",
@@ -42,7 +58,22 @@ const apps = [
     publisher: "Spotify AB",
     genre: "Music & Audio",
     playstore: "https://play.google.com/store/apps/details?id=com.spotify.music",
-    description: "Spotify MOD APK gives you full Premium experience for free. Enjoy unlimited skips, no ads, offline download, and highest audio quality. Listen to millions of songs and podcasts without any restrictions.",
+    description: `
+      <strong>PREMIUM EXPERIENCE WITHOUT SUBSCRIPTION</strong><br><br>
+      Spotify MOD APK gives you full Premium experience for free. Enjoy unlimited skips, no ads, offline download, and highest audio quality. Listen to millions of songs and podcasts without any restrictions.<br><br>
+
+      <strong>AD-FREE LISTENING FOREVER</strong><br><br>
+      No more interruptions from audio or banner ads. Stream smoothly and immerse yourself completely in your music.<br><br>
+
+      <strong>UNLIMITED SKIPS & ON-DEMAND PLAYBACK</strong><br><br>
+      Skip as many tracks as you want. Choose any song, album, or playlist instantly—no shuffle required.<br><br>
+
+      <strong>OFFLINE DOWNLOADS</strong><br><br>
+      Download playlists, albums, and podcasts for offline listening. Perfect for travel or areas with poor connection.<br><br>
+
+      <strong>VERY HIGH AUDIO QUALITY</strong><br><br>
+      Stream at 320kbps—the highest quality available. Hear every detail exactly as the artist intended.
+    `,
     features: [
       "Premium Unlocked",
       "No Ads",
@@ -73,7 +104,22 @@ const apps = [
     publisher: "Garena International",
     genre: "Action",
     playstore: "https://play.google.com/store/apps/details?id=com.dts.freefireth",
-    description: "Free Fire MOD APK with unlimited diamonds, aimbot, ESP, and more. Dominate every match with premium features unlocked. Safe, anti-ban protection included.",
+    description: `
+      <strong>DOMINATE EVERY MATCH</strong><br><br>
+      Free Fire MOD APK with unlimited diamonds, aimbot, ESP wallhack, and anti-ban protection. Get instant access to premium items and dominate the battlefield.<br><br>
+
+      <strong>UNLIMITED DIAMONDS & RESOURCES</strong><br><br>
+      Buy any skin, character, weapon, or bundle without grinding. Everything is available from the start.<br><br>
+
+      <strong>AIMBOT & AUTO HEADSHOT</strong><br><br>
+      Lock onto enemies automatically with perfect accuracy. Land headshots consistently for quick eliminations.<br><br>
+
+      <strong>ESP WALLHACK & NO RECOIL</strong><br><br>
+      See enemies through walls, track their movement, and fire with zero recoil for unmatched control.<br><br>
+
+      <strong>SAFE WITH ANTI-BAN</strong><br><br>
+      Advanced protection keeps your account secure while enjoying all premium advantages.
+    `,
     features: [
       "Unlimited Diamonds",
       "Aimbot + Auto Headshot",
@@ -103,7 +149,22 @@ const apps = [
     publisher: "Level Infinite",
     genre: "Action",
     playstore: "https://play.google.com/store/apps/details?id=com.tencent.ig",
-    description: "PUBG Mobile MOD APK with unlimited UC, wallhack, aimbot, and zero recoil. Experience the ultimate battle royale with all premium items unlocked.",
+    description: `
+      <strong>ULTIMATE BATTLE ROYALE DOMINATION</strong><br><br>
+      PUBG Mobile MOD APK with unlimited UC, wallhack, aimbot, and magic bullet. Unlock every premium item and dominate every match.<br><br>
+
+      <strong>UNLIMITED UC & RESOURCES</strong><br><br>
+      Purchase any outfit, vehicle skin, weapon upgrade, or Royale Pass tier instantly.<br><br>
+
+      <strong>AIMBOT & MAGIC BULLET</strong><br><br>
+      Automatic targeting with perfect accuracy—even through obstacles for guaranteed hits.<br><br>
+
+      <strong>WALLHACK & NO GRASS</strong><br><br>
+      See enemies through walls and remove grass for clear visibility in every environment.<br><br>
+
+      <strong>ZERO RECOIL & HIGH DAMAGE</strong><br><br>
+      Fire with perfect stability and increased damage output for faster eliminations.
+    `,
     features: [
       "Unlimited UC",
       "Wallhack",
@@ -133,7 +194,22 @@ const apps = [
     publisher: "Moonton",
     genre: "MOBA",
     playstore: "https://play.google.com/store/apps/details?id=com.mobile.legends",
-    description: "Mobile Legends MOD APK with map hack, drone view, and all skins unlocked. Play with premium advantages and dominate the ranked games.",
+    description: `
+      <strong>EPIC MOBA DOMINATION</strong><br><br>
+      Mobile Legends MOD APK with map hack, drone view, unlimited diamonds, and all skins unlocked. Gain complete battlefield awareness and premium cosmetics.<br><br>
+
+      <strong>UNLOCK ALL SKINS & HEROES</strong><br><br>
+      Access every epic, legend, and special skin instantly. Customize your heroes with the rarest cosmetics.<br><br>
+
+      <strong>MAP HACK & DRONE VIEW</strong><br><br>
+      See the entire map and enemy positions. Expand your camera view for perfect strategic planning.<br><br>
+
+      <strong>UNLIMITED DIAMONDS</strong><br><br>
+      Purchase anything in the shop without limits. Upgrade emblems and acquire battle effects freely.<br><br>
+
+      <strong>RADAR HACK & NO COOLDOWN</strong><br><br>
+      Track enemies precisely and spam skills without waiting—turn matches in your favor.
+    `,
     features: [
       "Unlimited Diamonds",
       "Map Hack",
@@ -164,7 +240,22 @@ const apps = [
     publisher: "TECHIE GAMER MODS",
     genre: "Tutorial",
     playstore: "#",
-    description: "Complete step-by-step guide to using Lucky Patcher. Learn how to patch apps, remove ads, bypass license verification, and apply custom patches safely.",
+    description: `
+      <strong>MASTER APP MODDING WITH LUCKY PATCHER</strong><br><br>
+      Complete step-by-step guide to using Lucky Patcher on Android. Learn powerful techniques to modify apps and games safely.<br><br>
+
+      <strong>REMOVE ADS FROM ANY APP</strong><br><br>
+      Block Google ads and in-app advertisements permanently. Enjoy clean, ad-free experience in all your favorite apps.<br><br>
+
+      <strong>BYPASS LICENSE VERIFICATION</strong><br><br>
+      Remove premium license checks to unlock paid features without purchasing.<br><br>
+
+      <strong>CUSTOM PATCHES & IN-APP PURCHASES</strong><br><br>
+      Apply community patches and emulate in-app purchases for free premium content.<br><br>
+
+      <strong>ADVANCED MODIFICATION TOOLS</strong><br><br>
+      Backup apps, modify permissions, and create custom modified APKs with full control.
+    `,
     features: [
       "Patch Android Apps",
       "Remove Ads",
@@ -176,7 +267,7 @@ const apps = [
       "images/screenshots/lp2.png"
     ],
     youtube: "https://www.youtube.com/watch?v=YOUR_LP_TUTORIAL",
-    download: "#"  // No download
+    download: "#"
   },
 
   {
@@ -191,7 +282,22 @@ const apps = [
     publisher: "TECHIE GAMER MODS",
     genre: "Tutorial",
     playstore: "#",
-    description: "Full tutorial on using MT Manager for advanced APK editing. Learn DEX editing, resource modification, XML editing, and creating custom mods.",
+    description: `
+      <strong>PROFESSIONAL APK EDITING WITH MT MANAGER</strong><br><br>
+      Full tutorial on using MT Manager—the most powerful APK editor for Android. Master advanced modification techniques.<br><br>
+
+      <strong>DEX & RESOURCE EDITING</strong><br><br>
+      Decompile and edit DEX files, modify app code, and customize resources like images and XML.<br><br>
+
+      <strong>APK SIGNING & OPTIMIZATION</strong><br><br>
+      Recompile modified APKs, sign them properly, and optimize for better performance.<br><br>
+
+      <strong>ADVANCED FILE MANAGEMENT</strong><br><br>
+      Root explorer, text editor, and powerful tools for system-level file operations.<br><br>
+
+      <strong>CREATE CUSTOM MODS</strong><br><br>
+      Build your own modified apps with complete control over code, resources, and behavior.
+    `,
     features: [
       "APK Editing",
       "DEX Editor",
