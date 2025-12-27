@@ -101,7 +101,7 @@
     </div>
   </div>
 
-  <!-- LONG DESCRIPTION WITH HEADERS -->
+  <!-- LONG DESCRIPTION -->
   <div class="description-section" id="descriptionSection">
     <p id="appDescription">Loading...</p>
   </div>
@@ -134,17 +134,12 @@
     ⬇ DOWNLOAD APK
   </button>
 
-  <!-- SOCIAL & TELEGRAM -->
+  <!-- SOCIAL ICONS ONLY -->
   <div class="social-section" style="text-align:center; margin:40px 0;">
-    <div style="margin-bottom:20px;">
-      <a href="#" style="margin:0 10px; color:var(--neon); font-size:24px;">📘</a>
-      <a href="#" style="margin:0 10px; color:var(--neon); font-size:24px;">🐦</a>
-      <a href="#" style="margin:0 10px; color:var(--neon); font-size:24px;">📱</a>
-      <a href="#" style="margin:0 10px; color:var(--neon); font-size:24px;">✉</a>
-    </div>
-    <a href="https://t.me/yourchannel" target="_blank" class="download-btn" style="background:#0088cc; color:white;">
-      ✈ Join @TECHIEGAMERMODS on Telegram channel
-    </a>
+    <a href="https://t.me/yourtelegram" target="_blank" style="margin:0 15px; color:var(--neon); font-size:40px;">✈</a>
+    <a href="https://wa.me/yournumber" target="_blank" style="margin:0 15px; color:var(--neon); font-size:40px;">💬</a>
+    <a href="https://instagram.com/yourinsta" target="_blank" style="margin:0 15px; color:var(--neon); font-size:40px;">📷</a>
+    <a href="https://youtube.com/yourchannel" target="_blank" style="margin:0 15px; color:var(--neon); font-size:40px;">📺</a>
   </div>
 
   <!-- RECOMMENDED -->
@@ -193,7 +188,7 @@
     // Header
     document.getElementById("appImage").src = app.image;
     document.getElementById("modTitle").textContent = `\( {app.name} v \){app.version} MOD APK (${app.modTitle || "Premium Unlocked"})`;
-    document.getElementById("updatedText").textContent = `${app.updated || "December 27, 2025"} (1 second ago)`;
+    document.getElementById("updatedText").textContent = `${app.updated || "December 26, 2025"} (1 second ago)`;
 
     // Table
     document.getElementById("appNameTable").textContent = app.name;
@@ -210,7 +205,7 @@
     document.getElementById("warningBox").style.display = isTutorial ? "none" : "block";
     document.getElementById("guideBox").style.display = isTutorial ? "block" : "none";
 
-    // Long description with headers
+    // Long description
     document.getElementById("descriptionSection").innerHTML = app.description || "Premium mod with all features unlocked. Clean, safe, and verified.";
 
     // Screenshots
@@ -239,14 +234,31 @@
       "<span>✓ Verified Steps</span><span>✓ Beginner Friendly</span><span>✓ Updated 2025</span><span>✓ No Root Needed</span>" :
       "<span>✓ VirusTotal Clean</span><span>✓ No Malware</span><span>✓ Signed APK</span><span>✓ Daily Scans</span>";
 
+    // Recommended apps
+    const recommendedGrid = document.getElementById("recommendedGrid");
+    const recommendedApps = apps.filter(a => a.id !== appId && a.category !== "tutorials").slice(0, 4);
+    recommendedApps.forEach(rec => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <img src="${rec.image}" style="width:70px;height:70px;border-radius:14px;margin-bottom:10px;" onerror="this.src='images/logo.png'">
+        <h3>${rec.name}</h3>
+        <p>${rec.version} • ${rec.size}</p>
+        <a href="app.html?id=${rec.id}">View Mod</a>
+      `;
+      recommendedGrid.appendChild(card);
+    });
+
     // Download button
     const downloadBtn = document.getElementById("downloadBtn");
+    const originalDownloadText = "⬇ DOWNLOAD APK";
     if (isTutorial) {
       downloadBtn.style.display = "none";
     } else {
       downloadBtn.style.display = "block";
       const downloadLink = app.download || "#";
-      downloadBtn.addEventListener("click", () => {
+      downloadBtn.addEventListener("click", (e) => {
+        e.preventDefault();
         downloadBtn.textContent = "Preparing download... 3";
         downloadBtn.disabled = true;
         let count = 2;
@@ -261,12 +273,27 @@
       });
     }
 
+    // Reset download button on back
+    window.addEventListener("pageshow", () => {
+      downloadBtn.textContent = originalDownloadText;
+      downloadBtn.disabled = false;
+    });
+
     // YouTube button
     const youtubeBtn = document.getElementById("youtubeBtn");
+    const originalYoutubeText = "📺 Watch Tutorial on YouTube";
     youtubeBtn.style.display = app.youtube ? "block" : "none";
 
+    function resetYouTubeButton() {
+      youtubeBtn.textContent = originalYoutubeText;
+      youtubeBtn.disabled = false;
+    }
+
+    resetYouTubeButton();
+
     if (app.youtube) {
-      youtubeBtn.addEventListener("click", () => {
+      youtubeBtn.addEventListener("click", (e) => {
+        e.preventDefault();
         youtubeBtn.textContent = "Redirecting to video... 3";
         youtubeBtn.disabled = true;
         let count = 2;
@@ -281,9 +308,102 @@
       });
     }
 
-    // LIGHTBOX, DRAWER, MATRIX — all fixed and working
+    window.addEventListener("pageshow", resetYouTubeButton);
 
-    // DRAWER FIXED
+    // LIGHTBOX FULL WORKING
+    const lightbox = document.createElement('div');
+    lightbox.id = 'lightbox';
+    lightbox.style.display = 'none';
+    lightbox.style.position = 'fixed';
+    lightbox.style.top = '0';
+    lightbox.style.left = '0';
+    lightbox.style.width = '100%';
+    lightbox.style.height = '100%';
+    lightbox.style.background = 'rgba(0,0,0,0.95)';
+    lightbox.style.zIndex = '9999';
+    lightbox.style.justifyContent = 'center';
+    lightbox.style.alignItems = 'center';
+    lightbox.style.flexDirection = 'column';
+
+    const lightboxClose = document.createElement('span');
+    lightboxClose.textContent = '×';
+    lightboxClose.style.position = 'absolute';
+    lightboxClose.style.top = '20px';
+    lightboxClose.style.right = '30px';
+    lightboxClose.style.color = 'white';
+    lightboxClose.style.fontSize = '40px';
+    lightboxClose.style.cursor = 'pointer';
+
+    const lightboxPrev = document.createElement('span');
+    lightboxPrev.textContent = '‹';
+    lightboxPrev.style.position = 'absolute';
+    lightboxPrev.style.left = '20px';
+    lightboxPrev.style.top = '50%';
+    lightboxPrev.style.transform = 'translateY(-50%)';
+    lightboxPrev.style.color = 'white';
+    lightboxPrev.style.fontSize = '50px';
+    lightboxPrev.style.cursor = 'pointer';
+
+    const lightboxNext = document.createElement('span');
+    lightboxNext.textContent = '›';
+    lightboxNext.style.position = 'absolute';
+    lightboxNext.style.right = '20px';
+    lightboxNext.style.top = '50%';
+    lightboxNext.style.transform = 'translateY(-50%)';
+    lightboxNext.style.color = 'white';
+    lightboxNext.style.fontSize = '50px';
+    lightboxNext.style.cursor = 'pointer';
+
+    const lightboxImg = document.createElement('img');
+    lightboxImg.style.maxWidth = '95%';
+    lightboxImg.style.maxHeight = '80vh';
+    lightboxImg.style.borderRadius = '10px';
+    lightboxImg.style.boxShadow = '0 0 30px rgba(0,255,156,0.8)';
+
+    lightbox.appendChild(lightboxClose);
+    lightbox.appendChild(lightboxPrev);
+    lightbox.appendChild(lightboxNext);
+    lightbox.appendChild(lightboxImg);
+    document.body.appendChild(lightbox);
+
+    let currentIndex = 0;
+
+    function openLightbox(index) {
+      currentIndex = index;
+      lightboxImg.src = currentScreenshots[currentIndex];
+      lightbox.style.display = 'flex';
+    }
+
+    function closeLightbox() {
+      lightbox.style.display = 'none';
+    }
+
+    function showPrev() {
+      currentIndex = (currentIndex - 1 + currentScreenshots.length) % currentScreenshots.length;
+      lightboxImg.src = currentScreenshots[currentIndex];
+    }
+
+    function showNext() {
+      currentIndex = (currentIndex + 1) % currentScreenshots.length;
+      lightboxImg.src = currentScreenshots[currentIndex];
+    }
+
+    lightboxClose.onclick = closeLightbox;
+    lightbox.onclick = (e) => {
+      if (e.target === lightbox) closeLightbox();
+    };
+    lightboxPrev.onclick = showPrev;
+    lightboxNext.onclick = showNext;
+
+    document.addEventListener('keydown', (e) => {
+      if (lightbox.style.display === 'flex') {
+        if (e.key === 'ArrowLeft') showPrev();
+        if (e.key === 'ArrowRight') showNext();
+        if (e.key === 'Escape') closeLightbox();
+      }
+    });
+
+    // DRAWER
     const menuToggle = document.getElementById('menuToggle');
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('overlay');
@@ -298,7 +418,7 @@
       overlay.classList.remove('open');
     });
 
-    // LIGHT/DARK MODE SYNC
+    // LIGHT/DARK MODE
     const modeToggle = document.querySelector('.mode-toggle');
     const modeText = document.getElementById('modeText');
     const body = document.body;
@@ -324,7 +444,7 @@
   });
 </script>
 
-<!-- MATRIX RAIN FIXED -->
+<!-- MATRIX RAIN -->
 <script>
   const canvas = document.getElementById('matrix-canvas');
   const ctx = canvas.getContext('2d');
@@ -371,4 +491,4 @@
 </script>
 
 </body>
-    </html>
+  </html>
