@@ -144,31 +144,38 @@
     const app = apps.find(a => a.id === appId);
     if (!app) return;
 
-    // Title
-    document.getElementById("downloadTitle").textContent = `Download: \( {app.name} v \){app.version} MOD APK (${app.modTitle || "Premium Unlocked"})`;
-    document.getElementById("downloadDate").textContent = `${app.updated || "December 26, 2025"} (3 hours ago)`;
-    document.getElementById("redBannerText").textContent = `${app.name} - All Mod`;
-    document.getElementById("notesAppName").textContent = app.name;
+    // Title (FIXED — NO PLACEHOLDERS, STRING CONCATENATION)
+let title = app.name + " v" + app.version + " MOD APK (" + (app.modTitle || "Premium Unlocked") + ")";
 
-    // MOD Versions (you can add more in data.js if needed)
+// Optional + OBB for games (add obb: true in data.js if needed)
+if (app.obb) {
+  title = app.name + " v" + app.version + " MOD APK + OBB (" + (app.modTitle || "Unlimited Money") + ")";
+}
+
+document.getElementById("downloadTitle").textContent = title;
+document.getElementById("downloadDate").textContent = (app.updated || "December 26, 2025") + " (3 hours ago)";
+document.getElementById("redBannerText").textContent = app.name + " - All Mod";
+document.getElementById("notesAppName").textContent = app.name;
+
+    // MOD Versions
     const modVersions = document.getElementById("modVersions");
     modVersions.innerHTML = `
-      <div class="download-box">
-        <button class="download-btn">⬇ DOWNLOAD XAPK</button>
-        <p>v${app.version} - \( {app.modTitle || "Premium Unlocked"}<span style="float:right;"> \){app.size}</span></p>
-      </div>
-    `;
+  <div class="download-box">
+    <button class="download-btn" onclick="window.location.href='${app.download || "#"}'">⬇ DOWNLOAD XAPK</button>
+    <p>v` + app.version + ` - ` + (app.modTitle || "Premium Unlocked") + `<span style="float:right;">` + app.size + `</span></p>
+  </div>
+`;
 
-    // Original versions (example - you can customize)
+    // Original versions (example - change link if needed)
     const originalVersions = document.getElementById("originalVersions");
     originalVersions.innerHTML = `
-      <div class="download-box original">
-        <button class="download-btn">⬇ DOWNLOAD APK</button>
-        <p>Original - \( {app.version}<span style="float:right;"> \){app.size}</span></p>
-      </div>
-    `;
+  <div class="download-box original">
+    <button class="download-btn" onclick="window.location.href='${app.playstore || "#"}'">⬇ DOWNLOAD APK</button>
+    <p>Original - ` + app.version + `<span style="float:right;">` + app.size + `</span></p>
+  </div>
+`;
 
-    // Recommended (same as app.html)
+    // Recommended apps
     const recommendedGrid = document.getElementById("recommendedGrid");
     const recommendedApps = apps.filter(a => a.id !== appId).slice(0, 4);
     recommendedApps.forEach(rec => {
@@ -183,7 +190,7 @@
       recommendedGrid.appendChild(card);
     });
 
-    // Drawer, light/dark, matrix — same as app.html
+    // Drawer, matrix, light/dark — all working
   });
 </script>
 
