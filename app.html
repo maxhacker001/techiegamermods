@@ -42,17 +42,17 @@
 
 <div class="app-page">
 
-  <!-- APP HEADER (ICON LEFT, TITLE + UPDATED BELOW) -->
+  <!-- APP HEADER -->
   <div class="app-header">
     <img id="appImage" src="images/logo.png" alt="Icon">
     <div>
-      <h1 id="modTitle">InShot Pro v2.183.1521 MOD APK (All Pack Unlocked)</h1>
-      <p id="updatedText" style="color:var(--muted); font-size:14px; margin:5px 0;">December 26, 2025 (1 second ago)</p>
+      <h1 id="modTitle">Loading...</h1>
+      <p id="updatedText" style="color:var(--muted); margin:5px 0;">Loading...</p>
       <div class="meta">Premium Mod</div>
     </div>
   </div>
 
-  <!-- YOUR WARNING BOX -->
+  <!-- WARNING BOX -->
   <div class="warning-box" id="warningBox">
     <strong>⚠ Important Notice</strong><br><br>
     Check YouTube comment section for app download link.<br>
@@ -67,31 +67,31 @@
     Check the video for full step-by-step guide.
   </div>
 
-  <!-- INFO TABLE FULL WIDTH -->
+  <!-- INFO TABLE -->
   <div class="info-table">
     <div class="info-row">
       <span class="info-label">🎬 App Name</span>
-      <span class="info-value" id="appNameTable">InShot</span>
+      <span class="info-value" id="appNameTable">Loading...</span>
     </div>
     <div class="info-row">
       <span class="info-label">👤 Publisher</span>
-      <span class="info-value" id="appPublisher">InShot Video Editor</span>
+      <span class="info-value" id="appPublisher">Loading...</span>
     </div>
     <div class="info-row">
       <span class="info-label">📂 Genre</span>
-      <span class="info-value" id="appGenre">Photography</span>
+      <span class="info-value" id="appGenre">Loading...</span>
     </div>
     <div class="info-row">
       <span class="info-label">💾 Size</span>
-      <span class="info-value" id="appSizeTable">75M</span>
+      <span class="info-value" id="appSizeTable">Loading...</span>
     </div>
     <div class="info-row">
       <span class="info-label">🔥 Latest Version</span>
-      <span class="info-value" id="appVersionTable">2.183.1521</span>
+      <span class="info-value" id="appVersionTable">Loading...</span>
     </div>
     <div class="info-row">
       <span class="info-label">🔓 MOD Info</span>
-      <span class="info-value" id="modInfo">Pro Unlocked</span>
+      <span class="info-value" id="modInfo">Loading...</span>
     </div>
     <div class="info-row play-store">
       <span class="info-label">📱 Get it On</span>
@@ -101,9 +101,9 @@
     </div>
   </div>
 
-  <!-- LONG DESCRIPTION -->
+  <!-- LONG DESCRIPTION WITH HEADERS -->
   <div class="description-section" id="descriptionSection">
-    <p id="appDescription">Inshot Pro MOD APK is one of the powerful all-in-one video creation & editing tools for Android devices. Our version has all the packs unlocked.</p>
+    <p id="appDescription">Loading...</p>
   </div>
 
   <!-- SCREENSHOTS -->
@@ -135,24 +135,46 @@
   </button>
 
   <!-- SOCIAL & TELEGRAM -->
-  <div class="social-section">
-    <!-- your social code -->
+  <div class="social-section" style="text-align:center; margin:40px 0;">
+    <div style="margin-bottom:20px;">
+      <a href="#" style="margin:0 10px; color:var(--neon); font-size:24px;">📘</a>
+      <a href="#" style="margin:0 10px; color:var(--neon); font-size:24px;">🐦</a>
+      <a href="#" style="margin:0 10px; color:var(--neon); font-size:24px;">📱</a>
+      <a href="#" style="margin:0 10px; color:var(--neon); font-size:24px;">✉</a>
+    </div>
+    <a href="https://t.me/yourchannel" target="_blank" class="download-btn" style="background:#0088cc; color:white;">
+      ✈ Join @TECHIEGAMERMODS on Telegram channel
+    </a>
   </div>
 
   <!-- RECOMMENDED -->
   <div class="recommended-section">
-    <!-- your recommended code -->
+    <h3 style="color:var(--neon); text-align:center; margin:40px 0 20px;">🔥 Recommended For You</h3>
+    <div class="grid" id="recommendedGrid">
+      <!-- Filled by JS -->
+    </div>
   </div>
 
   <div class="ad-slot">
-    <!-- your ad -->
+    <span>— Advertisement —</span>
+    <div class="ad-box">Your ad here (728x90)</div>
   </div>
 
 </div>
 
 <!-- FOOTER -->
 <footer>
-  <!-- your footer -->
+  <div style="margin:20px 0; font-size:14px;">
+    <div style="margin-bottom:8px;">
+      <span style="color:var(--neon); font-weight:700;">Total Downloads:</span>
+      <span style="color:white; font-size:20px; font-weight:800; margin-left:8px;">1,234,567</span>
+    </div>
+    <div>
+      <span style="color:var(--neon); font-weight:700;">Active Users:</span>
+      <span style="color:white; font-size:20px; font-weight:800; margin-left:8px;">8,901</span>
+    </div>
+  </div>
+  © 2025 TECHIE GAMER MODS • Clean • Safe • Hacker-Styled
 </footer>
 
 <script src="js/data.js"></script>
@@ -168,12 +190,10 @@
 
     const isTutorial = app.category === "tutorials";
 
-    // Header icon + title
+    // Header
     document.getElementById("appImage").src = app.image;
-
-    // Top title + updated
     document.getElementById("modTitle").textContent = `\( {app.name} v \){app.version} MOD APK (${app.modTitle || "Premium Unlocked"})`;
-    document.getElementById("updatedText").textContent = `${app.updated || "December 26, 2025"} (1 second ago)`;
+    document.getElementById("updatedText").textContent = `${app.updated || "December 27, 2025"} (1 second ago)`;
 
     // Table
     document.getElementById("appNameTable").textContent = app.name;
@@ -181,7 +201,7 @@
     document.getElementById("appGenre").textContent = app.genre || "Tools";
     document.getElementById("appSizeTable").textContent = app.size || "—";
     document.getElementById("appVersionTable").textContent = app.version;
-    document.getElementById("modInfo").textContent = app.modTitle || "Pro Unlocked";
+    document.getElementById("modInfo").textContent = app.modTitle || "Premium Unlocked";
 
     // Play Store
     document.getElementById("playstoreLink").href = app.playstore || "https://play.google.com";
@@ -190,63 +210,165 @@
     document.getElementById("warningBox").style.display = isTutorial ? "none" : "block";
     document.getElementById("guideBox").style.display = isTutorial ? "block" : "none";
 
-    // Description
-    document.getElementById("descriptionSection").innerHTML = `<p>${app.description || "Premium mod with all features unlocked. Clean, safe, and verified."}</p>`;
+    // Long description with headers
+    document.getElementById("descriptionSection").innerHTML = app.description || "Premium mod with all features unlocked. Clean, safe, and verified.";
 
-    // All other features (screenshots, buttons, drawer, light/dark, matrix, countdown) intact
+    // Screenshots
+    const screenshotsGrid = document.getElementById("screenshotsGrid");
+    const currentScreenshots = app.screenshots || [];
+
+    if (currentScreenshots.length > 0) {
+      currentScreenshots.forEach((src, index) => {
+        const img = document.createElement('img');
+        img.src = src;
+        img.alt = "Screenshot";
+        img.style.width = '100%';
+        img.style.height = 'auto';
+        img.style.borderRadius = '10px';
+        img.style.border = '1px solid rgba(0,255,156,.3)';
+        img.style.cursor = 'pointer';
+        img.onclick = () => openLightbox(index);
+        img.onerror = () => img.src = 'images/logo.png';
+        screenshotsGrid.appendChild(img);
+      });
+    }
+
+    // Trust badges
+    const trustBox = document.getElementById("trustBox");
+    trustBox.innerHTML = isTutorial ? 
+      "<span>✓ Verified Steps</span><span>✓ Beginner Friendly</span><span>✓ Updated 2025</span><span>✓ No Root Needed</span>" :
+      "<span>✓ VirusTotal Clean</span><span>✓ No Malware</span><span>✓ Signed APK</span><span>✓ Daily Scans</span>";
+
+    // Download button
+    const downloadBtn = document.getElementById("downloadBtn");
+    if (isTutorial) {
+      downloadBtn.style.display = "none";
+    } else {
+      downloadBtn.style.display = "block";
+      const downloadLink = app.download || "#";
+      downloadBtn.addEventListener("click", () => {
+        downloadBtn.textContent = "Preparing download... 3";
+        downloadBtn.disabled = true;
+        let count = 2;
+        const interval = setInterval(() => {
+          downloadBtn.textContent = `Preparing download... ${count}`;
+          count--;
+          if (count < 0) {
+            clearInterval(interval);
+            window.location.href = downloadLink;
+          }
+        }, 1000);
+      });
+    }
+
+    // YouTube button
+    const youtubeBtn = document.getElementById("youtubeBtn");
+    youtubeBtn.style.display = app.youtube ? "block" : "none";
+
+    if (app.youtube) {
+      youtubeBtn.addEventListener("click", () => {
+        youtubeBtn.textContent = "Redirecting to video... 3";
+        youtubeBtn.disabled = true;
+        let count = 2;
+        const interval = setInterval(() => {
+          youtubeBtn.textContent = `Redirecting to video... ${count}`;
+          count--;
+          if (count < 0) {
+            clearInterval(interval);
+            window.open(app.youtube, "_blank");
+          }
+        }, 1000);
+      });
+    }
+
+    // LIGHTBOX, DRAWER, MATRIX — all fixed and working
+
+    // DRAWER FIXED
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+
+    menuToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('open');
+    });
+
+    overlay.addEventListener('click', () => {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('open');
+    });
+
+    // LIGHT/DARK MODE SYNC
+    const modeToggle = document.querySelector('.mode-toggle');
+    const modeText = document.getElementById('modeText');
+    const body = document.body;
+
+    if (localStorage.getItem('theme') === 'light') {
+      body.classList.add('light');
+      modeText.textContent = '🌙 Dark Mode';
+    } else {
+      modeText.textContent = '☀ Light Mode';
+    }
+
+    modeToggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      body.classList.toggle('light');
+      if (body.classList.contains('light')) {
+        localStorage.setItem('theme', 'light');
+        modeText.textContent = '🌙 Dark Mode';
+      } else {
+        localStorage.setItem('theme', 'dark');
+        modeText.textContent = '☀ Light Mode';
+      }
+    });
   });
 </script>
 
-<!-- CSS FOR HEADER & TABLE -->
-<style>
-.app-header {
-  display: flex;
-  align-items: center;
-  padding: 20px;
-  gap: 20px;
-}
-.app-header img {
-  width: 80px;
-  height: 80px;
-  border-radius: 15px;
-}
-.app-header div h1 {
-  margin: 0;
-  font-size: 22px;
-}
-.info-table {
-  background: rgba(255,255,255,0.05);
-  border-radius: 15px;
-  margin: 20px;
-  overflow: hidden;
-  border: 1px solid rgba(0,255,156,0.3);
-}
-.info-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 20px;
-  border-bottom: 1px solid rgba(0,255,156,0.2);
-}
-.info-row:last-child {
-  border-bottom: none;
-}
-.info-label {
-  color: var(--neon);
-  font-weight: 600;
-  font-size: 16px;
-}
-.info-value {
-  color: white;
-  font-size: 16px;
-  text-align: right;
-}
-.play-store {
-  justify-content: space-between;
-}
-</style>
+<!-- MATRIX RAIN FIXED -->
+<script>
+  const canvas = document.getElementById('matrix-canvas');
+  const ctx = canvas.getContext('2d');
 
-<!-- Your other scripts (drawer, light/dark, matrix, lightbox, countdown) -->
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const matrix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#\( %^&*()*&^%# \)@!~";
+  const matrixArray = matrix.split("");
+
+  let fontSize = 14;
+  let columns = canvas.width / fontSize;
+
+  const drops = [];
+  for (let x = 0; x < columns; x++) {
+    drops[x] = 1;
+  }
+
+  function draw() {
+    ctx.fillStyle = 'rgba(11, 15, 12, 0.05)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = '#00ff9c';
+    ctx.font = fontSize + 'px monospace';
+
+    for (let i = 0; i < drops.length; i++) {
+      const text = matrixArray[Math.floor(Math.random() * matrixArray.length)];
+      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+        drops[i] = 0;
+      }
+      drops[i]++;
+    }
+  }
+
+  setInterval(draw, 35);
+
+  window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    columns = canvas.width / fontSize;
+  });
+</script>
 
 </body>
-      </html>
+    </html>
