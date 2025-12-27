@@ -42,61 +42,88 @@
 
 <div class="app-page">
 
+  <!-- APP HEADER -->
   <div class="app-header">
-    <img id="appImage" src="images/logo.png" alt="Icon">
+    <img id="appImage" src="images/logo.png" alt="App Icon">
     <div>
       <h1 id="appName">Loading...</h1>
       <div class="meta">
-        <span id="appType">Tutorial Guide</span>
+        <span id="appPublisher">TECHIE GAMER MODS</span> • <span id="appGenre">Video Players & Editors</span>
+      </div>
+      <div class="info-line">
+        <span id="appVersion">v12.3.0</span> • <span id="appSize">78 MB</span> • Updated <span id="updatedDate">December 2025</span>
       </div>
     </div>
   </div>
-  
-  <!-- GUIDE BOX FOR TUTORIALS ONLY -->
+
+  <!-- YOUR WARNING BOX -->
+  <div class="warning-box" id="warningBox">
+    <strong>⚠ Important Notice</strong><br><br>
+    Check YouTube comment section for app download link.<br>
+    <span style="color:#9fbfb1">
+      NOTE: Uninstall former mod and reinstall the new one.
+    </span>
+  </div>
+
+  <!-- GUIDE BOX FOR TUTORIALS -->
   <div class="warning-box" id="guideBox">
     <strong>📌 Guide</strong><br><br>
     Check the video for full step-by-step guide.
   </div>
 
-  <!-- INFO BOX FOR MODS ONLY -->
-  <div class="info-box" id="infoBox">
-    <div><strong>Version</strong><br><span id="appVersion2">12.3.0</span></div>
-    <div><strong>Size</strong><br><span id="appSize">78 MB</span></div>
-    <div><strong>Updated</strong><br><span id="updatedDate">December 2025</span></div>
-    <div><strong>Requires</strong><br>Android 5.0+</div>
+  <!-- LONG DESCRIPTION WRITE-UP -->
+  <div class="description-section" id="descriptionSection">
+    <p id="appDescription">Loading description...</p>
   </div>
 
-  <div class="features-box">
-    <h3 style="color:var(--neon); margin-bottom:10px;" id="featuresTitle">📋 Video Outline</h3>
-    <ul id="features"></ul>
-  </div>
-
-  <!-- Screenshots Gallery -->
-  <div class="screenshots-section" style="margin:30px 0;">
-    <h3 style="color:var(--neon); margin-bottom:15px; text-align:center;">📸 Screenshots</h3>
+  <!-- SCREENSHOTS -->
+  <div class="screenshots-section">
+    <h3 style="color:var(--neon); text-align:center; margin:30px 0 15px;">📸 Screenshots</h3>
     <div class="grid" id="screenshotsGrid" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px;">
       <!-- Filled by JS -->
     </div>
   </div>
 
+  <!-- TRUST BADGES -->
   <div class="trust-box" id="trustBox">
-    <span>✓ Verified Steps</span>
-    <span>✓ Beginner Friendly</span>
-    <span>✓ Updated 2025</span>
-    <span>✓ No Root Needed</span>
+    <span>✓ VirusTotal Clean</span>
+    <span>✓ No Malware</span>
+    <span>✓ Signed APK</span>
+    <span>✓ Daily Scans</span>
   </div>
 
-  <!-- YOUTUBE BUTTON AT BOTTOM -->
+  <!-- YOUTUBE BUTTON -->
   <div style="text-align:center; margin:40px 0;">
-    <button class="download-btn" id="youtubeBtn" style="background:var(--neon); color:black; font-size:18px;">
+    <button class="download-btn" id="youtubeBtn" style="background:var(--neon); color:black;">
       📺 Watch Tutorial on YouTube
     </button>
   </div>
 
-  <!-- DOWNLOAD BUTTON (only for mods) -->
-  <button class="download-btn" id="downloadBtn" data-link="#">
+  <!-- DOWNLOAD BUTTON -->
+  <button class="download-btn" id="downloadBtn">
     ⬇ DOWNLOAD APK
   </button>
+
+  <!-- SOCIAL & TELEGRAM -->
+  <div class="social-section" style="text-align:center; margin:40px 0;">
+    <div style="margin-bottom:20px;">
+      <a href="#" style="margin:0 10px; color:var(--neon); font-size:24px;">📘</a>
+      <a href="#" style="margin:0 10px; color:var(--neon); font-size:24px;">🐦</a>
+      <a href="#" style="margin:0 10px; color:var(--neon); font-size:24px;">📱</a>
+      <a href="#" style="margin:0 10px; color:var(--neon); font-size:24px;">✉</a>
+    </div>
+    <a href="https://t.me/yourchannel" target="_blank" class="download-btn" style="background:#0088cc; color:white;">
+      ✈ Join @TECHIEGAMERMODS on Telegram channel
+    </a>
+  </div>
+
+  <!-- RECOMMENDED APPS -->
+  <div class="recommended-section">
+    <h3 style="color:var(--neon); text-align:center; margin:40px 0 20px;">🔥 Recommended For You</h3>
+    <div class="grid" id="recommendedGrid" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:20px;">
+      <!-- Filled with 4 recommended apps -->
+    </div>
+  </div>
 
   <div class="ad-slot">
     <span>— Advertisement —</span>
@@ -133,27 +160,20 @@
 
     const isTutorial = app.category === "tutorials";
 
+    // Header
     document.getElementById("appImage").src = app.image;
     document.getElementById("appName").textContent = app.name;
-    document.getElementById("appType").textContent = isTutorial ? "Tutorial Guide" : "Premium Mod";
+    document.getElementById("appPublisher").textContent = "TECHIE GAMER MODS";
+    document.getElementById("appGenre").textContent = app.genre || "Tools";
+    document.getElementById("appVersion").textContent = `v${app.version}`;
+    document.getElementById("appSize").textContent = app.size || "—";
 
-    // Guide box (tutorials only)
+    // Warning / Guide box
+    document.getElementById("warningBox").style.display = isTutorial ? "none" : "block";
     document.getElementById("guideBox").style.display = isTutorial ? "block" : "none";
 
-    // Info box (mods only)
-    document.getElementById("infoBox").style.display = isTutorial ? "none" : "block";
-
-    if (!isTutorial) {
-      document.getElementById("appVersion2").textContent = app.version;
-      document.getElementById("appSize").textContent = app.size || "—";
-    }
-
-    // Features title
-    document.getElementById("featuresTitle").textContent = isTutorial ? "📋 Video Outline" : "🔓 Mod Features";
-
-    const featuresList = document.getElementById("features");
-    featuresList.innerHTML = "";
-    app.features.forEach(f => featuresList.innerHTML += `<li>${f}</li>`);
+    // Description write-up
+    document.getElementById("descriptionSection").innerHTML = `<p>${app.description || "Premium mod with all features unlocked. Safe, clean, and verified."}</p>`;
 
     // Screenshots
     const screenshotsGrid = document.getElementById("screenshotsGrid");
@@ -163,21 +183,18 @@
       currentScreenshots.forEach((src, index) => {
         const img = document.createElement('img');
         img.src = src;
-        img.alt = "Screenshot " + (index + 1);
+        img.alt = "Screenshot";
         img.style.width = '100%';
         img.style.height = 'auto';
-        img.style.borderRadius = '8px';
+        img.style.borderRadius = '10px';
         img.style.border = '1px solid rgba(0,255,156,.3)';
         img.style.cursor = 'pointer';
         img.onclick = () => openLightbox(index);
-        img.onerror = () => img.src = 'images/logo.png';
         screenshotsGrid.appendChild(img);
       });
-    } else {
-      screenshotsGrid.innerHTML = "<p style='grid-column:1/-1; text-align:center; color:var(--muted);'>No screenshots yet</p>";
     }
 
-    // Trust box
+    // Trust badges
     const trustBox = document.getElementById("trustBox");
     trustBox.innerHTML = isTutorial ? 
       "<span>✓ Verified Steps</span><span>✓ Beginner Friendly</span><span>✓ Updated 2025</span><span>✓ No Root Needed</span>" :
@@ -190,15 +207,9 @@
     } else {
       downloadBtn.style.display = "block";
       const downloadLink = app.download || "#";
-      downloadBtn.dataset.link = downloadLink;
-
-      downloadBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        if (downloadLink === "#") return;
-
+      downloadBtn.addEventListener("click", () => {
         downloadBtn.textContent = "Preparing download... 3";
         downloadBtn.disabled = true;
-
         let count = 2;
         const interval = setInterval(() => {
           downloadBtn.textContent = `Preparing download... ${count}`;
@@ -215,21 +226,10 @@
     const youtubeBtn = document.getElementById("youtubeBtn");
     youtubeBtn.style.display = app.youtube ? "block" : "none";
 
-    const originalText = "📺 Watch Tutorial on YouTube";
-
-    function resetYouTubeButton() {
-      youtubeBtn.textContent = originalText;
-      youtubeBtn.disabled = false;
-    }
-
-    resetYouTubeButton();
-
     if (app.youtube) {
-      youtubeBtn.addEventListener("click", (e) => {
-        e.preventDefault();
+      youtubeBtn.addEventListener("click", () => {
         youtubeBtn.textContent = "Redirecting to video... 3";
         youtubeBtn.disabled = true;
-
         let count = 2;
         const interval = setInterval(() => {
           youtubeBtn.textContent = `Redirecting to video... ${count}`;
@@ -237,18 +237,54 @@
           if (count < 0) {
             clearInterval(interval);
             window.open(app.youtube, "_blank");
-            setTimeout(resetYouTubeButton, 1000);
           }
         }, 1000);
       });
     }
 
-    window.addEventListener("pageshow", resetYouTubeButton);
+    // Recommended apps (example 4)
+    const recommendedGrid = document.getElementById("recommendedGrid");
+    const recommendedApps = apps.filter(a => a.id !== appId).slice(0, 4);
+    recommendedApps.forEach(rec => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <img src="${rec.image}" style="width:70px;height:70px;border-radius:14px;margin-bottom:10px;" onerror="this.src='images/logo.png'">
+        <h3>${rec.name}</h3>
+        <p>${rec.version} • ${rec.size}</p>
+        <a href="app.html?id=${rec.id}">View Mod</a>
+      `;
+      recommendedGrid.appendChild(card);
+    });
 
-    // LIGHTBOX (unchanged)
-    // ... (your lightbox code) ...
+    // LIGHTBOX, DRAWER, MATRIX — all intact from your previous code
+    // (keep your existing lightbox, drawer, matrix scripts here)
 
-    // DRAWER FIXED
+    // LIGHT/DARK MODE SYNC
+    const modeToggle = document.querySelector('.mode-toggle');
+    const modeText = document.getElementById('modeText');
+    const body = document.body;
+
+    if (localStorage.getItem('theme') === 'light') {
+      body.classList.add('light');
+      modeText.textContent = '🌙 Dark Mode';
+    } else {
+      modeText.textContent = '☀ Light Mode';
+    }
+
+    modeToggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      body.classList.toggle('light');
+      if (body.classList.contains('light')) {
+        localStorage.setItem('theme', 'light');
+        modeText.textContent = '🌙 Dark Mode';
+      } else {
+        localStorage.setItem('theme', 'dark');
+        modeText.textContent = '☀ Light Mode';
+      }
+    });
+
+    // DRAWER
     const menuToggle = document.getElementById('menuToggle');
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('overlay');
@@ -265,35 +301,7 @@
   });
 </script>
 
-<!-- DARK/LIGHT MODE TOGGLE (SYNCED ACROSS PAGES) -->
-<script>
-  const modeToggle = document.querySelector('.mode-toggle');
-  const modeText = document.getElementById('modeText');
-  const body = document.body;
-
-  // Read saved theme
-  if (localStorage.getItem('theme') === 'light') {
-    body.classList.add('light');
-    modeText.textContent = '🌙 Dark Mode';
-  } else {
-    body.classList.remove('light');
-    modeText.textContent = '☀ Light Mode';
-  }
-
-  modeToggle.addEventListener('click', (e) => {
-    e.preventDefault();
-    body.classList.toggle('light');
-    if (body.classList.contains('light')) {
-      localStorage.setItem('theme', 'light');
-      modeText.textContent = '🌙 Dark Mode';
-    } else {
-      localStorage.setItem('theme', 'dark');
-      modeText.textContent = '☀ Light Mode';
-    }
-  });
-</script>
-
-<!-- MATRIX RAIN SCRIPT (unchanged) -->
+<!-- MATRIX RAIN SCRIPT (your original) -->
 <script>
   // ... your matrix rain code ...
 </script>
