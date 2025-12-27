@@ -144,34 +144,39 @@
     const app = apps.find(a => a.id === appId);
     if (!app) return;
 
+    const isGame = app.category === "games";
+
     // App icon in header
     document.getElementById("appImageHeader").src = app.image;
 
     // Title
-    document.getElementById("downloadTitle").textContent = "Download: " + app.name + " v" + app.version + " MOD APK (" + (app.modTitle || "Premium Unlocked") + ")";
+    let title = "Download: " + app.name + " v" + app.version + " MOD APK (" + (app.modTitle || "Premium Unlocked") + ")";
+    document.getElementById("downloadTitle").textContent = title;
     document.getElementById("downloadDate").textContent = (app.updated || "December 26, 2025") + " (3 hours ago)";
     document.getElementById("redBannerText").textContent = app.name + " - All Mod";
     document.getElementById("notesAppName").textContent = app.name;
 
-    // MOD Versions — MOD APK first, then XAPK
+    // MOD Versions
     const modVersions = document.getElementById("modVersions");
+    let secondButtonText = isGame ? "⬇ DOWNLOAD OBB/PATCH" : "⬇ DOWNLOAD XAPK";
+
     modVersions.innerHTML = `
       <div class="download-box">
         <button class="download-btn">⬇ DOWNLOAD MOD APK</button>
-        <p>v${app.version} - \( {app.modTitle || "Premium Unlocked"}<span style="float:right;"> \){app.size}</span></p>
+        <p>v` + app.version + ` - ` + (app.modTitle || "Premium Unlocked") + `<span style="float:right;">` + app.size + `</span></p>
       </div>
       <div class="download-box">
-        <button class="download-btn">⬇ DOWNLOAD XAPK</button>
-        <p>v${app.version} - \( {app.modTitle || "Premium Unlocked"}<span style="float:right;"> \){app.size}</span></p>
+        <button class="download-btn">` + secondButtonText + `</button>
+        <p>v` + app.version + ` - ` + (app.modTitle || "Premium Unlocked") + `<span style="float:right;">` + app.size + `</span></p>
       </div>
     `;
 
-    // Original versions
+    // Original version — redirects to Play Store
     const originalVersions = document.getElementById("originalVersions");
     originalVersions.innerHTML = `
       <div class="download-box original">
-        <button class="download-btn">⬇ DOWNLOAD APK</button>
-        <p>Original - \( {app.version}<span style="float:right;"> \){app.size}</span></p>
+        <button class="download-btn" onclick="window.location.href='` + (app.playstore || "#") + `'">⬇ DOWNLOAD APK</button>
+        <p>Original - ` + app.version + `<span style="float:right;">` + app.size + `</span></p>
       </div>
     `;
 
