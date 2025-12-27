@@ -42,11 +42,14 @@
 
 <div class="app-page">
 
-  <!-- TOP TITLE -->
-  <div class="top-title">
+  <!-- APP HEADER (ICON LEFT, TITLE + UPDATED BELOW) -->
+  <div class="app-header">
     <img id="appImage" src="images/logo.png" alt="Icon">
-    <h1 id="modTitle">InShot Pro v2.183.1521 MOD APK (All Pack Unlocked)</h1>
-    <p id="updatedText">December 26, 2025 (1 second ago)</p>
+    <div>
+      <h1 id="modTitle">InShot Pro v2.183.1521 MOD APK (All Pack Unlocked)</h1>
+      <p id="updatedText" style="color:var(--muted); font-size:14px; margin:5px 0;">December 26, 2025 (1 second ago)</p>
+      <div class="meta">Premium Mod</div>
+    </div>
   </div>
 
   <!-- YOUR WARNING BOX -->
@@ -133,23 +136,23 @@
 
   <!-- SOCIAL & TELEGRAM -->
   <div class="social-section">
-    <!-- ... -->
+    <!-- your social code -->
   </div>
 
   <!-- RECOMMENDED -->
   <div class="recommended-section">
-    <!-- ... -->
+    <!-- your recommended code -->
   </div>
 
   <div class="ad-slot">
-    <!-- ... -->
+    <!-- your ad -->
   </div>
 
 </div>
 
 <!-- FOOTER -->
 <footer>
-  <!-- ... -->
+  <!-- your footer -->
 </footer>
 
 <script src="js/data.js"></script>
@@ -165,7 +168,10 @@
 
     const isTutorial = app.category === "tutorials";
 
-    // Top title
+    // Header icon + title
+    document.getElementById("appImage").src = app.image;
+
+    // Top title + updated
     document.getElementById("modTitle").textContent = `\( {app.name} v \){app.version} MOD APK (${app.modTitle || "Premium Unlocked"})`;
     document.getElementById("updatedText").textContent = `${app.updated || "December 26, 2025"} (1 second ago)`;
 
@@ -187,29 +193,26 @@
     // Description
     document.getElementById("descriptionSection").innerHTML = `<p>${app.description || "Premium mod with all features unlocked. Clean, safe, and verified."}</p>`;
 
-    // All other features (screenshots, buttons, drawer, light/dark, matrix) remain intact
+    // All other features (screenshots, buttons, drawer, light/dark, matrix, countdown) intact
   });
 </script>
 
-<!-- CSS FOR TABLE FULL WIDTH & ALIGNMENT -->
+<!-- CSS FOR HEADER & TABLE -->
 <style>
-.top-title {
-  text-align: center;
-  margin: 20px;
+.app-header {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  gap: 20px;
 }
-.top-title img {
+.app-header img {
   width: 80px;
   height: 80px;
   border-radius: 15px;
-  margin-bottom: 10px;
 }
-.top-title h1 {
+.app-header div h1 {
+  margin: 0;
   font-size: 22px;
-  margin: 10px 0;
-}
-.top-title p {
-  color: var(--muted);
-  font-size: 14px;
 }
 .info-table {
   background: rgba(255,255,255,0.05);
@@ -232,20 +235,18 @@
   color: var(--neon);
   font-weight: 600;
   font-size: 16px;
-  flex: 1;
 }
 .info-value {
   color: white;
   font-size: 16px;
   text-align: right;
-  flex: 1;
 }
 .play-store {
   justify-content: space-between;
 }
 </style>
 
-<!-- Your other scripts -->
+<!-- Your other scripts (drawer, light/dark, matrix, lightbox, countdown) -->
 
 </body>
-  </html>
+      </html>
