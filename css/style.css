@@ -727,4 +727,41 @@ body.light footer {
   color: #64748b;
 }
 
+.mod-info-table {
+  background: rgba(255,255,255,0.05);
+  border-radius: 15px;
+  margin: 0 20px 20px 20px;
+  overflow: hidden;
+  border: 1px solid rgba(0,255,156,0.3);
+}
+
+.mod-info-header {
+  background: rgba(0,255,156,0.1);
+  padding: 15px 20px;
+  border-bottom: 1px solid rgba(0,255,156,0.2);
+}
+
+.mod-info-header .info-label {
+  color: var(--neon);
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.mod-info-content {
+  padding: 20px;
+}
+
+.mod-info-content ul {
+  margin: 0;
+  padding-left: 20px;
+  list-style-type: disc;
+}
+
+.mod-info-content li {
+  color: white;
+  margin-bottom: 12px;
+  line-height: 1.5;
+  font-size: 15px;
+}
+
 
