@@ -692,8 +692,39 @@ body.light #overlay.open {
   background: rgba(0,0,0,0.5);
 }
 
+.info-table {
+  background: rgba(255,255,255,0.05);
+  border-radius: 15px;
+  margin: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(0,255,156,0.3);
+}
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid rgba(0,255,156,0.2);
+}
+.info-row:last-child {
+  border-bottom: none;
+}
+.info-label {
+  color: var(--neon);
+  font-weight: 600;
+  font-size: 16px;
+}
+.info-value {
+  color: white;
+  font-size: 16px;
+  text-align: right;
+}
+.play-store {
+  justify-content: space-between;
+   }
 body.light footer {
   border-top: 1px solid rgba(0,191,255,0.15);
   color: #64748b;
 }
+
 
