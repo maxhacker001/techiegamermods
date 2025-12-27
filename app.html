@@ -200,9 +200,10 @@
     // Header
 document.getElementById("appImage").src = app.image;
 
-// Dynamic top title (fixed properly)
+// FIXED DYNAMIC TITLE — NO PLACEHOLDERS
 let title = `\( {app.name} v \){app.version} MOD APK (${app.modTitle || "Premium Unlocked"})`;
 
+// Optional + OBB for games (add obb: true in data.js if needed)
 if (app.obb) {
   title = `\( {app.name} v \){app.version} MOD APK + OBB (${app.modTitle || "Unlimited Money"})`;
 }
@@ -210,6 +211,9 @@ if (app.obb) {
 document.getElementById("modTitle").textContent = title;
 
 document.getElementById("updatedText").textContent = `${app.updated || "December 26, 2025"} (1 second ago)`;
+
+
+    
     // Table
     document.getElementById("appNameTable").textContent = app.name;
     document.getElementById("appPublisher").textContent = app.publisher || "TECHIE GAMER MODS";
