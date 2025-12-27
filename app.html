@@ -196,22 +196,20 @@
     if (!app) return;
 
     const isTutorial = app.category === "tutorials";
-
-    // Header
+// Header
 document.getElementById("appImage").src = app.image;
 
-// FIXED DYNAMIC TITLE — NO PLACEHOLDERS
-let title = `\( {app.name} v \){app.version} MOD APK (${app.modTitle || "Premium Unlocked"})`;
+// FIXED TITLE — 100% WORKING
+let title = app.name + " v" + app.version + " MOD APK (" + (app.modTitle || "Premium Unlocked") + ")";
 
-// Optional + OBB for games (add obb: true in data.js if needed)
+// If game has OBB (add obb: true in data.js for those games)
 if (app.obb) {
-  title = `\( {app.name} v \){app.version} MOD APK + OBB (${app.modTitle || "Unlimited Money"})`;
+  title = app.name + " v" + app.version + " MOD APK + OBB (" + (app.modTitle || "Unlimited Money") + ")";
 }
 
 document.getElementById("modTitle").textContent = title;
 
-document.getElementById("updatedText").textContent = `${app.updated || "December 26, 2025"} (1 second ago)`;
-
+document.getElementById("updatedText").textContent = (app.updated || "December 26, 2025") + " (1 second ago)";
 
     
     // Table
