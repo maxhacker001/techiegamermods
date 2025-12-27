@@ -34,8 +34,8 @@
 <header>
   <div class="nav">
     <div class="logo">
-      <!-- APP ICON IN HEADER - FIXED -->
-      <img id="appImageHeader" src="images/logo.png" alt="App Icon" style="height:28px; border-radius:8px; margin-right:10px;">
+      <!-- ONLY SITE LOGO IN HEADER -->
+      <img src="images/logo.png" alt="TECHIE GAMER MODS" style="height:28px; border-radius:8px; margin-right:10px;">
       <span>TECHIE GAMER MODS</span>
     </div>
   </div>
@@ -43,10 +43,13 @@
 
 <div class="app-page">
 
-  <!-- DOWNLOAD PAGE TITLE -->
-  <div class="download-title" style="text-align:center; margin:30px 20px;">
-    <h1 id="downloadTitle">Download: Loading...</h1>
-    <p id="downloadDate" style="color:var(--muted);">Loading...</p>
+  <!-- APP ICON LEFT + TITLE RIGHT (EXACTLY LIKE APP.HTML) -->
+  <div class="app-header" style="display:flex; align-items:center; padding:20px; gap:20px;">
+    <img id="appIconDownload" src="images/logo.png" alt="App Icon" style="width:80px; height:80px; border-radius:15px;">
+    <div>
+      <h1 id="downloadTitle">Download: Loading...</h1>
+      <p id="downloadDate" style="color:var(--muted); margin:5px 0;">Loading...</p>
+    </div>
   </div>
 
   <!-- RED BANNER -->
@@ -147,8 +150,8 @@
 
     const isGame = app.category === "games";
 
-    // FIXED: App icon in header
-    document.getElementById("appImageHeader").src = app.image;
+    // App icon left of title (like app.html)
+    document.getElementById("appIconDownload").src = app.image;
 
     // Title
     document.getElementById("downloadTitle").textContent = "Download: " + app.name + " v" + app.version + " MOD APK (" + (app.modTitle || "Premium Unlocked") + ")";
