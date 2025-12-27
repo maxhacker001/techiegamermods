@@ -210,6 +210,15 @@
     document.getElementById("appVersionTable").textContent = app.version;
     document.getElementById("modInfo").textContent = app.modTitle || "Premium Unlocked";
 
+    // MOD Info bullet list
+const modFeaturesList = document.getElementById("modFeaturesList");
+modFeaturesList.innerHTML = "";
+app.features.forEach(feature => {
+  const li = document.createElement('li');
+  li.textContent = feature;
+  modFeaturesList.appendChild(li);
+});
+
     // Play Store
     document.getElementById("playstoreLink").href = app.playstore || "https://play.google.com";
 
