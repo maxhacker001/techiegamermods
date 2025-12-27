@@ -47,33 +47,31 @@
     <img id="appImage" src="images/logo.png" alt="App Icon">
     <div>
       <h1 id="appName">Loading...</h1>
-      <div class="meta">
-        Premium Mod
-      </div>
+      <div class="meta">Premium Mod</div>
     </div>
   </div>
 
-  <!-- INFO TABLE LIKE SCREENSHOT -->
+  <!-- INFO TABLE EXACT LIKE SCREENSHOT -->
   <div class="info-table">
     <div class="info-row">
       <span class="info-label">🎬 App Name</span>
-      <span class="info-value" id="appNameTable">InShot</span>
+      <span class="info-value" id="appNameTable">Spotify MOD</span>
     </div>
     <div class="info-row">
       <span class="info-label">👤 Publisher</span>
-      <span class="info-value" id="appPublisher">InShot Video Editor</span>
+      <span class="info-value" id="appPublisher">Spotify AB</span>
     </div>
     <div class="info-row">
       <span class="info-label">📂 Genre</span>
-      <span class="info-value" id="appGenre">Photography</span>
+      <span class="info-value" id="appGenre">Music & Audio</span>
     </div>
     <div class="info-row">
       <span class="info-label">💾 Size</span>
-      <span class="info-value" id="appSizeTable">75M</span>
+      <span class="info-value" id="appSizeTable">45 MB</span>
     </div>
     <div class="info-row">
       <span class="info-label">🔥 Latest Version</span>
-      <span class="info-value" id="appVersionTable">2.183.1521</span>
+      <span class="info-value" id="appVersionTable">8.9.18</span>
     </div>
     <div class="info-row">
       <span class="info-label">🔓 MOD Info</span>
@@ -81,13 +79,13 @@
     </div>
     <div class="info-row play-store">
       <span class="info-label">📱 Get it On</span>
-      <a href="https://play.google.com/store/apps/details?id=com.camerasideas.instashot" target="_blank">
+      <a href="#" id="playstoreLink" target="_blank">
         <img src="images/playstore.png" alt="Google Play" style="height:40px;">
       </a>
     </div>
   </div>
 
-  <!-- YOUR WARNING BOX -->
+  <!-- WARNING BOX -->
   <div class="warning-box" id="warningBox">
     <strong>⚠ Important Notice</strong><br><br>
     Check YouTube comment section for app download link.<br>
@@ -104,7 +102,7 @@
 
   <!-- LONG DESCRIPTION -->
   <div class="description-section" id="descriptionSection">
-    <p id="appDescription">Loading description...</p>
+    <p id="appDescription">Premium mod with all features unlocked. Clean, safe, and verified.</p>
   </div>
 
   <!-- SCREENSHOTS -->
@@ -203,6 +201,10 @@
     document.getElementById("appVersionTable").textContent = app.version;
     document.getElementById("modInfo").textContent = isTutorial ? "Tutorial Guide" : "Pro Unlocked";
 
+    // Play Store link
+    const playLink = app.playstore || "https://play.google.com";
+    document.getElementById("playstoreLink").href = playLink;
+
     // Warning / Guide
     document.getElementById("warningBox").style.display = isTutorial ? "none" : "block";
     document.getElementById("guideBox").style.display = isTutorial ? "block" : "none";
@@ -210,13 +212,11 @@
     // Description
     document.getElementById("descriptionSection").innerHTML = `<p>${app.description || "Premium mod with all features unlocked. Clean, safe, and verified."}</p>`;
 
-    // Screenshots, trust, buttons, recommended — same as before
-
-    // All your other scripts (drawer, light/dark, matrix, lightbox, countdown) remain intact
+    // Screenshots, trust, buttons, recommended, drawer, light/dark, matrix — all intact
   });
 </script>
 
-<!-- Add this CSS in style.css for the table -->
+<!-- CSS FOR TABLE (add to style.css) -->
 <style>
 .info-table {
   background: rgba(255,255,255,0.05);
@@ -228,7 +228,8 @@
 .info-row {
   display: flex;
   justify-content: space-between;
-  padding: 12px 20px;
+  align-items: center;
+  padding: 15px 20px;
   border-bottom: 1px solid rgba(0,255,156,0.2);
 }
 .info-row:last-child {
@@ -237,18 +238,19 @@
 .info-label {
   color: var(--neon);
   font-weight: 600;
+  font-size: 16px;
 }
 .info-value {
   color: white;
+  font-size: 16px;
   text-align: right;
 }
 .play-store {
-  justify-content: flex-start !important;
-  gap: 20px;
+  justify-content: space-between !important;
 }
 </style>
 
-<!-- Your other scripts (matrix, drawer, light/dark, lightbox) -->
+<!-- Your other scripts (drawer, light/dark, matrix, lightbox, countdown) -->
 
 </body>
-  </html>
+    </html>
