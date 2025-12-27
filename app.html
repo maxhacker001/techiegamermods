@@ -198,19 +198,18 @@
     const isTutorial = app.category === "tutorials";
 
     // Header
-    document.getElementById("appImage").src = app.image;
+document.getElementById("appImage").src = app.image;
 
-    // Dynamic top title
-    let title = `\( {app.name} v \){app.version} MOD APK (${app.modTitle || "Premium Unlocked"})`;
+// Dynamic top title (fixed properly)
+let title = `\( {app.name} v \){app.version} MOD APK (${app.modTitle || "Premium Unlocked"})`;
 
-    // Add + OBB for games if needed (add obb: true in data.js for those games)
-    if (app.obb) {
-      title = `\( {app.name} v \){app.version} MOD APK + OBB (${app.modTitle || "Unlimited Money"})`;
-    }
+if (app.obb) {
+  title = `\( {app.name} v \){app.version} MOD APK + OBB (${app.modTitle || "Unlimited Money"})`;
+}
 
-    document.getElementById("modTitle").textContent = title;
-    document.getElementById("updatedText").textContent = `${app.updated || "December 26, 2025"} (1 second ago)`;
+document.getElementById("modTitle").textContent = title;
 
+document.getElementById("updatedText").textContent = `${app.updated || "December 26, 2025"} (1 second ago)`;
     // Table
     document.getElementById("appNameTable").textContent = app.name;
     document.getElementById("appPublisher").textContent = app.publisher || "TECHIE GAMER MODS";
