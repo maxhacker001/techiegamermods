@@ -159,25 +159,29 @@
     document.getElementById("redBannerText").textContent = app.name + " - All Mod";
     document.getElementById("notesAppName").textContent = app.name;
 
-    // MOD Versions
-modVersions.innerHTML = `
-  <div class="download-box">
-    <a href="https://your-mod-apk-link.com" class="download-btn">⬇ DOWNLOAD MOD APK</a>
-    <p>v` + app.version + ` - ` + (app.modTitle || "Premium Unlocked") + `<span style="float:right;">` + app.size + `</span></p>
-  </div>
-  <div class="download-box">
-    <a href="https://your-xapk-or-obb-link.com" class="download-btn">` + secondButtonText + `</a>
-    <p>v` + app.version + ` - ` + (app.modTitle || "Premium Unlocked") + `<span style="float:right;">` + app.size + `</span></p>
-  </div>
-`;
+    // MOD Versions — MOD APK first, then XAPK or OBB/PATCH
+    const modVersions = document.getElementById("modVersions");
+    let secondButtonText = isGame ? "⬇ DOWNLOAD OBB/PATCH" : "⬇ DOWNLOAD XAPK";
 
-// Original
-originalVersions.innerHTML = `
-  <div class="download-box original">
-    <a href="` + (app.playstore || "https://play.google.com") + `" class="download-btn" target="_blank">⬇ DOWNLOAD APK</a>
-    <p>Original - ` + app.version + `<span style="float:right;">` + app.size + `</span></p>
-  </div>
-`;
+    modVersions.innerHTML = `
+      <div class="download-box">
+        <button class="download-btn">⬇ DOWNLOAD MOD APK</button>
+        <p>v` + app.version + ` - ` + (app.modTitle || "Premium Unlocked") + `<span style="float:right;">` + app.size + `</span></p>
+      </div>
+      <div class="download-box">
+        <button class="download-btn">` + secondButtonText + `</button>
+        <p>v` + app.version + ` - ` + (app.modTitle || "Premium Unlocked") + `<span style="float:right;">` + app.size + `</span></p>
+      </div>
+    `;
+
+    // Original version
+    const originalVersions = document.getElementById("originalVersions");
+    originalVersions.innerHTML = `
+      <div class="download-box original">
+        <button class="download-btn" onclick="window.location.href='` + (app.playstore || "#") + `'">⬇ DOWNLOAD APK</button>
+        <p>Original - ` + app.version + `<span style="float:right;">` + app.size + `</span></p>
+      </div>
+    `;
 
     // Recommended apps
     const recommendedGrid = document.getElementById("recommendedGrid");
