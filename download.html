@@ -159,26 +159,22 @@
     document.getElementById("redBannerText").textContent = app.name + " - All Mod";
     document.getElementById("notesAppName").textContent = app.name;
 
-    // MOD Versions — buttons clickable
-const modVersions = document.getElementById("modVersions");
-let secondButtonText = isGame ? "⬇ DOWNLOAD OBB/PATCH" : "⬇ DOWNLOAD XAPK";
-
+    // MOD Versions
 modVersions.innerHTML = `
   <div class="download-box">
-    <button class="download-btn" onclick="window.location.href='https://your-mod-apk-link.com'">⬇ DOWNLOAD MOD APK</button>
+    <a href="https://your-mod-apk-link.com" class="download-btn">⬇ DOWNLOAD MOD APK</a>
     <p>v` + app.version + ` - ` + (app.modTitle || "Premium Unlocked") + `<span style="float:right;">` + app.size + `</span></p>
   </div>
   <div class="download-box">
-    <button class="download-btn" onclick="window.location.href='https://your-xapk-or-obb-link.com'">` + secondButtonText + `</button>
+    <a href="https://your-xapk-or-obb-link.com" class="download-btn">` + secondButtonText + `</a>
     <p>v` + app.version + ` - ` + (app.modTitle || "Premium Unlocked") + `<span style="float:right;">` + app.size + `</span></p>
   </div>
 `;
 
-// Original version — clickable to Play Store
-const originalVersions = document.getElementById("originalVersions");
+// Original
 originalVersions.innerHTML = `
   <div class="download-box original">
-    <button class="download-btn" onclick="window.location.href='` + (app.playstore || "https://play.google.com") + `'">⬇ DOWNLOAD APK</button>
+    <a href="` + (app.playstore || "https://play.google.com") + `" class="download-btn" target="_blank">⬇ DOWNLOAD APK</a>
     <p>Original - ` + app.version + `<span style="float:right;">` + app.size + `</span></p>
   </div>
 `;
