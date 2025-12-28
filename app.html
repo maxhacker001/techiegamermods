@@ -288,65 +288,71 @@ app.features.forEach(feature => {
       recommendedGrid.appendChild(card);
     });
 
-    // Download button
-    const downloadBtn = document.getElementById("downloadBtn");
-    const originalDownloadText = "⬇ DOWNLOAD APK";
-    if (isTutorial) {
-      downloadBtn.style.display = "none";
-    } else {
-      downloadBtn.style.display = "block";
-      const downloadLink = app.download || "#";
-      downloadBtn.addEventListener("click", (e) => {
-  e.preventDefault();
-  downloadBtn.textContent = "Preparing download... 3";
-  downloadBtn.disabled = true;
-  let count = 2;
-  const interval = setInterval(() => {
-    downloadBtn.textContent = `Preparing download... ${count}`;
-    count--;
-    if (count < 0) {
-      clearInterval(interval);
-      // Redirect to download.html with app ID
-      window.location.href = `download.html?id=${app.id}`;
-    }
-  }, 1000);
+ // Download button - first
+const downloadBtn = document.getElementById("downloadBtn");
+const originalDownloadText = "⬇ DOWNLOAD APK";
+
+if (isTutorial) {
+  downloadBtn.style.display = "none";
+} else {
+  downloadBtn.style.display = "block";
+  
+  // Long-press shows the URL
+  downloadBtn.title = `download.html?id=${app.id}`;
+  
+  downloadBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    downloadBtn.textContent = "Preparing download... 3";
+    let count = 2;
+    const interval = setInterval(() => {
+      downloadBtn.textContent = `Preparing download... ${count}`;
+      count--;
+      if (count < 0) {
+        clearInterval(interval);
+        window.location.href = `download.html?id=${app.id}`;
+      }
+    }, 1000);
+  });
+}
+
+// Reset on back
+window.addEventListener("pageshow", () => {
+  downloadBtn.textContent = originalDownloadText;
 });
-    }
 
-    // Reset on back
-    window.addEventListener("pageshow", () => {
-      downloadBtn.textContent = originalDownloadText;
-      downloadBtn.disabled = false;
-    });
+// YouTube button - second
+const youtubeBtn = document.getElementById("youtubeBtn");
+const originalYoutubeText = "📺 Watch Tutorial on YouTube";
 
-    // YouTube button
-    const youtubeBtn = document.getElementById("youtubeBtn");
-    const originalYoutubeText = "📺 Watch Tutorial on YouTube";
-    youtubeBtn.style.display = app.youtube ? "block" : "none";
+youtubeBtn.style.display = app.youtube ? "block" : "none";
 
-    function resetYouTubeButton() {
-      youtubeBtn.textContent = originalYoutubeText;
-      youtubeBtn.disabled = false;
-    }
+// Long-press shows the YouTube URL
+if (app.youtube) {
+  youtubeBtn.title = app.youtube;
+}
 
-    resetYouTubeButton();
+if (app.youtube) {
+  youtubeBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    youtubeBtn.textContent = "Redirecting to video... 3";
+    let count = 2;
+    const interval = setInterval(() => {
+      youtubeBtn.textContent = `Redirecting to video... ${count}`;
+      count--;
+      if (count < 0) {
+        clearInterval(interval);
+        window.open(app.youtube, "_blank");
+      }
+    }, 1000);
+  });
+}
 
-    if (app.youtube) {
-      youtubeBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        youtubeBtn.textContent = "Redirecting to video... 3";
-        youtubeBtn.disabled = true;
-        let count = 2;
-        const interval = setInterval(() => {
-          youtubeBtn.textContent = `Redirecting to video... ${count}`;
-          count--;
-          if (count < 0) {
-            clearInterval(interval);
-            window.open(app.youtube, "_blank");
-          }
-        }, 1000);
-      });
-    }
+// Reset on back
+window.addEventListener("pageshow", () => {
+  if (app.youtube) {
+    youtubeBtn.textContent = originalYoutubeText;
+  }
+});
 
     window.addEventListener("pageshow", resetYouTubeButton);
 
