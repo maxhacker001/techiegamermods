@@ -470,6 +470,355 @@ Multiple docks, pages.`,
   download: "https://example.com/nova.apk"
   },
   
+  {
+    id: "remini-mod",
+    name: "Remini MOD",
+    category: "apps",
+    version: "3.8.5",
+    size: "65 MB",
+    image: "images/remini.png",
+    modTitle: "Pro Unlocked",
+    updated: "December 31, 2025",
+    publisher: "Bending Spoons",
+    genre: "Photo Editing",
+    playstore: "https://play.google.com/store/apps/details?id=com.remini.app",
+    description: "Remini MOD APK - Unlimited AI credits, HD photo enhancement, restore old photos.",
+    features: [
+      "Pro Unlocked",
+      "Unlimited Credits",
+      "HD Enhancement",
+      "Batch Processing",
+      "No Ads"
+    ],
+    screenshots: [
+      "images/screenshots/remini1.png",
+      "images/screenshots/remini2.png",
+      "images/screenshots/remini3.png",
+      "images/screenshots/remini4.png"
+    ],
+    youtube: "https://youtube.com/watch?v=remini-tutorial",
+    download: "https://example.com/remini.apk"
+  },
+  
+  {
+    id: "picsart-mod",
+    name: "PicsArt MOD",
+    category: "apps",
+    version: "25.0.0",
+    size: "80 MB",
+    image: "images/picsart.png",
+    modTitle: "Gold Unlocked",
+    updated: "December 30, 2025",
+    publisher: "PicsArt Inc.",
+    genre: "Photo & Video Editor",
+    playstore: "https://play.google.com/store/apps/details?id=com.picsart.studio",
+    description: "PicsArt MOD APK - Gold unlocked, all stickers, effects, AI tools.",
+    features: [
+      "Gold Unlocked",
+      "No Ads",
+      "AI Tools",
+      "Background Remover",
+      "All Stickers"
+    ],
+    screenshots: [
+      "images/screenshots/picsart1.png",
+      "images/screenshots/picsart2.png",
+      "images/screenshots/picsart3.png",
+      "images/screenshots/picsart4.png"
+    ],
+    youtube: "https://youtube.com/watch?v=picsart-tutorial",
+    download: "https://example.com/picsart.apk"
+  },
+  
+  {
+    id: "photoroom-mod",
+    name: "PhotoRoom MOD",
+    category: "apps",
+    version: "4.8.0",
+    size: "55 MB",
+    image: "images/photoroom.png",
+    modTitle: "Pro Unlocked",
+    updated: "December 29, 2025",
+    publisher: "PhotoRoom",
+    genre: "Photo Editing",
+    playstore: "https://play.google.com/store/apps/details?id=com.photoroom.app",
+    description: "PhotoRoom MOD APK - Unlimited background remove, pro templates.",
+    features: [
+      "Pro Unlocked",
+      "Unlimited Remove",
+      "Pro Templates",
+      "Batch Edit",
+      "HD Export"
+    ],
+    screenshots: [
+      "images/screenshots/photoroom1.png",
+      "images/screenshots/photoroom2.png",
+      "images/screenshots/photoroom3.png",
+      "images/screenshots/photoroom4.png"
+    ],
+    youtube: "https://youtube.com/watch?v=photoroom-tutorial",
+    download: "https://example.com/photoroom.apk"
+  },
+  
+  {
+    id: "truecaller-mod",
+    name: "Truecaller Premium MOD",
+    category: "apps",
+    version: "13.5.0",
+    size: "90 MB",
+    image: "images/truecaller.png",
+    modTitle: "Premium Unlocked",
+    updated: "December 28, 2025",
+    publisher: "Truecaller",
+    genre: "Communication",
+    playstore: "https://play.google.com/store/apps/details?id=com.truecaller",
+    description: "Truecaller Premium MOD - No ads, ghost call, who viewed profile.",
+    features: [
+      "Premium Unlocked",
+      "No Ads",
+      "Ghost Call",
+      "Who Viewed Profile",
+      "Advanced Spam Block"
+    ],
+    screenshots: [
+      "images/screenshots/truecaller1.png",
+      "images/screenshots/truecaller2.png",
+      "images/screenshots/truecaller3.png",
+      "images/screenshots/truecaller4.png"
+    ],
+    youtube: "https://youtube.com/watch?v=truecaller-tutorial",
+    download: "https://example.com/truecaller.apk"
+  },
+  
+  {
+    id: "snaptube-mod",
+    name: "SnapTube MOD",
+    category: "apps",
+    version: "7.0.0",
+    size: "25 MB",
+    image: "images/snaptube.png",
+    modTitle: "VIP Unlocked",
+    updated: "December 27, 2025",
+    genre: "Video Downloader",
+    description: "SnapTube MOD APK - Download videos from YouTube, Facebook, Instagram.",
+    features: [
+      "VIP Unlocked",
+      "No Ads",
+      "4K Download",
+      "Batch Download"
+    ],
+    screenshots: [
+      "images/screenshots/snaptube1.png",
+      "images/screenshots/snaptube2.png",
+      "images/screenshots/snaptube3.png",
+      "images/screenshots/snaptube4.png"
+    ],
+    youtube: "https://youtube.com/watch?v=snaptube-tutorial",
+    download: "https://example.com/snaptube.apk"
+  },
+  
+  {
+    id: "telegram-premium-mod",
+    name: "Telegram Premium MOD",
+    category: "apps",
+    version: "10.5.0",
+    size: "55 MB",
+    image: "images/telegram.png",
+    modTitle: "Premium Unlocked",
+    updated: "December 26, 2025",
+    publisher: "Telegram FZ-LLC",
+    genre: "Communication",
+    playstore: "https://play.google.com/store/apps/details?id=org.telegram.messenger",
+    description: "Telegram Premium MOD - Unlimited cloud, faster download, premium stickers.",
+    features: [
+      "Premium Unlocked",
+      "No Ads",
+      "Faster Download",
+      "Unlimited Cloud",
+      "Premium Stickers"
+    ],
+    screenshots: [
+      "images/screenshots/telegram1.png",
+      "images/screenshots/telegram2.png",
+      "images/screenshots/telegram3.png",
+      "images/screenshots/telegram4.png"
+    ],
+    youtube: "https://youtube.com/watch?v=telegram-tutorial",
+    download: "https://example.com/telegram.apk"
+  },
+  
+  {
+    id: "insta-thunder-mod",
+    name: "Instagram Pro (Insta Thunder)",
+    category: "apps",
+    version: "300.0",
+    size: "70 MB",
+    image: "images/instathunder.png",
+    modTitle: "Pro Unlocked",
+    updated: "December 25, 2025",
+    genre: "Social",
+    description: "Insta Thunder MOD - Download media, no ads, privacy options.",
+    features: [
+      "Pro Unlocked",
+      "Download Media",
+      "No Ads",
+      "Privacy Options",
+      "Dark Mode"
+    ],
+    screenshots: [
+      "images/screenshots/instathunder1.png",
+      "images/screenshots/instathunder2.png",
+      "images/screenshots/instathunder3.png",
+      "images/screenshots/instathunder4.png"
+    ],
+    youtube: "https://youtube.com/watch?v=instathunder-tutorial",
+    download: "https://example.com/instathunder.apk"
+  },
+  
+  {
+    id: "twitter-gold-mod",
+    name: "Twitter X Gold MOD",
+    category: "apps",
+    version: "10.5.0",
+    size: "100 MB",
+    image: "images/twittergold.png",
+    modTitle: "Premium Unlocked",
+    updated: "December 24, 2025",
+    genre: "Social",
+    description: "Twitter Gold MOD - No ads, download videos.",
+    features: [
+      "Premium Unlocked",
+      "No Ads",
+      "Download Videos",
+      "Blue Tick Hide"
+    ],
+    screenshots: [
+      "images/screenshots/twittergold1.png",
+      "images/screenshots/twittergold2.png",
+      "images/screenshots/twittergold3.png",
+      "images/screenshots/twittergold4.png"
+    ],
+    youtube: "https://youtube.com/watch?v=twittergold-tutorial",
+    download: "https://example.com/twittergold.apk"
+  },
+  
+  {
+    id: "netflix-mod",
+    name: "Netflix MOD",
+    category: "apps",
+    version: "8.12.0",
+    size: "60 MB",
+    image: "images/netflix.png",
+    modTitle: "Premium Unlocked",
+    updated: "December 23, 2025",
+    genre: "Entertainment",
+    publisher: "Netflix Inc.",
+    playstore: "https://play.google.com/store/apps/details?id=com.netflix.mediaclient",
+    description: "Netflix MOD - 4K streaming, no ads, download all content.",
+    features: [
+      "Premium Unlocked",
+      "4K Streaming",
+      "No Ads",
+      "Download All",
+      "All Regions"
+    ],
+    screenshots: [
+      "images/screenshots/netflix1.png",
+      "images/screenshots/netflix2.png",
+      "images/screenshots/netflix3.png",
+      "images/screenshots/netflix4.png"
+    ],
+    youtube: "https://youtube.com/watch?v=netflix-tutorial",
+    download: "https://example.com/netflix.apk"
+  },
+  
+  {
+    id: "crunchyroll-mod",
+    name: "Crunchyroll MOD",
+    category: "apps",
+    version: "3.5.0",
+    size: "70 MB",
+    image: "images/crunchyroll.png",
+    modTitle: "Premium Unlocked",
+    updated: "December 22, 2025",
+    genre: "Entertainment",
+    publisher: "Crunchyroll",
+    playstore: "https://play.google.com/store/apps/details?id=com.crunchyroll.crunchyroid",
+    description: "Crunchyroll MOD - Ad-free anime, offline download, simulcasts.",
+    features: [
+      "Premium Unlocked",
+      "No Ads",
+      "Offline Download",
+      "Simulcasts"
+    ],
+    screenshots: [
+      "images/screenshots/crunchyroll1.png",
+      "images/screenshots/crunchyroll2.png",
+      "images/screenshots/crunchyroll3.png",
+      "images/screenshots/crunchyroll4.png"
+    ],
+    youtube: "https://youtube.com/watch?v=crunchyroll-tutorial",
+    download: "https://example.com/crunchyroll.apk"
+  },
+  
+  {
+    id: "fotmob-mod",
+    name: "FotMob MOD",
+    category: "apps",
+    version: "180.0",
+    size: "30 MB",
+    image: "images/fotmob.png",
+    modTitle: "Pro Unlocked",
+    updated: "December 21, 2025",
+    genre: "Sports",
+    publisher: "FotMob",
+    playstore: "https://play.google.com/store/apps/details?id=com.fotmob",
+    description: "FotMob MOD - Live football scores, no ads, all leagues.",
+    features: [
+      "Pro Unlocked",
+      "No Ads",
+      "All Leagues",
+      "Live Commentary"
+    ],
+    screenshots: [
+      "images/screenshots/fotmob1.png",
+      "images/screenshots/fotmob2.png",
+      "images/screenshots/fotmob3.png",
+      "images/screenshots/fotmob4.png"
+    ],
+    youtube: "https://youtube.com/watch?v=fotmob-tutorial",
+    download: "https://example.com/fotmob.apk"
+  },
+  
+  {
+    id: "zedge-mod",
+    name: "Zedge MOD",
+    category: "apps",
+    version: "8.0.0",
+    size: "40 MB",
+    image: "images/zedge.png",
+    modTitle: "Premium Unlocked",
+    updated: "December 20, 2025",
+    genre: "Personalization",
+    publisher: "Zedge",
+    playstore: "https://play.google.com/store/apps/details?id=net.zedge.android",
+    description: "Zedge MOD - Premium wallpapers, ringtones unlocked.",
+    features: [
+      "Premium Unlocked",
+      "Unlimited Downloads",
+      "No Ads",
+      "Premium Content"
+    ],
+    screenshots: [
+      "images/screenshots/zedge1.png",
+      "images/screenshots/zedge2.png",
+      "images/screenshots/zedge3.png",
+      "images/screenshots/zedge4.png"
+    ],
+    youtube: "https://youtube.com/watch?v=zedge-tutorial",
+    download: "https://example.com/zedge.apk"
+    },
+  
 
   // ========== GAME MODS ==========
   {
