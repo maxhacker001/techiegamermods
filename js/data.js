@@ -955,6 +955,366 @@ Multiple docks, pages.`,
     youtube: "https://www.youtube.com/watch?v=YOUR_MLBB_VIDEO",
     download: "https://example.com/mlbb.apk"
   },
+  
+{
+  id: "subway-surfers-mod",
+  name: "Subway Surfers MOD",
+  category: "games",
+  genre: "Endless Runner",
+  publisher: "SYBO Games",
+  version: "3.25.0",
+  size: "170 MB",
+  updated: "December 28, 2025",
+  modTitle: "Unlimited Coins",
+  image: "images/subwaysurfers.png",
+  playstore: "https://play.google.com/store/apps/details?id=com.kiloo.subwaysurf",
+  description: "Subway Surfers MOD APK - Unlimited coins & keys, all characters unlocked.",
+  features: [
+    "Unlimited Coins & Keys",
+    "All Characters Unlocked",
+    "All Boards",
+    "No Ads",
+    "God Mode"
+  ],
+  screenshots: [
+    "images/screenshots/subwaysurfers1.png",
+    "images/screenshots/subwaysurfers2.png",
+    "images/screenshots/subwaysurfers3.png",
+    "images/screenshots/subwaysurfers4.png"
+  ],
+  youtube: "https://youtube.com/watch?v=subwaysurfers-mod-tutorial",
+  download: "https://example.com/subwaysurfers.apk"
+},
+  
+{
+  id: "candy-crush-mod",
+  name: "Candy Crush Saga MOD",
+  category: "games",
+  genre: "Puzzle",
+  publisher: "King",
+  version: "1.290.0",
+  size: "90 MB",
+  updated: "December 27, 2025",
+  modTitle: "Unlimited Lives",
+  image: "images/candycrush.png",
+  playstore: "https://play.google.com/store/apps/details?id=com.king.candycrushsaga",
+  description: "Candy Crush Saga MOD APK - Unlimited lives, boosters, all levels unlocked.",
+  features: [
+    "Unlimited Lives",
+    "Unlimited Boosters",
+    "All Levels Unlocked",
+    "Unlimited Gold",
+    "No Ads"
+  ],
+  screenshots: [
+    "images/screenshots/candycrush1.png",
+    "images/screenshots/candycrush2.png",
+    "images/screenshots/candycrush3.png",
+    "images/screenshots/candycrush4.png"
+  ],
+  youtube: "https://youtube.com/watch?v=candycrush-mod-tutorial",
+  download: "https://example.com/candycrush.apk"
+},
+  
+{
+  id: "clash-clans-mod",
+  name: "Clash of Clans MOD",
+  category: "games",
+  genre: "Strategy",
+  publisher: "Supercell",
+  version: "16.0.0",
+  size: "300 MB",
+  updated: "December 26, 2025",
+  modTitle: "Unlimited Gems",
+  image: "images/clashclans.png",
+  playstore: "https://play.google.com/store/apps/details?id=com.supercell.clashofclans",
+  description: "Clash of Clans MOD APK - Unlimited gems, gold, elixir, private server.",
+  features: [
+    "Unlimited Gems",
+    "Unlimited Gold & Elixir",
+    "Private Server",
+    "All Troops Max",
+    "No Ads"
+  ],
+  screenshots: [
+    "images/screenshots/clashclans1.png",
+    "images/screenshots/clashclans2.png",
+    "images/screenshots/clashclans3.png",
+    "images/screenshots/clashclans4.png"
+  ],
+  youtube: "https://youtube.com/watch?v=clashclans-mod-tutorial",
+  download: "https://example.com/clashclans.apk"
+},
+  
+{
+  id: "roblox-mod",
+  name: "Roblox MOD",
+  category: "games",
+  genre: "Adventure",
+  publisher: "Roblox Corporation",
+  version: "2.644.704",
+  size: "150 MB",
+  updated: "December 25, 2025",
+  modTitle: "Menu MOD",
+  image: "images/roblox.png",
+  playstore: "https://play.google.com/store/apps/details?id=com.roblox.client",
+  description: "Roblox MOD APK - Menu mod, fly, speed, god mode.",
+  features: [
+    "Fly",
+    "Speed Hack",
+    "No Clip",
+    "God Mode",
+    "Unlimited Robux"
+  ],
+  screenshots: [
+    "images/screenshots/roblox1.png",
+    "images/screenshots/roblox2.png",
+    "images/screenshots/roblox3.png",
+    "images/screenshots/roblox4.png"
+  ],
+  youtube: "https://youtube.com/watch?v=roblox-mod-tutorial",
+  download: "https://example.com/roblox.apk"
+},
+  
+{
+  id: "cod-mobile-mod",
+  name: "Call of Duty Mobile MOD",
+  category: "games",
+  genre: "FPS",
+  publisher: "Activision",
+  version: "1.0.45",
+  size: "2.5 GB",
+  updated: "December 24, 2025",
+  modTitle: "Unlimited CP",
+  image: "images/codmobile.png",
+  playstore: "https://play.google.com/store/apps/details?id=com.activision.callofduty.shooter",
+  description: "Call of Duty Mobile MOD APK - Unlimited CP, aimbot, no recoil.",
+  features: [
+    "Unlimited CP",
+    "Aimbot",
+    "No Recoil",
+    "Wall Hack",
+    "Unlocked Skins"
+  ],
+  screenshots: [
+    "images/screenshots/codmobile1.png",
+    "images/screenshots/codmobile2.png",
+    "images/screenshots/codmobile3.png",
+    "images/screenshots/codmobile4.png"
+  ],
+  youtube: "https://youtube.com/watch?v=codmobile-mod-tutorial",
+  download: "https://example.com/codmobile.apk"
+},
+  
+{
+  id: "among-us-mod",
+  name: "Among Us MOD",
+  category: "games",
+  genre: "Social Deduction",
+  publisher: "Innersloth",
+  version: "2024.12.9",
+  size: "200 MB",
+  updated: "December 23, 2025",
+  modTitle: "Always Impostor",
+  image: "images/amongus.png",
+  playstore: "https://play.google.com/store/apps/details?id=com.innersloth.spacemafia",
+  description: "Among Us MOD APK - Always impostor, no kill cooldown, speed hack.",
+  features: [
+    "Always Impostor",
+    "No Kill Cooldown",
+    "Speed Hack",
+    "See Impostor",
+    "Unlocked Skins"
+  ],
+  screenshots: [
+    "images/screenshots/amongus1.png",
+    "images/screenshots/amongus2.png",
+    "images/screenshots/amongus3.png",
+    "images/screenshots/amongus4.png"
+  ],
+  youtube: "https://youtube.com/watch?v=amongus-mod-tutorial",
+  download: "https://example.com/amongus.apk"
+},
+  
+{
+  id: "stumble-guys-mod",
+  name: "Stumble Guys MOD",
+  category: "games",
+  genre: "Party",
+  publisher: "Kitka Games",
+  version: "0.63",
+  size: "180 MB",
+  updated: "December 22, 2025",
+  modTitle: "Unlimited Gems",
+  image: "images/stumbleguys.png",
+  playstore: "https://play.google.com/store/apps/details?id=com.kitkagames.fallguysmobile",
+  description: "Stumble Guys MOD APK - Unlimited gems, all skins unlocked.",
+  features: [
+    "Unlimited Gems",
+    "All Skins Unlocked",
+    "No Ads",
+    "Speed Hack",
+    "God Mode"
+  ],
+  screenshots: [
+    "images/screenshots/stumbleguys1.png",
+    "images/screenshots/stumbleguys2.png",
+    "images/screenshots/stumbleguys3.png",
+    "images/screenshots/stumbleguys4.png"
+  ],
+  youtube: "https://youtube.com/watch?v=stumbleguys-mod-tutorial",
+  download: "https://example.com/stumbleguys.apk"
+},
+  
+{
+  id: "brawl-stars-mod",
+  name: "Brawl Stars MOD",
+  category: "games",
+  genre: "MOBA",
+  publisher: "Supercell",
+  version: "53.176",
+  size: "450 MB",
+  updated: "December 21, 2025",
+  modTitle: "Unlimited Gems",
+  image: "images/brawlstars.png",
+  playstore: "https://play.google.com/store/apps/details?id=com.supercell.brawlstars",
+  description: "Brawl Stars MOD APK - Unlimited gems, all brawlers unlocked.",
+  features: [
+    "Unlimited Gems",
+    "All Brawlers Unlocked",
+    "Unlimited Tickets",
+    "Private Server",
+    "No Ads"
+  ],
+  screenshots: [
+    "images/screenshots/brawlstars1.png",
+    "images/screenshots/brawlstars2.png",
+    "images/screenshots/brawlstars3.png",
+    "images/screenshots/brawlstars4.png"
+  ],
+  youtube: "https://youtube.com/watch?v=brawlstars-mod-tutorial",
+  download: "https://example.com/brawlstars.apk"
+},
+  
+{
+  id: "shadow-fight-3-mod",
+  name: "Shadow Fight 3 MOD",
+  category: "games",
+  genre: "Fighting",
+  publisher: "Nekki",
+  version: "1.35.0",
+  size: "180 MB",
+  updated: "December 20, 2025",
+  modTitle: "Unlimited Money",
+  image: "images/shadowfight3.png",
+  playstore: "https://play.google.com/store/apps/details?id=com.nekki.shadowfight3",
+  description: "Shadow Fight 3 MOD APK - Unlimited money, frozen enemy.",
+  features: [
+    "Unlimited Money",
+    "Frozen Enemy",
+    "One Hit Kill",
+    "All Weapons",
+    "No Ads"
+  ],
+  screenshots: [
+    "images/screenshots/shadowfight3_1.png",
+    "images/screenshots/shadowfight3_2.png",
+    "images/screenshots/shadowfight3_3.png",
+    "images/screenshots/shadowfight3_4.png"
+  ],
+  youtube: "https://youtube.com/watch?v=shadowfight3-mod-tutorial",
+  download: "https://example.com/shadowfight3.apk"
+},
+  
+{
+  id: "dream-league-mod",
+  name: "Dream League Soccer MOD",
+  category: "games",
+  genre: "Sports",
+  publisher: "First Touch Games",
+  version: "11.0",
+  size: "500 MB",
+  updated: "December 19, 2025",
+  modTitle: "Unlimited Coins",
+  image: "images/dreamleague.png",
+  playstore: "https://play.google.com/store/apps/details?id=com.firsttouchgames.dls7",
+  description: "Dream League Soccer MOD APK - Unlimited coins, all players unlocked.",
+  features: [
+    "Unlimited Coins",
+    "All Players Unlocked",
+    "No Ads",
+    "Stadium Upgraded",
+    "Infinite Energy"
+  ],
+  screenshots: [
+    "images/screenshots/dreamleague1.png",
+    "images/screenshots/dreamleague2.png",
+    "images/screenshots/dreamleague3.png",
+    "images/screenshots/dreamleague4.png"
+  ],
+  youtube: "https://youtube.com/watch?v=dreamleague-mod-tutorial",
+  download: "https://example.com/dreamleague.apk"
+},
+  
+{
+  id: "hill-climb-mod",
+  name: "Hill Climb Racing MOD",
+  category: "games",
+  genre: "Racing",
+  publisher: "Fingersoft",
+  version: "1.61.0",
+  size: "80 MB",
+  updated: "December 18, 2025",
+  modTitle: "Unlimited Coins",
+  image: "images/hillclimb.png",
+  playstore: "https://play.google.com/store/apps/details?id=com.fingersoft.hillclimb",
+  description: "Hill Climb Racing MOD APK - Unlimited coins, fuel, all vehicles.",
+  features: [
+    "Unlimited Coins",
+    "Unlimited Fuel",
+    "All Vehicles Unlocked",
+    "All Stages",
+    "No Ads"
+  ],
+  screenshots: [
+    "images/screenshots/hillclimb1.png",
+    "images/screenshots/hillclimb2.png",
+    "images/screenshots/hillclimb3.png",
+    "images/screenshots/hillclimb4.png"
+  ],
+  youtube: "https://youtube.com/watch?v=hillclimb-mod-tutorial",
+  download: "https://example.com/hillclimb.apk"
+},
+  
+{
+  id: "8-ball-pool-mod",
+  name: "8 Ball Pool MOD",
+  category: "games",
+  genre: "Sports",
+  publisher: "Miniclip",
+  version: "5.14.0",
+  size: "90 MB",
+  updated: "December 17, 2025",
+  modTitle: "Unlimited Cash",
+  image: "images/8ballpool.png",
+  playstore: "https://play.google.com/store/apps/details?id=com.miniclip.eightballpool",
+  description: "8 Ball Pool MOD APK - Unlimited cash, long lines, all cues.",
+  features: [
+    "Unlimited Cash",
+    "Long Lines",
+    "All Cues Unlocked",
+    "No Ads",
+    "Level Max"
+  ],
+  screenshots: [
+    "images/screenshots/8ballpool1.png",
+    "images/screenshots/8ballpool2.png",
+    "images/screenshots/8ballpool3.png",
+    "images/screenshots/8ballpool4.png"
+  ],
+  youtube: "https://youtube.com/watch?v=8ballpool-mod-tutorial",
+  download: "https://example.com/8ballpool.apk"
+  },
 
   // ========== MODDING TUTORIALS ==========
   {
