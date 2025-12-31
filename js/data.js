@@ -818,6 +818,408 @@ Multiple docks, pages.`,
     youtube: "https://youtube.com/watch?v=zedge-tutorial",
     download: "https://example.com/zedge.apk"
     },
+
+{
+  id: "hypic-mod",
+  name: "Hypic MOD",
+  category: "apps",
+  version: "3.5.0",
+  size: "90 MB",
+  image: "images/hypic.png",
+  modTitle: "Pro Unlocked",
+  updated: "December 16, 2025",
+  publisher: "ByteDance",
+  genre: "Photo Editing",
+  playstore: "https://play.google.com/store/apps/details?id=com.bytedance.hypic",
+  description: "Hypic MOD APK - All AI filters, beauty tools, premium effects unlocked.",
+  features: [
+    "Pro Unlocked",
+    "All AI Filters",
+    "Beauty Tools",
+    "No Watermark",
+    "Premium Effects"
+  ],
+  screenshots: [
+    "images/screenshots/hypic1.png",
+    "images/screenshots/hypic2.png",
+    "images/screenshots/hypic3.png",
+    "images/screenshots/hypic4.png"
+  ],
+  youtube: "https://youtube.com/watch?v=hypic-tutorial",
+  download: "https://example.com/hypic.apk"
+},
+{
+  id: "toonapp-mod",
+  name: "ToonApp MOD",
+  category: "apps",
+  version: "2.6.0",
+  size: "45 MB",
+  image: "images/toonapp.png",
+  modTitle: "Pro Unlocked",
+  updated: "December 15, 2025",
+  publisher: "Lyrebird Studio",
+  genre: "Photo Editing",
+  playstore: "https://play.google.com/store/apps/details?id=com.lyrebirdstudio.cartoon",
+  description: "ToonApp MOD APK - All cartoon filters, AI avatar, no ads.",
+  features: [
+    "Pro Unlocked",
+    "All Cartoon Filters",
+    "AI Avatar",
+    "No Ads",
+    "HD Export"
+  ],
+  screenshots: [
+    "images/screenshots/toonapp1.png",
+    "images/screenshots/toonapp2.png",
+    "images/screenshots/toonapp3.png",
+    "images/screenshots/toonapp4.png"
+  ],
+  youtube: "https://youtube.com/watch?v=toonapp-tutorial",
+  download: "https://example.com/toonapp.apk"
+},
+{
+  id: "faceapp-mod",
+  name: "FaceApp MOD",
+  category: "apps",
+  version: "11.9.0",
+  size: "60 MB",
+  image: "images/faceapp.png",
+  modTitle: "Pro Unlocked",
+  updated: "December 14, 2025",
+  publisher: "FaceApp Technology",
+  genre: "Photo Editing",
+  playstore: "https://play.google.com/store/apps/details?id=io.faceapp",
+  description: "FaceApp MOD APK - All pro filters, age change, gender swap unlocked.",
+  features: [
+    "Pro Unlocked",
+    "All Filters",
+    "Age Change",
+    "Gender Swap",
+    "No Ads"
+  ],
+  screenshots: [
+    "images/screenshots/faceapp1.png",
+    "images/screenshots/faceapp2.png",
+    "images/screenshots/faceapp3.png",
+    "images/screenshots/faceapp4.png"
+  ],
+  youtube: "https://youtube.com/watch?v=faceapp-tutorial",
+  download: "https://example.com/faceapp.apk"
+},
+{
+  id: "prisma-mod",
+  name: "Prisma MOD",
+  category: "apps",
+  version: "4.6.0",
+  size: "80 MB",
+  image: "images/prisma.png",
+  modTitle: "Premium Unlocked",
+  updated: "December 13, 2025",
+  publisher: "Prisma Labs",
+  genre: "Photo Editing",
+  playstore: "https://play.google.com/store/apps/details?id=com.neuralprisma",
+  description: "Prisma MOD APK - All premium art filters unlocked.",
+  features: [
+    "Premium Unlocked",
+    "All Art Filters",
+    "No Ads",
+    "HD Export"
+  ],
+  screenshots: [
+    "images/screenshots/prisma1.png",
+    "images/screenshots/prisma2.png",
+    "images/screenshots/prisma3.png",
+    "images/screenshots/prisma4.png"
+  ],
+  youtube: "https://youtube.com/watch?v=prisma-tutorial",
+  download: "https://example.com/prisma.apk"
+},
+{
+  id: "voicemod-mod",
+  name: "VoiceMod MOD",
+  category: "apps",
+  version: "2.4.0",
+  size: "50 MB",
+  image: "images/voicemod.png",
+  modTitle: "Pro Unlocked",
+  updated: "December 12, 2025",
+  genre: "Entertainment",
+  description: "VoiceMod MOD APK - All voice effects unlocked.",
+  features: [
+    "Pro Unlocked",
+    "All Voice Effects",
+    "No Ads",
+    "Real-time Change"
+  ],
+  screenshots: [
+    "images/screenshots/voicemod1.png",
+    "images/screenshots/voicemod2.png",
+    "images/screenshots/voicemod3.png",
+    "images/screenshots/voicemod4.png"
+  ],
+  youtube: "https://youtube.com/watch?v=voicemod-tutorial",
+  download: "https://example.com/voicemod.apk"
+},
+{
+  id: "musify-mod",
+  name: "Musify MOD",
+  category: "apps",
+  version: "6.5.0",
+  size: "30 MB",
+  image: "images/musify.png",
+  modTitle: "Premium Unlocked",
+  updated: "December 11, 2025",
+  genre: "Music & Audio",
+  description: "Musify MOD APK - Ad-free music streaming, offline download.",
+  features: [
+    "Premium Unlocked",
+    "No Ads",
+    "Offline Download",
+    "High Quality"
+  ],
+  screenshots: [
+    "images/screenshots/musify1.png",
+    "images/screenshots/musify2.png",
+    "images/screenshots/musify3.png",
+    "images/screenshots/musify4.png"
+  ],
+  youtube: "https://youtube.com/watch?v=musify-tutorial",
+  download: "https://example.com/musify.apk"
+},
+{
+  id: "lark-player-mod",
+  name: "Lark Player MOD",
+  category: "apps",
+  version: "5.7.0",
+  size: "20 MB",
+  image: "images/larkplayer.png",
+  modTitle: "Pro Unlocked",
+  updated: "December 10, 2025",
+  genre: "Music & Audio",
+  description: "Lark Player MOD APK - Pro unlocked, no ads, equalizer.",
+  features: [
+    "Pro Unlocked",
+    "No Ads",
+    "Advanced Equalizer",
+    "Lyrics Support"
+  ],
+  screenshots: [
+    "images/screenshots/larkplayer1.png",
+    "images/screenshots/larkplayer2.png",
+    "images/screenshots/larkplayer3.png",
+    "images/screenshots/larkplayer4.png"
+  ],
+  youtube: "https://youtube.com/watch?v=larkplayer-tutorial",
+  download: "https://example.com/larkplayer.apk"
+},
+{
+  id: "super-vpn-mod",
+  name: "Super VPN MOD",
+  category: "apps",
+  version: "2.8.0",
+  size: "20 MB",
+  image: "images/supervpn.png",
+  modTitle: "Premium Unlocked",
+  updated: "December 9, 2025",
+  genre: "Tools",
+  description: "Super VPN MOD APK - Unlimited bandwidth, all servers unlocked.",
+  features: [
+    "Premium Unlocked",
+    "Unlimited Bandwidth",
+    "All Servers",
+    "No Ads"
+  ],
+  screenshots: [
+    "images/screenshots/supervpn1.png",
+    "images/screenshots/supervpn2.png",
+    "images/screenshots/supervpn3.png",
+    "images/screenshots/supervpn4.png"
+  ],
+  youtube: "https://youtube.com/watch?v=supervpn-tutorial",
+  download: "https://example.com/supervpn.apk"
+},
+{
+  id: "vpnify-mod",
+  name: "VPNify MOD",
+  category: "apps",
+  version: "2.1.0",
+  size: "25 MB",
+  image: "images/vpnify.png",
+  modTitle: "Premium Unlocked",
+  updated: "December 8, 2025",
+  genre: "Tools",
+  description: "VPNify MOD APK - Unlimited time, all locations.",
+  features: [
+    "Premium Unlocked",
+    "Unlimited Time",
+    "All Locations",
+    "No Ads"
+  ],
+  screenshots: [
+    "images/screenshots/vpnify1.png",
+    "images/screenshots/vpnify2.png",
+    "images/screenshots/vpnify3.png",
+    "images/screenshots/vpnify4.png"
+  ],
+  youtube: "https://youtube.com/watch?v=vpnify-tutorial",
+  download: "https://example.com/vpnify.apk"
+},
+{
+  id: "proton-vpn-mod",
+  name: "Proton VPN MOD",
+  category: "apps",
+  version: "4.9.0",
+  size: "50 MB",
+  image: "images/protonvpn.png",
+  modTitle: "Plus Unlocked",
+  updated: "December 7, 2025",
+  genre: "Tools",
+  description: "Proton VPN MOD APK - Plus servers, no speed limit.",
+  features: [
+    "Plus Unlocked",
+    "No Speed Limit",
+    "All Servers",
+    "No Ads"
+  ],
+  screenshots: [
+    "images/screenshots/protonvpn1.png",
+    "images/screenshots/protonvpn2.png",
+    "images/screenshots/protonvpn3.png",
+    "images/screenshots/protonvpn4.png"
+  ],
+  youtube: "https://youtube.com/watch?v=protonvpn-tutorial",
+  download: "https://example.com/protonvpn.apk"
+},
+{
+  id: "stark-vpn-mod",
+  name: "Stark VPN MOD",
+  category: "apps",
+  version: "5.5.0",
+  size: "15 MB",
+  image: "images/starkvpn.png",
+  modTitle: "Premium Unlocked",
+  updated: "December 6, 2025",
+  genre: "Tools",
+  description: "Stark VPN MOD APK - Unlimited data, custom configs.",
+  features: [
+    "Premium Unlocked",
+    "Unlimited Data",
+    "Custom Configs",
+    "No Ads"
+  ],
+  screenshots: [
+    "images/screenshots/starkvpn1.png",
+    "images/screenshots/starkvpn2.png",
+    "images/screenshots/starkvpn3.png",
+    "images/screenshots/starkvpn4.png"
+  ],
+  youtube: "https://youtube.com/watch?v=starkvpn-tutorial",
+  download: "https://example.com/starkvpn.apk"
+},
+{
+  id: "deepseek-mod",
+  name: "DeepSeek AI MOD",
+  category: "apps",
+  version: "1.5.0",
+  size: "40 MB",
+  image: "images/deepseek.png",
+  modTitle: "Premium Unlocked",
+  updated: "December 5, 2025",
+  genre: "Productivity",
+  description: "DeepSeek AI MOD APK - Unlimited queries, advanced models.",
+  features: [
+    "Premium Unlocked",
+    "Unlimited Queries",
+    "Advanced Models",
+    "No Ads"
+  ],
+  screenshots: [
+    "images/screenshots/deepseek1.png",
+    "images/screenshots/deepseek2.png",
+    "images/screenshots/deepseek3.png",
+    "images/screenshots/deepseek4.png"
+  ],
+  youtube: "https://youtube.com/watch?v=deepseek-tutorial",
+  download: "https://example.com/deepseek.apk"
+},
+{
+  id: "grok-ai-mod",
+  name: "Grok AI MOD",
+  category: "apps",
+  version: "2.0.0",
+  size: "35 MB",
+  image: "images/grok.png",
+  modTitle: "Pro Unlocked",
+  updated: "December 4, 2025",
+  genre: "Productivity",
+  description: "Grok AI MOD APK - Unlimited access, advanced features.",
+  features: [
+    "Pro Unlocked",
+    "Unlimited Access",
+    "Advanced Features",
+    "No Limits"
+  ],
+  screenshots: [
+    "images/screenshots/grok1.png",
+    "images/screenshots/grok2.png",
+    "images/screenshots/grok3.png",
+    "images/screenshots/grok4.png"
+  ],
+  youtube: "https://youtube.com/watch?v=grok-tutorial",
+  download: "https://example.com/grok.apk"
+},
+{
+  id: "copilot-mod",
+  name: "Microsoft Copilot MOD",
+  category: "apps",
+  version: "28.0.0",
+  size: "60 MB",
+  image: "images/copilot.png",
+  modTitle: "Pro Unlocked",
+  updated: "December 3, 2025",
+  genre: "Productivity",
+  description: "Microsoft Copilot MOD APK - GPT-4 access, image generation.",
+  features: [
+    "Pro Unlocked",
+    "GPT-4 Access",
+    "Image Generation",
+    "No Limits"
+  ],
+  screenshots: [
+    "images/screenshots/copilot1.png",
+    "images/screenshots/copilot2.png",
+    "images/screenshots/copilot3.png",
+    "images/screenshots/copilot4.png"
+  ],
+  youtube: "https://youtube.com/watch?v=copilot-tutorial",
+  download: "https://example.com/copilot.apk"
+},
+{
+  id: "gemini-mod",
+  name: "Google Gemini MOD",
+  category: "apps",
+  version: "1.0.0",
+  size: "45 MB",
+  image: "images/gemini.png",
+  modTitle: "Advanced Unlocked",
+  updated: "December 2, 2025",
+  genre: "Productivity",
+  description: "Google Gemini MOD APK - Gemini Advanced unlocked.",
+  features: [
+    "Advanced Unlocked",
+    "No Ads",
+    "Unlimited Use",
+    "All Features"
+  ],
+  screenshots: [
+    "images/screenshots/gemini1.png",
+    "images/screenshots/gemini2.png",
+    "images/screenshots/gemini3.png",
+    "images/screenshots/gemini4.png"
+  ],
+  youtube: "https://youtube.com/watch?v=gemini-tutorial",
+  download: "https://example.com/gemini.apk"
+    },
   
 
   // ========== GAME MODS ==========
