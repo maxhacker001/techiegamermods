@@ -90,8 +90,7 @@ const apps = [
     youtube: "https://www.youtube.com/watch?v=YOUR_SPOTIFY_VIDEO",
     download: "https://example.com/spotify.apk"
   },
-
-  // New Apps Added - Trending (latest dates)
+  
 {
   id: "alight-motion-mod",
   name: "Alight Motion MOD",
@@ -131,6 +130,7 @@ Export clean videos.`,
   youtube: "https://youtube.com/watch?v=alightmotion-tutorial",
   download: "https://example.com/alightmotion.apk"
 },
+  
 {
   id: "kinemaster-mod",
   name: "KineMaster MOD",
@@ -170,6 +170,7 @@ Add multiple video, image, text layers.`,
   youtube: "https://youtube.com/watch?v=kinemaster-tutorial",
   download: "https://example.com/kinemaster.apk"
 },
+  
 {
   id: "inshot-mod",
   name: "InShot MOD",
@@ -208,6 +209,7 @@ Animated text and stickers.`,
   youtube: "https://youtube.com/watch?v=inshot-tutorial",
   download: "https://example.com/inshot.apk"
 },
+  
 {
   id: "vn-mod",
   name: "VN Video Editor MOD",
@@ -246,6 +248,7 @@ Advanced control.`,
   youtube: "https://youtube.com/watch?v=vn-tutorial",
   download: "https://example.com/vn.apk"
 },
+  
 {
   id: "powerdirector-mod",
   name: "PowerDirector MOD",
@@ -282,6 +285,7 @@ All pro effects unlocked.`,
   youtube: "https://youtube.com/watch?v=powerdirector-tutorial",
   download: "https://example.com/powerdirector.apk"
 },
+  
 {
   id: "canva-mod",
   name: "Canva MOD",
@@ -318,6 +322,7 @@ Export clean designs.`,
   youtube: "https://youtube.com/watch?v=canva-tutorial",
   download: "https://example.com/canva.apk"
 },
+  
 {
   id: "gbwhatsapp-mod",
   name: "GBWhatsApp MOD",
@@ -353,6 +358,7 @@ Run two WhatsApp.`,
   youtube: "https://youtube.com/watch?v=gbwhatsapp-tutorial",
   download: "https://example.com/gbwhatsapp.apk"
 },
+  
 {
   id: "youtube-revanced-mod",
   name: "YouTube ReVanced MOD",
@@ -389,6 +395,7 @@ Save for offline.`,
   youtube: "https://youtube.com/watch?v=revanced-tutorial",
   download: "https://example.com/youtube-revanced.apk"
 },
+  
 {
   id: "adguard-mod",
   name: "AdGuard MOD",
@@ -425,6 +432,7 @@ All filters unlocked.`,
   youtube: "https://youtube.com/watch?v=adguard-tutorial",
   download: "https://example.com/adguard.apk"
 },
+  
 {
   id: "nova-launcher-mod",
   name: "Nova Launcher Prime MOD",
@@ -460,7 +468,7 @@ Multiple docks, pages.`,
   ],
   youtube: "https://youtube.com/watch?v=nova-tutorial",
   download: "https://example.com/nova.apk"
-  }
+  },
   
 
   // ========== GAME MODS ==========
