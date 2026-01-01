@@ -1,125 +1,147 @@
 const apps = [
   // ========== APP MODS ==========
   {
-    id: "capcut-mod",
-    name: "CapCut MOD",
-    category: "apps",
-    version: "12.3.0",
-    size: "78 MB",
-    image: "images/capcut.png",
-    modTitle: "Pro Unlocked",
-    updated: "December 26, 2025",
-    publisher: "Bytedance Pte. Ltd.",
-    genre: "Video Players & Editors",
-    playstore: "https://play.google.com/store/apps/details?id=com.lemon.lvoverseas",
-    description: `
-      <strong>UNLIMITED CREATIVITY FOR VIDEO EDITING</strong><br><br>
-      CapCut MOD APK is the ultimate all-in-one video editing app for Android devices. Our version unlocks all Pro features, including premium effects, transitions, filters, keyframe animation, chroma key, and no watermark. Create professional-quality videos with ease.<br><br>
-
-      <strong>ADVANCED KEYFRAME ANIMATION</strong><br><br>
-      Add precise control to your edits with keyframe animation. Animate text, stickers, effects, and layers frame by frame for stunning custom transitions and movements that make your videos stand out.<br><br>
-
-      <strong>THOUSANDS OF PREMIUM EFFECTS & TEMPLATES</strong><br><br>
-      Access a massive library of pro templates, trending effects, filters, stickers, and transitions. From smooth slow-motion to 4K export and beat sync, everything is unlocked and ready to use.<br><br>
-
-      <strong>PROFESSIONAL TOOLS WITHOUT LIMITS</strong><br><br>
-      Multi-layer editing, voice-over recording, speed control, stabilization, picture-in-picture (PIP), and AI tools like auto captions and background removal. Export in ultra-high quality without watermarks or ads.<br><br>
-
-      <strong>PERFECT FOR CONTENT CREATORS</strong><br><br>
-      Whether you're making TikTok videos, YouTube shorts, or Instagram reels, CapCut Pro gives you the tools used by top creators—all completely free in our MOD version.
-    `,
-    features: [
-      "Pro Unlocked",
-      "No Watermark",
-      "All Effects Enabled",
-      "Premium Transitions",
-      "4K Export",
-      "Keyframe Animation"
-    ],
-    screenshots: [
-      "images/screenshots/capcut1.png",
-      "images/screenshots/capcut2.png",
-      "images/screenshots/capcut3.png",
-      "images/screenshots/capcut4.png"
-    ],
-    youtube: "https://www.youtube.com/watch?v=YOUR_CAPCUT_VIDEO",
-    download: "https://example.com/capcut.apk"
-  },
-
-  {
-    id: "spotify-mod",
-    name: "Spotify MOD",
-    category: "apps",
-    version: "8.9.18",
-    size: "45 MB",
-    image: "images/spotify.png",
-    modTitle: "Premium Unlocked",
-    updated: "December 26, 2025",
-    publisher: "Spotify AB",
-    genre: "Music & Audio",
-    playstore: "https://play.google.com/store/apps/details?id=com.spotify.music",
-    description: `
-      <strong>PREMIUM EXPERIENCE WITHOUT SUBSCRIPTION</strong><br><br>
-      Spotify MOD APK gives you full Premium experience for free. Enjoy unlimited skips, no ads, offline download, and highest audio quality. Listen to millions of songs and podcasts without any restrictions.<br><br>
-
-      <strong>AD-FREE LISTENING FOREVER</strong><br><br>
-      No more interruptions from audio or banner ads. Stream smoothly and immerse yourself completely in your music.<br><br>
-
-      <strong>UNLIMITED SKIPS & ON-DEMAND PLAYBACK</strong><br><br>
-      Skip as many tracks as you want. Choose any song, album, or playlist instantly—no shuffle required.<br><br>
-
-      <strong>OFFLINE DOWNLOADS</strong><br><br>
-      Download playlists, albums, and podcasts for offline listening. Perfect for travel or areas with poor connection.<br><br>
-
-      <strong>VERY HIGH AUDIO QUALITY</strong><br><br>
-      Stream at 320kbps—the highest quality available. Hear every detail exactly as the artist intended.
-    `,
-    features: [
-      "Premium Unlocked",
-      "No Ads",
-      "Unlimited Skips",
-      "Offline Download",
-      "Very High Quality Audio"
-    ],
-    screenshots: [
-      "images/screenshots/spotify1.png",
-      "images/screenshots/spotify2.png",
-      "images/screenshots/spotify3.png",
-      "images/screenshots/spotify4.png"
-    ],
-    youtube: "https://www.youtube.com/watch?v=YOUR_SPOTIFY_VIDEO",
-    download: "https://example.com/spotify.apk"
-  },
-  
+  id: "capcut-mod",
+  name: "CapCut MOD",
+  category: "apps",
+  version: "12.3.0",
+  size: "78 MB",
+  image: "images/capcut.png",
+  modTitle: "Pro Unlocked",
+  updated: "December 31, 2025",
+  publisher: "ByteDance Pte. Ltd.",
+  genre: "Video Players & Editors",
+  playstore: "https://play.google.com/store/apps/details?id=com.lemon.lvoverseas",
+  description: `<strong>UNLIMITED CREATIVITY FOR VIDEO EDITING</strong><br><br>
+CapCut MOD APK is the ultimate all-in-one video editing app.<br><br>
+<strong>ADVANCED KEYFRAME ANIMATION</strong><br><br>
+Add precise control to your edits.<br><br>
+<strong>THOUSANDS OF PREMIUM EFFECTS & TEMPLATES</strong><br><br>
+Access pro templates and trending effects.<br><br>
+<strong>PROFESSIONAL TOOLS WITHOUT LIMITS</strong><br><br>
+Multi-layer editing, voice-over, speed control.<br><br>
+<strong>PERFECT FOR CONTENT CREATORS</strong><br><br>
+TikTok, YouTube shorts, Reels.`,
+  features: [
+    "Pro Unlocked",
+    "No Watermark",
+    "All Effects Enabled",
+    "Premium Transitions",
+    "4K Export",
+    "Keyframe Animation"
+  ],
+  screenshots: [
+    "images/screenshots/capcut1.png",
+    "images/screenshots/capcut2.png",
+    "images/screenshots/capcut3.png",
+    "images/screenshots/capcut4.png"
+  ],
+  youtube: "https://youtube.com/watch?v=capcut-tutorial",
+  download_apk: "https://example.com/capcut-mod.apk",
+  download_extra: "https://example.com/capcut-xapk.apk"
+},
+{
+  id: "spotify-mod",
+  name: "Spotify MOD",
+  category: "apps",
+  version: "8.9.18",
+  size: "45 MB",
+  image: "images/spotify.png",
+  modTitle: "Premium Unlocked",
+  updated: "December 30, 2025",
+  publisher: "Spotify AB",
+  genre: "Music & Audio",
+  playstore: "https://play.google.com/store/apps/details?id=com.spotify.music",
+  description: `<strong>PREMIUM EXPERIENCE WITHOUT SUBSCRIPTION</strong><br><br>
+Spotify MOD APK gives you full Premium experience for free.<br><br>
+<strong>AD-FREE LISTENING</strong><br><br>
+No interruptions.<br><br>
+<strong>UNLIMITED SKIPS</strong><br><br>
+Skip any track.<br><br>
+<strong>OFFLINE DOWNLOAD</strong><br><br>
+Download for offline.<br><br>
+<strong>HIGH QUALITY</strong><br><br>
+320kbps audio.`,
+  features: [
+    "Premium Unlocked",
+    "No Ads",
+    "Unlimited Skips",
+    "Offline Download",
+    "Very High Quality Audio"
+  ],
+  screenshots: [
+    "images/screenshots/spotify1.png",
+    "images/screenshots/spotify2.png",
+    "images/screenshots/spotify3.png",
+    "images/screenshots/spotify4.png"
+  ],
+  youtube: "https://youtube.com/watch?v=spotify-tutorial",
+  download_apk: "https://example.com/spotify-mod.apk",
+  download_extra: "https://example.com/spotify-xapk.apk"
+},
+{
+  id: "remini-mod",
+  name: "Remini MOD",
+  category: "apps",
+  version: "3.8.5",
+  size: "65 MB",
+  image: "images/remini.png",
+  modTitle: "Pro Unlocked",
+  updated: "December 29, 2025",
+  publisher: "Bending Spoons",
+  genre: "Photo Editing",
+  playstore: "https://play.google.com/store/apps/details?id=com.remini.app",
+  description: `<strong>AI PHOTO ENHANCER</strong><br><br>
+Remini MOD - Unlimited AI credits, HD enhancement.<br><br>
+<strong>RESTORE OLD PHOTOS</strong><br><br>
+Bring old photos back to life.<br><br>
+<strong>ENHANCE QUALITY</strong><br><br>
+Turn blurry photos into HD.<br><br>
+<strong>BATCH PROCESSING</strong><br><br>
+Enhance multiple photos.`,
+  features: [
+    "Pro Unlocked",
+    "Unlimited Credits",
+    "HD Enhancement",
+    "Batch Processing",
+    "No Ads"
+  ],
+  screenshots: [
+    "images/screenshots/remini1.png",
+    "images/screenshots/remini2.png",
+    "images/screenshots/remini3.png",
+    "images/screenshots/remini4.png"
+  ],
+  youtube: "https://youtube.com/watch?v=remini-tutorial",
+  download_apk: "https://example.com/remini-mod.apk",
+  download_extra: "https://example.com/remini-xapk.apk"
+},
 {
   id: "alight-motion-mod",
   name: "Alight Motion MOD",
   category: "apps",
-  genre: "Video Editing",
-  publisher: "Alight Creative, Inc.",
   version: "5.0.0",
   size: "100 MB",
-  updated: "December 31, 2025",
-  modTitle: "Pro Unlocked",
   image: "images/alightmotion.png",
+  modTitle: "Pro Unlocked",
+  updated: "December 28, 2025",
+  publisher: "Alight Creative, Inc.",
+  genre: "Video Editing",
   playstore: "https://play.google.com/store/apps/details?id=com.alightcreative.motion",
   description: `<strong>PROFESSIONAL MOTION DESIGN</strong><br><br>
-Alight Motion MOD APK - Full Pro unlocked, no watermark, all premium effects.<br><br>
+Alight Motion MOD - Full Pro unlocked, no watermark, all effects.<br><br>
 <strong>KEYFRAME ANIMATION</strong><br><br>
-Precise control over every element.<br><br>
-<strong>PREMIUM EFFECTS & PRESETS</strong><br><br>
-Blur, glow, distortion, vector graphics.<br><br>
+Precise control.<br><br>
+<strong>PREMIUM EFFECTS</strong><br><br>
+Blur, glow, distortion.<br><br>
 <strong>XML PROJECT SUPPORT</strong><br><br>
-Import and export projects.<br><br>
-<strong>NO WATERMARK</strong><br><br>
-Export clean videos.`,
+Import/export projects.`,
   features: [
     "Pro Unlocked",
     "No Watermark",
     "All Premium Effects",
     "Keyframe Animation",
-    "XML Import/Export",
-    "Vector Graphics"
+    "XML Import/Export"
   ],
   screenshots: [
     "images/screenshots/alightmotion1.png",
@@ -128,38 +150,35 @@ Export clean videos.`,
     "images/screenshots/alightmotion4.png"
   ],
   youtube: "https://youtube.com/watch?v=alightmotion-tutorial",
-  download: "https://example.com/alightmotion.apk"
+  download_apk: "https://example.com/alightmotion-mod.apk",
+  download_extra: "https://example.com/alightmotion-xapk.apk"
 },
-  
 {
   id: "kinemaster-mod",
   name: "KineMaster MOD",
   category: "apps",
-  genre: "Video Editing",
-  publisher: "KineMaster Corporation",
   version: "7.4.0",
   size: "95 MB",
-  updated: "December 30, 2025",
-  modTitle: "Diamond Unlocked",
   image: "images/kinemaster.png",
+  modTitle: "Diamond Unlocked",
+  updated: "December 27, 2025",
+  publisher: "KineMaster Corporation",
+  genre: "Video Editing",
   playstore: "https://play.google.com/store/apps/details?id=com.nexstreaming.app.kinemasterfree",
   description: `<strong>POWERFUL VIDEO EDITOR</strong><br><br>
 KineMaster MOD - No watermark, premium assets, chroma key.<br><br>
 <strong>CHROMA KEY</strong><br><br>
 Green screen effects.<br><br>
 <strong>PREMIUM ASSET STORE</strong><br><br>
-All transitions, effects, music unlocked.<br><br>
+All transitions unlocked.<br><br>
 <strong>4K EXPORT</strong><br><br>
-High quality output.<br><br>
-<strong>MULTI-LAYER</strong><br><br>
-Add multiple video, image, text layers.`,
+High quality output.`,
   features: [
     "Diamond Unlocked",
     "No Watermark",
     "Chroma Key",
     "Premium Assets",
-    "4K Export",
-    "Multi-Layer Editing"
+    "4K Export"
   ],
   screenshots: [
     "images/screenshots/kinemaster1.png",
@@ -168,31 +187,29 @@ Add multiple video, image, text layers.`,
     "images/screenshots/kinemaster4.png"
   ],
   youtube: "https://youtube.com/watch?v=kinemaster-tutorial",
-  download: "https://example.com/kinemaster.apk"
+  download_apk: "https://example.com/kinemaster-mod.apk",
+  download_extra: "https://example.com/kinemaster-xapk.apk"
 },
-  
 {
   id: "inshot-mod",
   name: "InShot MOD",
   category: "apps",
-  genre: "Video Editing",
-  publisher: "InShot Inc.",
   version: "2.0.0",
   size: "70 MB",
-  updated: "December 29, 2025",
-  modTitle: "Pro Unlocked",
   image: "images/inshot.png",
+  modTitle: "Pro Unlocked",
+  updated: "December 26, 2025",
+  publisher: "InShot Inc.",
+  genre: "Video Editing",
   playstore: "https://play.google.com/store/apps/details?id=com.camerasideas.instashot",
   description: `<strong>EASY & POWERFUL VIDEO EDITOR</strong><br><br>
-InShot MOD - Pro unlocked, no ads, all filters.<br><br>
+InShot MOD - Pro filters, no ads, all effects.<br><br>
 <strong>ALL FILTERS & EFFECTS</strong><br><br>
-Premium transitions and effects.<br><br>
+Premium transitions.<br><br>
 <strong>NO WATERMARK</strong><br><br>
 Clean export.<br><br>
 <strong>MUSIC LIBRARY</strong><br><br>
-Add trending music.<br><br>
-<strong>TEXT & STICKERS</strong><br><br>
-Animated text and stickers.`,
+Trending music.`,
   features: [
     "Pro Unlocked",
     "No Ads",
@@ -207,29 +224,27 @@ Animated text and stickers.`,
     "images/screenshots/inshot4.png"
   ],
   youtube: "https://youtube.com/watch?v=inshot-tutorial",
-  download: "https://example.com/inshot.apk"
+  download_apk: "https://example.com/inshot-mod.apk",
+  download_extra: "https://example.com/inshot-xapk.apk"
 },
-  
 {
   id: "vn-mod",
   name: "VN Video Editor MOD",
   category: "apps",
-  genre: "Video Editing",
-  publisher: "Ubiquiti Labs",
   version: "2.2.0",
   size: "160 MB",
-  updated: "December 28, 2025",
-  modTitle: "Pro Unlocked",
   image: "images/vn.png",
+  modTitle: "Pro Unlocked",
+  updated: "December 25, 2025",
+  publisher: "Ubiquiti Labs",
+  genre: "Video Editing",
   playstore: "https://play.google.com/store/apps/details?id=com.frontrow.vlog",
   description: `<strong>PROFESSIONAL VIDEO EDITOR</strong><br><br>
-VN MOD - Pro templates, no watermark, multi-layer.<br><br>
+VN MOD - Pro templates, multi-layer, no watermark.<br><br>
 <strong>MULTI-LAYER TIMELINE</strong><br><br>
 Professional editing.<br><br>
-<strong>NO WATERMARK</strong><br><br>
-Clean export.<br><br>
 <strong>PRO TEMPLATES</strong><br><br>
-Ready-to-use templates.<br><br>
+Ready-to-use.<br><br>
 <strong>KEYFRAME & MASK</strong><br><br>
 Advanced control.`,
   features: [
@@ -246,29 +261,29 @@ Advanced control.`,
     "images/screenshots/vn4.png"
   ],
   youtube: "https://youtube.com/watch?v=vn-tutorial",
-  download: "https://example.com/vn.apk"
+  download_apk: "https://example.com/vn-mod.apk",
+  download_extra: "https://example.com/vn-xapk.apk"
 },
-  
 {
   id: "powerdirector-mod",
   name: "PowerDirector MOD",
   category: "apps",
-  genre: "Video Editing",
-  publisher: "CyberLink",
   version: "13.0.0",
   size: "120 MB",
-  updated: "December 27, 2025",
-  modTitle: "Premium Unlocked",
   image: "images/powerdirector.png",
+  modTitle: "Premium Unlocked",
+  updated: "December 24, 2025",
+  publisher: "CyberLink",
+  genre: "Video Editing",
   playstore: "https://play.google.com/store/apps/details?id=com.cyberlink.powerdirector.DRA140225_01",
   description: `<strong>PROFESSIONAL VIDEO EDITOR</strong><br><br>
-PowerDirector MOD - Premium unlocked, 4K, chroma key.<br><br>
+PowerDirector MOD - Premium effects, chroma key, 4K.<br><br>
 <strong>CHROMA KEY</strong><br><br>
-Green screen effects.<br><br>
+Green screen.<br><br>
 <strong>4K SUPPORT</strong><br><br>
-High quality export.<br><br>
+High quality.<br><br>
 <strong>PREMIUM EFFECTS</strong><br><br>
-All pro effects unlocked.`,
+All pro effects.`,
   features: [
     "Premium Unlocked",
     "Chroma Key",
@@ -283,35 +298,35 @@ All pro effects unlocked.`,
     "images/screenshots/powerdirector4.png"
   ],
   youtube: "https://youtube.com/watch?v=powerdirector-tutorial",
-  download: "https://example.com/powerdirector.apk"
+  download_apk: "https://example.com/powerdirector-mod.apk",
+  download_extra: "https://example.com/powerdirector-xapk.apk"
 },
-  
 {
   id: "canva-mod",
   name: "Canva MOD",
   category: "apps",
-  genre: "Graphic Design",
-  publisher: "Canva",
   version: "2.250.0",
   size: "40 MB",
-  updated: "December 26, 2025",
-  modTitle: "Pro Unlocked",
   image: "images/canva.png",
+  modTitle: "Pro Unlocked",
+  updated: "December 23, 2025",
+  publisher: "Canva",
+  genre: "Graphic Design",
   playstore: "https://play.google.com/store/apps/details?id=com.canva.editor",
   description: `<strong>GRAPHIC DESIGN MADE EASY</strong><br><br>
-Canva MOD - Pro templates, elements, no watermark.<br><br>
+Canva MOD - Pro templates, elements, background remover.<br><br>
 <strong>PRO TEMPLATES</strong><br><br>
 Thousands of premium templates.<br><br>
 <strong>ALL ELEMENTS</strong><br><br>
-Premium photos, icons, fonts.<br><br>
+Premium photos, icons.<br><br>
 <strong>NO WATERMARK</strong><br><br>
-Export clean designs.`,
+Export clean.`,
   features: [
     "Pro Unlocked",
     "All Premium Templates",
     "Premium Elements",
-    "No Watermark",
-    "Background Remover"
+    "Background Remover",
+    "No Watermark"
   ],
   screenshots: [
     "images/screenshots/canva1.png",
@@ -320,20 +335,19 @@ Export clean designs.`,
     "images/screenshots/canva4.png"
   ],
   youtube: "https://youtube.com/watch?v=canva-tutorial",
-  download: "https://example.com/canva.apk"
+  download_apk: "https://example.com/canva-mod.apk",
+  download_extra: "https://example.com/canva-xapk.apk"
 },
-  
 {
   id: "gbwhatsapp-mod",
   name: "GBWhatsApp MOD",
   category: "apps",
-  genre: "Communication",
   version: "17.85",
   size: "60 MB",
-  updated: "December 25, 2025",
-  modTitle: "Pro Unlocked",
   image: "images/gbwhatsapp.png",
-  playstore: "",
+  modTitle: "Pro Unlocked",
+  updated: "December 22, 2025",
+  genre: "Communication",
   description: `<strong>ENHANCED WHATSAPP EXPERIENCE</strong><br><br>
 GBWhatsApp MOD - Privacy, themes, dual account.<br><br>
 <strong>PRIVACY OPTIONS</strong><br><br>
@@ -346,8 +360,8 @@ Run two WhatsApp.`,
     "Privacy Options",
     "Custom Themes",
     "Dual Account",
-    "No Ads",
-    "Message Scheduler"
+    "Message Scheduler",
+    "No Ads"
   ],
   screenshots: [
     "images/screenshots/gbwhatsapp1.png",
@@ -356,871 +370,9 @@ Run two WhatsApp.`,
     "images/screenshots/gbwhatsapp4.png"
   ],
   youtube: "https://youtube.com/watch?v=gbwhatsapp-tutorial",
-  download: "https://example.com/gbwhatsapp.apk"
-},
-  
-{
-  id: "youtube-revanced-mod",
-  name: "YouTube ReVanced MOD",
-  category: "apps",
-  genre: "Video Players",
-  publisher: "ReVanced Team",
-  version: "19.04.38",
-  size: "120 MB",
-  updated: "December 24, 2025",
-  modTitle: "Premium Unlocked",
-  image: "images/youtube-revanced.png",
-  playstore: "",
-  description: `<strong>AD-FREE YOUTUBE</strong><br><br>
-YouTube ReVanced MOD - No ads, background play, download.<br><br>
-<strong>BACKGROUND PLAY</strong><br><br>
-Play with screen off.<br><br>
-<strong>NO ADS</strong><br><br>
-Skip all ads.<br><br>
-<strong>DOWNLOAD VIDEOS</strong><br><br>
-Save for offline.`,
-  features: [
-    "No Ads",
-    "Background Play",
-    "Download Videos",
-    "Premium Features",
-    "SponsorBlock"
-  ],
-  screenshots: [
-    "images/screenshots/youtube-revanced1.png",
-    "images/screenshots/youtube-revanced2.png",
-    "images/screenshots/youtube-revanced3.png",
-    "images/screenshots/youtube-revanced4.png"
-  ],
-  youtube: "https://youtube.com/watch?v=revanced-tutorial",
-  download: "https://example.com/youtube-revanced.apk"
-},
-  
-{
-  id: "adguard-mod",
-  name: "AdGuard MOD",
-  category: "apps",
-  genre: "Tools",
-  publisher: "AdGuard",
-  version: "4.5.0",
-  size: "30 MB",
-  updated: "December 23, 2025",
-  modTitle: "Premium Unlocked",
-  image: "images/adguard.png",
-  playstore: "",
-  description: `<strong>SYSTEM-WIDE AD BLOCKER</strong><br><br>
-AdGuard MOD - Block ads in all apps and browsers.<br><br>
-<strong>NO ROOT REQUIRED</strong><br><br>
-Works on non-rooted devices.<br><br>
-<strong>PRIVACY PROTECTION</strong><br><br>
-Block trackers.<br><br>
-<strong>PREMIUM FILTERS</strong><br><br>
-All filters unlocked.`,
-  features: [
-    "Premium Unlocked",
-    "System-Wide Block",
-    "No Root",
-    "Privacy Protection",
-    "All Filters"
-  ],
-  screenshots: [
-    "images/screenshots/adguard1.png",
-    "images/screenshots/adguard2.png",
-    "images/screenshots/adguard3.png",
-    "images/screenshots/adguard4.png"
-  ],
-  youtube: "https://youtube.com/watch?v=adguard-tutorial",
-  download: "https://example.com/adguard.apk"
-},
-  
-{
-  id: "nova-launcher-mod",
-  name: "Nova Launcher Prime MOD",
-  category: "apps",
-  genre: "Personalization",
-  publisher: "TeslaCoil Software",
-  version: "8.0.0",
-  size: "12 MB",
-  updated: "December 22, 2025",
-  modTitle: "Prime Unlocked",
-  image: "images/nova.png",
-  playstore: "https://play.google.com/store/apps/details?id=com.teslacoilsw.launcher",
-  description: `<strong>HIGHLY CUSTOMIZABLE LAUNCHER</strong><br><br>
-Nova Launcher Prime MOD - All prime features unlocked.<br><br>
-<strong>GESTURES</strong><br><br>
-Swipe, pinch, double tap.<br><br>
-<strong>CUSTOM ICONS</strong><br><br>
-Icon packs, adaptive icons.<br><br>
-<strong>DOCK CUSTOMIZATION</strong><br><br>
-Multiple docks, pages.`,
-  features: [
-    "Prime Unlocked",
-    "Gestures",
-    "Custom Icons",
-    "Unread Counts",
-    "Backup/Restore"
-  ],
-  screenshots: [
-    "images/screenshots/nova1.png",
-    "images/screenshots/nova2.png",
-    "images/screenshots/nova3.png",
-    "images/screenshots/nova4.png"
-  ],
-  youtube: "https://youtube.com/watch?v=nova-tutorial",
-  download: "https://example.com/nova.apk"
-  },
-  
-  {
-    id: "remini-mod",
-    name: "Remini MOD",
-    category: "apps",
-    version: "3.8.5",
-    size: "65 MB",
-    image: "images/remini.png",
-    modTitle: "Pro Unlocked",
-    updated: "December 31, 2025",
-    publisher: "Bending Spoons",
-    genre: "Photo Editing",
-    playstore: "https://play.google.com/store/apps/details?id=com.remini.app",
-    description: "Remini MOD APK - Unlimited AI credits, HD photo enhancement, restore old photos.",
-    features: [
-      "Pro Unlocked",
-      "Unlimited Credits",
-      "HD Enhancement",
-      "Batch Processing",
-      "No Ads"
-    ],
-    screenshots: [
-      "images/screenshots/remini1.png",
-      "images/screenshots/remini2.png",
-      "images/screenshots/remini3.png",
-      "images/screenshots/remini4.png"
-    ],
-    youtube: "https://youtube.com/watch?v=remini-tutorial",
-    download: "https://example.com/remini.apk"
-  },
-  
-  {
-    id: "picsart-mod",
-    name: "PicsArt MOD",
-    category: "apps",
-    version: "25.0.0",
-    size: "80 MB",
-    image: "images/picsart.png",
-    modTitle: "Gold Unlocked",
-    updated: "December 30, 2025",
-    publisher: "PicsArt Inc.",
-    genre: "Photo & Video Editor",
-    playstore: "https://play.google.com/store/apps/details?id=com.picsart.studio",
-    description: "PicsArt MOD APK - Gold unlocked, all stickers, effects, AI tools.",
-    features: [
-      "Gold Unlocked",
-      "No Ads",
-      "AI Tools",
-      "Background Remover",
-      "All Stickers"
-    ],
-    screenshots: [
-      "images/screenshots/picsart1.png",
-      "images/screenshots/picsart2.png",
-      "images/screenshots/picsart3.png",
-      "images/screenshots/picsart4.png"
-    ],
-    youtube: "https://youtube.com/watch?v=picsart-tutorial",
-    download: "https://example.com/picsart.apk"
-  },
-  
-  {
-    id: "photoroom-mod",
-    name: "PhotoRoom MOD",
-    category: "apps",
-    version: "4.8.0",
-    size: "55 MB",
-    image: "images/photoroom.png",
-    modTitle: "Pro Unlocked",
-    updated: "December 29, 2025",
-    publisher: "PhotoRoom",
-    genre: "Photo Editing",
-    playstore: "https://play.google.com/store/apps/details?id=com.photoroom.app",
-    description: "PhotoRoom MOD APK - Unlimited background remove, pro templates.",
-    features: [
-      "Pro Unlocked",
-      "Unlimited Remove",
-      "Pro Templates",
-      "Batch Edit",
-      "HD Export"
-    ],
-    screenshots: [
-      "images/screenshots/photoroom1.png",
-      "images/screenshots/photoroom2.png",
-      "images/screenshots/photoroom3.png",
-      "images/screenshots/photoroom4.png"
-    ],
-    youtube: "https://youtube.com/watch?v=photoroom-tutorial",
-    download: "https://example.com/photoroom.apk"
-  },
-  
-  {
-    id: "truecaller-mod",
-    name: "Truecaller Premium MOD",
-    category: "apps",
-    version: "13.5.0",
-    size: "90 MB",
-    image: "images/truecaller.png",
-    modTitle: "Premium Unlocked",
-    updated: "December 28, 2025",
-    publisher: "Truecaller",
-    genre: "Communication",
-    playstore: "https://play.google.com/store/apps/details?id=com.truecaller",
-    description: "Truecaller Premium MOD - No ads, ghost call, who viewed profile.",
-    features: [
-      "Premium Unlocked",
-      "No Ads",
-      "Ghost Call",
-      "Who Viewed Profile",
-      "Advanced Spam Block"
-    ],
-    screenshots: [
-      "images/screenshots/truecaller1.png",
-      "images/screenshots/truecaller2.png",
-      "images/screenshots/truecaller3.png",
-      "images/screenshots/truecaller4.png"
-    ],
-    youtube: "https://youtube.com/watch?v=truecaller-tutorial",
-    download: "https://example.com/truecaller.apk"
-  },
-  
-  {
-    id: "snaptube-mod",
-    name: "SnapTube MOD",
-    category: "apps",
-    version: "7.0.0",
-    size: "25 MB",
-    image: "images/snaptube.png",
-    modTitle: "VIP Unlocked",
-    updated: "December 27, 2025",
-    genre: "Video Downloader",
-    description: "SnapTube MOD APK - Download videos from YouTube, Facebook, Instagram.",
-    features: [
-      "VIP Unlocked",
-      "No Ads",
-      "4K Download",
-      "Batch Download"
-    ],
-    screenshots: [
-      "images/screenshots/snaptube1.png",
-      "images/screenshots/snaptube2.png",
-      "images/screenshots/snaptube3.png",
-      "images/screenshots/snaptube4.png"
-    ],
-    youtube: "https://youtube.com/watch?v=snaptube-tutorial",
-    download: "https://example.com/snaptube.apk"
-  },
-  
-  {
-    id: "telegram-premium-mod",
-    name: "Telegram Premium MOD",
-    category: "apps",
-    version: "10.5.0",
-    size: "55 MB",
-    image: "images/telegram.png",
-    modTitle: "Premium Unlocked",
-    updated: "December 26, 2025",
-    publisher: "Telegram FZ-LLC",
-    genre: "Communication",
-    playstore: "https://play.google.com/store/apps/details?id=org.telegram.messenger",
-    description: "Telegram Premium MOD - Unlimited cloud, faster download, premium stickers.",
-    features: [
-      "Premium Unlocked",
-      "No Ads",
-      "Faster Download",
-      "Unlimited Cloud",
-      "Premium Stickers"
-    ],
-    screenshots: [
-      "images/screenshots/telegram1.png",
-      "images/screenshots/telegram2.png",
-      "images/screenshots/telegram3.png",
-      "images/screenshots/telegram4.png"
-    ],
-    youtube: "https://youtube.com/watch?v=telegram-tutorial",
-    download: "https://example.com/telegram.apk"
-  },
-  
-  {
-    id: "insta-thunder-mod",
-    name: "Instagram Pro (Insta Thunder)",
-    category: "apps",
-    version: "300.0",
-    size: "70 MB",
-    image: "images/instathunder.png",
-    modTitle: "Pro Unlocked",
-    updated: "December 25, 2025",
-    genre: "Social",
-    description: "Insta Thunder MOD - Download media, no ads, privacy options.",
-    features: [
-      "Pro Unlocked",
-      "Download Media",
-      "No Ads",
-      "Privacy Options",
-      "Dark Mode"
-    ],
-    screenshots: [
-      "images/screenshots/instathunder1.png",
-      "images/screenshots/instathunder2.png",
-      "images/screenshots/instathunder3.png",
-      "images/screenshots/instathunder4.png"
-    ],
-    youtube: "https://youtube.com/watch?v=instathunder-tutorial",
-    download: "https://example.com/instathunder.apk"
-  },
-  
-  {
-    id: "twitter-gold-mod",
-    name: "Twitter X Gold MOD",
-    category: "apps",
-    version: "10.5.0",
-    size: "100 MB",
-    image: "images/twittergold.png",
-    modTitle: "Premium Unlocked",
-    updated: "December 24, 2025",
-    genre: "Social",
-    description: "Twitter Gold MOD - No ads, download videos.",
-    features: [
-      "Premium Unlocked",
-      "No Ads",
-      "Download Videos",
-      "Blue Tick Hide"
-    ],
-    screenshots: [
-      "images/screenshots/twittergold1.png",
-      "images/screenshots/twittergold2.png",
-      "images/screenshots/twittergold3.png",
-      "images/screenshots/twittergold4.png"
-    ],
-    youtube: "https://youtube.com/watch?v=twittergold-tutorial",
-    download: "https://example.com/twittergold.apk"
-  },
-  
-  {
-    id: "netflix-mod",
-    name: "Netflix MOD",
-    category: "apps",
-    version: "8.12.0",
-    size: "60 MB",
-    image: "images/netflix.png",
-    modTitle: "Premium Unlocked",
-    updated: "December 23, 2025",
-    genre: "Entertainment",
-    publisher: "Netflix Inc.",
-    playstore: "https://play.google.com/store/apps/details?id=com.netflix.mediaclient",
-    description: "Netflix MOD - 4K streaming, no ads, download all content.",
-    features: [
-      "Premium Unlocked",
-      "4K Streaming",
-      "No Ads",
-      "Download All",
-      "All Regions"
-    ],
-    screenshots: [
-      "images/screenshots/netflix1.png",
-      "images/screenshots/netflix2.png",
-      "images/screenshots/netflix3.png",
-      "images/screenshots/netflix4.png"
-    ],
-    youtube: "https://youtube.com/watch?v=netflix-tutorial",
-    download: "https://example.com/netflix.apk"
-  },
-  
-  {
-    id: "crunchyroll-mod",
-    name: "Crunchyroll MOD",
-    category: "apps",
-    version: "3.5.0",
-    size: "70 MB",
-    image: "images/crunchyroll.png",
-    modTitle: "Premium Unlocked",
-    updated: "December 22, 2025",
-    genre: "Entertainment",
-    publisher: "Crunchyroll",
-    playstore: "https://play.google.com/store/apps/details?id=com.crunchyroll.crunchyroid",
-    description: "Crunchyroll MOD - Ad-free anime, offline download, simulcasts.",
-    features: [
-      "Premium Unlocked",
-      "No Ads",
-      "Offline Download",
-      "Simulcasts"
-    ],
-    screenshots: [
-      "images/screenshots/crunchyroll1.png",
-      "images/screenshots/crunchyroll2.png",
-      "images/screenshots/crunchyroll3.png",
-      "images/screenshots/crunchyroll4.png"
-    ],
-    youtube: "https://youtube.com/watch?v=crunchyroll-tutorial",
-    download: "https://example.com/crunchyroll.apk"
-  },
-  
-  {
-    id: "fotmob-mod",
-    name: "FotMob MOD",
-    category: "apps",
-    version: "180.0",
-    size: "30 MB",
-    image: "images/fotmob.png",
-    modTitle: "Pro Unlocked",
-    updated: "December 21, 2025",
-    genre: "Sports",
-    publisher: "FotMob",
-    playstore: "https://play.google.com/store/apps/details?id=com.fotmob",
-    description: "FotMob MOD - Live football scores, no ads, all leagues.",
-    features: [
-      "Pro Unlocked",
-      "No Ads",
-      "All Leagues",
-      "Live Commentary"
-    ],
-    screenshots: [
-      "images/screenshots/fotmob1.png",
-      "images/screenshots/fotmob2.png",
-      "images/screenshots/fotmob3.png",
-      "images/screenshots/fotmob4.png"
-    ],
-    youtube: "https://youtube.com/watch?v=fotmob-tutorial",
-    download: "https://example.com/fotmob.apk"
-  },
-  
-  {
-    id: "zedge-mod",
-    name: "Zedge MOD",
-    category: "apps",
-    version: "8.0.0",
-    size: "40 MB",
-    image: "images/zedge.png",
-    modTitle: "Premium Unlocked",
-    updated: "December 20, 2025",
-    genre: "Personalization",
-    publisher: "Zedge",
-    playstore: "https://play.google.com/store/apps/details?id=net.zedge.android",
-    description: "Zedge MOD - Premium wallpapers, ringtones unlocked.",
-    features: [
-      "Premium Unlocked",
-      "Unlimited Downloads",
-      "No Ads",
-      "Premium Content"
-    ],
-    screenshots: [
-      "images/screenshots/zedge1.png",
-      "images/screenshots/zedge2.png",
-      "images/screenshots/zedge3.png",
-      "images/screenshots/zedge4.png"
-    ],
-    youtube: "https://youtube.com/watch?v=zedge-tutorial",
-    download: "https://example.com/zedge.apk"
-    },
-
-{
-  id: "hypic-mod",
-  name: "Hypic MOD",
-  category: "apps",
-  version: "3.5.0",
-  size: "90 MB",
-  image: "images/hypic.png",
-  modTitle: "Pro Unlocked",
-  updated: "December 16, 2025",
-  publisher: "ByteDance",
-  genre: "Photo Editing",
-  playstore: "https://play.google.com/store/apps/details?id=com.bytedance.hypic",
-  description: "Hypic MOD APK - All AI filters, beauty tools, premium effects unlocked.",
-  features: [
-    "Pro Unlocked",
-    "All AI Filters",
-    "Beauty Tools",
-    "No Watermark",
-    "Premium Effects"
-  ],
-  screenshots: [
-    "images/screenshots/hypic1.png",
-    "images/screenshots/hypic2.png",
-    "images/screenshots/hypic3.png",
-    "images/screenshots/hypic4.png"
-  ],
-  youtube: "https://youtube.com/watch?v=hypic-tutorial",
-  download: "https://example.com/hypic.apk"
-},
-{
-  id: "toonapp-mod",
-  name: "ToonApp MOD",
-  category: "apps",
-  version: "2.6.0",
-  size: "45 MB",
-  image: "images/toonapp.png",
-  modTitle: "Pro Unlocked",
-  updated: "December 15, 2025",
-  publisher: "Lyrebird Studio",
-  genre: "Photo Editing",
-  playstore: "https://play.google.com/store/apps/details?id=com.lyrebirdstudio.cartoon",
-  description: "ToonApp MOD APK - All cartoon filters, AI avatar, no ads.",
-  features: [
-    "Pro Unlocked",
-    "All Cartoon Filters",
-    "AI Avatar",
-    "No Ads",
-    "HD Export"
-  ],
-  screenshots: [
-    "images/screenshots/toonapp1.png",
-    "images/screenshots/toonapp2.png",
-    "images/screenshots/toonapp3.png",
-    "images/screenshots/toonapp4.png"
-  ],
-  youtube: "https://youtube.com/watch?v=toonapp-tutorial",
-  download: "https://example.com/toonapp.apk"
-},
-{
-  id: "faceapp-mod",
-  name: "FaceApp MOD",
-  category: "apps",
-  version: "11.9.0",
-  size: "60 MB",
-  image: "images/faceapp.png",
-  modTitle: "Pro Unlocked",
-  updated: "December 14, 2025",
-  publisher: "FaceApp Technology",
-  genre: "Photo Editing",
-  playstore: "https://play.google.com/store/apps/details?id=io.faceapp",
-  description: "FaceApp MOD APK - All pro filters, age change, gender swap unlocked.",
-  features: [
-    "Pro Unlocked",
-    "All Filters",
-    "Age Change",
-    "Gender Swap",
-    "No Ads"
-  ],
-  screenshots: [
-    "images/screenshots/faceapp1.png",
-    "images/screenshots/faceapp2.png",
-    "images/screenshots/faceapp3.png",
-    "images/screenshots/faceapp4.png"
-  ],
-  youtube: "https://youtube.com/watch?v=faceapp-tutorial",
-  download: "https://example.com/faceapp.apk"
-},
-{
-  id: "prisma-mod",
-  name: "Prisma MOD",
-  category: "apps",
-  version: "4.6.0",
-  size: "80 MB",
-  image: "images/prisma.png",
-  modTitle: "Premium Unlocked",
-  updated: "December 13, 2025",
-  publisher: "Prisma Labs",
-  genre: "Photo Editing",
-  playstore: "https://play.google.com/store/apps/details?id=com.neuralprisma",
-  description: "Prisma MOD APK - All premium art filters unlocked.",
-  features: [
-    "Premium Unlocked",
-    "All Art Filters",
-    "No Ads",
-    "HD Export"
-  ],
-  screenshots: [
-    "images/screenshots/prisma1.png",
-    "images/screenshots/prisma2.png",
-    "images/screenshots/prisma3.png",
-    "images/screenshots/prisma4.png"
-  ],
-  youtube: "https://youtube.com/watch?v=prisma-tutorial",
-  download: "https://example.com/prisma.apk"
-},
-{
-  id: "voicemod-mod",
-  name: "VoiceMod MOD",
-  category: "apps",
-  version: "2.4.0",
-  size: "50 MB",
-  image: "images/voicemod.png",
-  modTitle: "Pro Unlocked",
-  updated: "December 12, 2025",
-  genre: "Entertainment",
-  description: "VoiceMod MOD APK - All voice effects unlocked.",
-  features: [
-    "Pro Unlocked",
-    "All Voice Effects",
-    "No Ads",
-    "Real-time Change"
-  ],
-  screenshots: [
-    "images/screenshots/voicemod1.png",
-    "images/screenshots/voicemod2.png",
-    "images/screenshots/voicemod3.png",
-    "images/screenshots/voicemod4.png"
-  ],
-  youtube: "https://youtube.com/watch?v=voicemod-tutorial",
-  download: "https://example.com/voicemod.apk"
-},
-{
-  id: "musify-mod",
-  name: "Musify MOD",
-  category: "apps",
-  version: "6.5.0",
-  size: "30 MB",
-  image: "images/musify.png",
-  modTitle: "Premium Unlocked",
-  updated: "December 11, 2025",
-  genre: "Music & Audio",
-  description: "Musify MOD APK - Ad-free music streaming, offline download.",
-  features: [
-    "Premium Unlocked",
-    "No Ads",
-    "Offline Download",
-    "High Quality"
-  ],
-  screenshots: [
-    "images/screenshots/musify1.png",
-    "images/screenshots/musify2.png",
-    "images/screenshots/musify3.png",
-    "images/screenshots/musify4.png"
-  ],
-  youtube: "https://youtube.com/watch?v=musify-tutorial",
-  download: "https://example.com/musify.apk"
-},
-{
-  id: "lark-player-mod",
-  name: "Lark Player MOD",
-  category: "apps",
-  version: "5.7.0",
-  size: "20 MB",
-  image: "images/larkplayer.png",
-  modTitle: "Pro Unlocked",
-  updated: "December 10, 2025",
-  genre: "Music & Audio",
-  description: "Lark Player MOD APK - Pro unlocked, no ads, equalizer.",
-  features: [
-    "Pro Unlocked",
-    "No Ads",
-    "Advanced Equalizer",
-    "Lyrics Support"
-  ],
-  screenshots: [
-    "images/screenshots/larkplayer1.png",
-    "images/screenshots/larkplayer2.png",
-    "images/screenshots/larkplayer3.png",
-    "images/screenshots/larkplayer4.png"
-  ],
-  youtube: "https://youtube.com/watch?v=larkplayer-tutorial",
-  download: "https://example.com/larkplayer.apk"
-},
-{
-  id: "super-vpn-mod",
-  name: "Super VPN MOD",
-  category: "apps",
-  version: "2.8.0",
-  size: "20 MB",
-  image: "images/supervpn.png",
-  modTitle: "Premium Unlocked",
-  updated: "December 9, 2025",
-  genre: "Tools",
-  description: "Super VPN MOD APK - Unlimited bandwidth, all servers unlocked.",
-  features: [
-    "Premium Unlocked",
-    "Unlimited Bandwidth",
-    "All Servers",
-    "No Ads"
-  ],
-  screenshots: [
-    "images/screenshots/supervpn1.png",
-    "images/screenshots/supervpn2.png",
-    "images/screenshots/supervpn3.png",
-    "images/screenshots/supervpn4.png"
-  ],
-  youtube: "https://youtube.com/watch?v=supervpn-tutorial",
-  download: "https://example.com/supervpn.apk"
-},
-{
-  id: "vpnify-mod",
-  name: "VPNify MOD",
-  category: "apps",
-  version: "2.1.0",
-  size: "25 MB",
-  image: "images/vpnify.png",
-  modTitle: "Premium Unlocked",
-  updated: "December 8, 2025",
-  genre: "Tools",
-  description: "VPNify MOD APK - Unlimited time, all locations.",
-  features: [
-    "Premium Unlocked",
-    "Unlimited Time",
-    "All Locations",
-    "No Ads"
-  ],
-  screenshots: [
-    "images/screenshots/vpnify1.png",
-    "images/screenshots/vpnify2.png",
-    "images/screenshots/vpnify3.png",
-    "images/screenshots/vpnify4.png"
-  ],
-  youtube: "https://youtube.com/watch?v=vpnify-tutorial",
-  download: "https://example.com/vpnify.apk"
-},
-{
-  id: "proton-vpn-mod",
-  name: "Proton VPN MOD",
-  category: "apps",
-  version: "4.9.0",
-  size: "50 MB",
-  image: "images/protonvpn.png",
-  modTitle: "Plus Unlocked",
-  updated: "December 7, 2025",
-  genre: "Tools",
-  description: "Proton VPN MOD APK - Plus servers, no speed limit.",
-  features: [
-    "Plus Unlocked",
-    "No Speed Limit",
-    "All Servers",
-    "No Ads"
-  ],
-  screenshots: [
-    "images/screenshots/protonvpn1.png",
-    "images/screenshots/protonvpn2.png",
-    "images/screenshots/protonvpn3.png",
-    "images/screenshots/protonvpn4.png"
-  ],
-  youtube: "https://youtube.com/watch?v=protonvpn-tutorial",
-  download: "https://example.com/protonvpn.apk"
-},
-{
-  id: "stark-vpn-mod",
-  name: "Stark VPN MOD",
-  category: "apps",
-  version: "5.5.0",
-  size: "15 MB",
-  image: "images/starkvpn.png",
-  modTitle: "Premium Unlocked",
-  updated: "December 6, 2025",
-  genre: "Tools",
-  description: "Stark VPN MOD APK - Unlimited data, custom configs.",
-  features: [
-    "Premium Unlocked",
-    "Unlimited Data",
-    "Custom Configs",
-    "No Ads"
-  ],
-  screenshots: [
-    "images/screenshots/starkvpn1.png",
-    "images/screenshots/starkvpn2.png",
-    "images/screenshots/starkvpn3.png",
-    "images/screenshots/starkvpn4.png"
-  ],
-  youtube: "https://youtube.com/watch?v=starkvpn-tutorial",
-  download: "https://example.com/starkvpn.apk"
-},
-{
-  id: "deepseek-mod",
-  name: "DeepSeek AI MOD",
-  category: "apps",
-  version: "1.5.0",
-  size: "40 MB",
-  image: "images/deepseek.png",
-  modTitle: "Premium Unlocked",
-  updated: "December 5, 2025",
-  genre: "Productivity",
-  description: "DeepSeek AI MOD APK - Unlimited queries, advanced models.",
-  features: [
-    "Premium Unlocked",
-    "Unlimited Queries",
-    "Advanced Models",
-    "No Ads"
-  ],
-  screenshots: [
-    "images/screenshots/deepseek1.png",
-    "images/screenshots/deepseek2.png",
-    "images/screenshots/deepseek3.png",
-    "images/screenshots/deepseek4.png"
-  ],
-  youtube: "https://youtube.com/watch?v=deepseek-tutorial",
-  download: "https://example.com/deepseek.apk"
-},
-{
-  id: "grok-ai-mod",
-  name: "Grok AI MOD",
-  category: "apps",
-  version: "2.0.0",
-  size: "35 MB",
-  image: "images/grok.png",
-  modTitle: "Pro Unlocked",
-  updated: "December 4, 2025",
-  genre: "Productivity",
-  description: "Grok AI MOD APK - Unlimited access, advanced features.",
-  features: [
-    "Pro Unlocked",
-    "Unlimited Access",
-    "Advanced Features",
-    "No Limits"
-  ],
-  screenshots: [
-    "images/screenshots/grok1.png",
-    "images/screenshots/grok2.png",
-    "images/screenshots/grok3.png",
-    "images/screenshots/grok4.png"
-  ],
-  youtube: "https://youtube.com/watch?v=grok-tutorial",
-  download: "https://example.com/grok.apk"
-},
-{
-  id: "copilot-mod",
-  name: "Microsoft Copilot MOD",
-  category: "apps",
-  version: "28.0.0",
-  size: "60 MB",
-  image: "images/copilot.png",
-  modTitle: "Pro Unlocked",
-  updated: "December 3, 2025",
-  genre: "Productivity",
-  description: "Microsoft Copilot MOD APK - GPT-4 access, image generation.",
-  features: [
-    "Pro Unlocked",
-    "GPT-4 Access",
-    "Image Generation",
-    "No Limits"
-  ],
-  screenshots: [
-    "images/screenshots/copilot1.png",
-    "images/screenshots/copilot2.png",
-    "images/screenshots/copilot3.png",
-    "images/screenshots/copilot4.png"
-  ],
-  youtube: "https://youtube.com/watch?v=copilot-tutorial",
-  download: "https://example.com/copilot.apk"
-},
-{
-  id: "gemini-mod",
-  name: "Google Gemini MOD",
-  category: "apps",
-  version: "1.0.0",
-  size: "45 MB",
-  image: "images/gemini.png",
-  modTitle: "Advanced Unlocked",
-  updated: "December 2, 2025",
-  genre: "Productivity",
-  description: "Google Gemini MOD APK - Gemini Advanced unlocked.",
-  features: [
-    "Advanced Unlocked",
-    "No Ads",
-    "Unlimited Use",
-    "All Features"
-  ],
-  screenshots: [
-    "images/screenshots/gemini1.png",
-    "images/screenshots/gemini2.png",
-    "images/screenshots/gemini3.png",
-    "images/screenshots/gemini4.png"
-  ],
-  youtube: "https://youtube.com/watch?v=gemini-tutorial",
-  download: "https://example.com/gemini.apk"
-    },
-  
+  download_apk: "https://example.com/gbwhatsapp-mod.apk",
+  download_extra: "https://example.com/gbwhatsapp-xapk.apk"
+    }
 
   // ========== GAME MODS ==========
   {
