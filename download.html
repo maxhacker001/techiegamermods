@@ -164,11 +164,11 @@ let secondButtonText = isGame ? "⬇ DOWNLOAD OBB/PATCH" : "⬇ DOWNLOAD XAPK";
 
 modVersions.innerHTML = `
   <div class="download-box">
-    <button class="download-btn" onclick="window.location.href='https://your-mod-apk-link.com'">⬇ DOWNLOAD MOD APK</button>
+    <button class="download-btn" onclick="window.location.href='` + app.download_apk + `'">⬇ DOWNLOAD MOD APK</button>
     <p>v` + app.version + ` - ` + (app.modTitle || "Premium Unlocked") + `<span style="float:right;">` + app.size + `</span></p>
   </div>
   <div class="download-box">
-    <button class="download-btn" onclick="window.location.href='https://your-xapk-or-obb-link.com'">` + secondButtonText + `</button>
+    <button class="download-btn" onclick="window.location.href='` + (app.download_extra || app.download_apk) + `'">` + secondButtonText + `</button>
     <p>v` + app.version + ` - ` + (app.modTitle || "Premium Unlocked") + `<span style="float:right;">` + app.size + `</span></p>
   </div>
 `;
