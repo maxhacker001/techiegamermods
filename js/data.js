@@ -449,6 +449,450 @@ const apps = [
   download_apk: "https://example.com/gbwhatsapp-mod.apk",
   download_extra: "https://example.com/gbwhatsapp-xapk.apk"
     },
+  {
+  id: "remini-mod",
+  name: "Remini MOD",
+  category: "apps",
+  version: "3.8.5",
+  size: "65 MB",
+  image: "images/remini.png",
+  modTitle: "Pro Unlocked",
+  updated: "December 21, 2025",
+  publisher: "Bending Spoons",
+  genre: "Photo Editing",
+  playstore: "https://play.google.com/store/apps/details?id=com.remini.app",
+  description: `
+    <strong>AI PHOTO ENHANCER</strong><br><br>
+    Remini MOD APK - Unlimited AI credits, HD enhancement, no ads.<br><br>
+
+    <strong>RESTORE OLD PHOTOS</strong><br><br>
+    Bring blurry or old photos back to life with powerful AI.<br><br>
+
+    <strong>ENHANCE QUALITY</strong><br><br>
+    Turn low-resolution photos into crystal clear HD.<br><br>
+
+    <strong>BATCH PROCESSING</strong><br><br>
+    Enhance multiple photos at once without limits.<br><br>
+
+    <strong>NO ADS & UNLIMITED CREDITS</strong><br><br>
+    Use all pro features freely without waiting.
+  `,
+  features: [
+    "Pro Unlocked",
+    "Unlimited Credits",
+    "HD Enhancement",
+    "Batch Processing",
+    "No Ads"
+  ],
+  screenshots: [
+    "images/screenshots/remini1.png",
+    "images/screenshots/remini2.png",
+    "images/screenshots/remini3.png",
+    "images/screenshots/remini4.png"
+  ],
+  youtube: "https://www.youtube.com/watch?v=YOUR_REMINI_VIDEO",
+  download_apk: "https://example.com/remini-mod.apk",
+  download_extra: "https://example.com/remini-xapk.apk"
+},
+{
+  id: "picsart-mod",
+  name: "PicsArt MOD",
+  category: "apps",
+  version: "25.0.0",
+  size: "80 MB",
+  image: "images/picsart.png",
+  modTitle: "Gold Unlocked",
+  updated: "December 20, 2025",
+  publisher: "PicsArt Inc.",
+  genre: "Photo & Video Editor",
+  playstore: "https://play.google.com/store/apps/details?id=com.picsart.studio",
+  description: `
+    <strong>ALL-IN-ONE PHOTO & VIDEO EDITOR</strong><br><br>
+    PicsArt Gold MOD - All stickers, effects, AI tools unlocked.<br><br>
+
+    <strong>AI TOOLS</strong><br><br>
+    Background remover, AI replace, object removal.<br><br>
+
+    <strong>NO ADS</strong><br><br>
+    Clean editing experience without interruptions.<br><br>
+
+    <strong>PROFESSIONAL FEATURES</strong><br><br>
+    Layers, masks, dispersion, clone tool.<br><br>
+
+    <strong>THOUSANDS OF STICKERS & FONTS</strong><br><br>
+    Full access to premium content.
+  `,
+  features: [
+    "Gold Unlocked",
+    "No Ads",
+    "AI Tools",
+    "Background Remover",
+    "All Stickers & Effects"
+  ],
+  screenshots: [
+    "images/screenshots/picsart1.png",
+    "images/screenshots/picsart2.png",
+    "images/screenshots/picsart3.png",
+    "images/screenshots/picsart4.png"
+  ],
+  youtube: "https://www.youtube.com/watch?v=YOUR_PICSART_VIDEO",
+  download_apk: "https://example.com/picsart-mod.apk",
+  download_extra: "https://example.com/picsart-xapk.apk"
+},
+{
+  id: "photoroom-mod",
+  name: "PhotoRoom MOD",
+  category: "apps",
+  version: "4.8.0",
+  size: "55 MB",
+  image: "images/photoroom.png",
+  modTitle: "Pro Unlocked",
+  updated: "December 19, 2025",
+  publisher: "PhotoRoom",
+  genre: "Photo Editing",
+  playstore: "https://play.google.com/store/apps/details?id=com.photoroom.app",
+  description: `
+    <strong>INSTANT BACKGROUND REMOVE</strong><br><br>
+    PhotoRoom MOD - Unlimited background remove, pro templates.<br><br>
+
+    <strong>BATCH EDITING</strong><br><br>
+    Edit multiple photos at once.<br><br>
+
+    <strong>HD EXPORT</strong><br><br>
+    High quality output every time.<br><br>
+
+    <strong>PROFESSIONAL TEMPLATES</strong><br><br>
+    Product photos, portraits, Instagram posts.<br><br>
+
+    <strong>NO LIMITS</strong><br><br>
+    Full pro access without restrictions.
+  `,
+  features: [
+    "Pro Unlocked",
+    "Unlimited Remove",
+    "Pro Templates",
+    "Batch Edit",
+    "HD Export"
+  ],
+  screenshots: [
+    "images/screenshots/photoroom1.png",
+    "images/screenshots/photoroom2.png",
+    "images/screenshots/photoroom3.png",
+    "images/screenshots/photoroom4.png"
+  ],
+  youtube: "https://www.youtube.com/watch?v=YOUR_PHOTOROOM_VIDEO",
+  download_apk: "https://example.com/photoroom-mod.apk",
+  download_extra: "https://example.com/photoroom-xapk.apk"
+},
+{
+  id: "truecaller-mod",
+  name: "Truecaller Premium MOD",
+  category: "apps",
+  version: "13.5.0",
+  size: "90 MB",
+  image: "images/truecaller.png",
+  modTitle: "Premium Unlocked",
+  updated: "December 18, 2025",
+  publisher: "Truecaller",
+  genre: "Communication",
+  playstore: "https://play.google.com/store/apps/details?id=com.truecaller",
+  description: `
+    <strong>ADVANCED CALLER ID & SPAM PROTECTION</strong><br><br>
+    Truecaller Premium MOD - No ads, ghost call, who viewed profile.<br><br>
+
+    <strong>NO ADS</strong><br><br>
+    Clean interface without interruptions.<br><br>
+
+    <strong>GHOST CALL</strong><br><br>
+    Schedule fake calls to escape situations.<br><br>
+
+    <strong>WHO VIEWED MY PROFILE</strong><br><br>
+    See who checked your profile.<br><br>
+
+    <strong>ADVANCED SPAM BLOCKING</strong><br><br>
+    Block by name, series, or country.
+  `,
+  features: [
+    "Premium Unlocked",
+    "No Ads",
+    "Ghost Call",
+    "Who Viewed Profile",
+    "Advanced Spam Block"
+  ],
+  screenshots: [
+    "images/screenshots/truecaller1.png",
+    "images/screenshots/truecaller2.png",
+    "images/screenshots/truecaller3.png",
+    "images/screenshots/truecaller4.png"
+  ],
+  youtube: "https://www.youtube.com/watch?v=YOUR_TRUECALLER_VIDEO",
+  download_apk: "https://example.com/truecaller-mod.apk",
+  download_extra: "https://example.com/truecaller-xapk.apk"
+},
+{
+  id: "snaptube-mod",
+  name: "SnapTube MOD",
+  category: "apps",
+  version: "7.0.0",
+  size: "25 MB",
+  image: "images/snaptube.png",
+  modTitle: "VIP Unlocked",
+  updated: "December 17, 2025",
+  genre: "Video Downloader",
+  description: `
+    <strong>DOWNLOAD FROM ANY PLATFORM</strong><br><br>
+    SnapTube MOD - Download videos from YouTube, Facebook, Instagram, TikTok.<br><br>
+
+    <strong>4K & 8K SUPPORT</strong><br><br>
+    Download in highest quality available.<br><br>
+
+    <strong>NO ADS</strong><br><br>
+    Clean experience without interruptions.<br><br>
+
+    <strong>BATCH DOWNLOAD</strong><br><br>
+    Download multiple videos at once.<br><br>
+
+    <strong>AUDIO EXTRACT</strong><br><br>
+    Convert videos to MP3.
+  `,
+  features: [
+    "VIP Unlocked",
+    "No Ads",
+    "4K Download",
+    "Batch Download",
+    "Audio Extract"
+  ],
+  screenshots: [
+    "images/screenshots/snaptube1.png",
+    "images/screenshots/snaptube2.png",
+    "images/screenshots/snaptube3.png",
+    "images/screenshots/snaptube4.png"
+  ],
+  youtube: "https://www.youtube.com/watch?v=YOUR_SNAPTUBE_VIDEO",
+  download_apk: "https://example.com/snaptube-mod.apk",
+  download_extra: "https://example.com/snaptube-xapk.apk"
+},
+{
+  id: "telegram-premium-mod",
+  name: "Telegram Premium MOD",
+  category: "apps",
+  version: "10.5.0",
+  size: "55 MB",
+  image: "images/telegram.png",
+  modTitle: "Premium Unlocked",
+  updated: "December 16, 2025",
+  publisher: "Telegram FZ-LLC",
+  genre: "Communication",
+  playstore: "https://play.google.com/store/apps/details?id=org.telegram.messenger",
+  description: `
+    <strong>FASTER & MORE FEATURES</strong><br><br>
+    Telegram Premium MOD - Unlimited cloud, faster download, premium stickers.<br><br>
+
+    <strong>NO ADS</strong><br><br>
+    Clean chat experience.<br><br>
+
+    <strong>FASTER DOWNLOADS</strong><br><br>
+    2x faster speed.<br><br>
+
+    <strong>UNLIMITED CLOUD</strong><br><br>
+    Store unlimited files.<br><br>
+
+    <strong>PREMIUM STICKERS & REACTIONS</strong><br><br>
+    Exclusive animated stickers.
+  `,
+  features: [
+    "Premium Unlocked",
+    "No Ads",
+    "Faster Download",
+    "Unlimited Cloud",
+    "Premium Stickers"
+  ],
+  screenshots: [
+    "images/screenshots/telegram1.png",
+    "images/screenshots/telegram2.png",
+    "images/screenshots/telegram3.png",
+    "images/screenshots/telegram4.png"
+  ],
+  youtube: "https://www.youtube.com/watch?v=YOUR_TELEGRAM_VIDEO",
+  download_apk: "https://example.com/telegram-mod.apk",
+  download_extra: "https://example.com/telegram-xapk.apk"
+},
+{
+  id: "insta-thunder-mod",
+  name: "Instagram Pro (Insta Thunder)",
+  category: "apps",
+  version: "300.0",
+  size: "70 MB",
+  image: "images/instathunder.png",
+  modTitle: "Pro Unlocked",
+  updated: "December 15, 2025",
+  genre: "Social",
+  description: `
+    <strong>ADVANCED INSTAGRAM EXPERIENCE</strong><br><br>
+    Insta Thunder MOD - Download media, no ads, privacy options.<br><br>
+
+    <strong>DOWNLOAD ANYTHING</strong><br><br>
+    Photos, videos, stories, reels.<br><br>
+
+    <strong>PRIVACY FEATURES</strong><br><br>
+    Hide view stories, typing status, online status.<br><br>
+
+    <strong>DARK MODE & CUSTOM THEMES</strong><br><br>
+    Full customization.<br><br>
+
+    <strong>NO ADS</strong><br><br>
+    Clean feed and stories.
+  `,
+  features: [
+    "Pro Unlocked",
+    "Download Media",
+    "No Ads",
+    "Privacy Options",
+    "Dark Mode"
+  ],
+  screenshots: [
+    "images/screenshots/instathunder1.png",
+    "images/screenshots/instathunder2.png",
+    "images/screenshots/instathunder3.png",
+    "images/screenshots/instathunder4.png"
+  ],
+  youtube: "https://www.youtube.com/watch?v=YOUR_INSTATHUNDER_VIDEO",
+  download_apk: "https://example.com/instathunder-mod.apk",
+  download_extra: "https://example.com/instathunder-xapk.apk"
+},
+{
+  id: "twitter-gold-mod",
+  name: "Twitter X Gold MOD",
+  category: "apps",
+  version: "10.5.0",
+  size: "100 MB",
+  image: "images/twittergold.png",
+  modTitle: "Premium Unlocked",
+  updated: "December 14, 2025",
+  genre: "Social",
+  description: `
+    <strong>ENHANCED TWITTER EXPERIENCE</strong><br><br>
+    Twitter Gold MOD - No ads, download videos, premium features.<br><br>
+
+    <strong>NO ADS</strong><br><br>
+    Clean timeline and replies.<br><br>
+
+    <strong>DOWNLOAD VIDEOS</strong><br><br>
+    Save any video or GIF.<br><br>
+
+    <strong>BLUE TICK HIDE</strong><br><br>
+    Read messages without showing seen.<br><br>
+
+    <strong>LONGER POSTS</strong><br><br>
+    Write longer tweets.
+  `,
+  features: [
+    "Premium Unlocked",
+    "No Ads",
+    "Download Videos",
+    "Blue Tick Hide",
+    "Longer Posts"
+  ],
+  screenshots: [
+    "images/screenshots/twittergold1.png",
+    "images/screenshots/twittergold2.png",
+    "images/screenshots/twittergold3.png",
+    "images/screenshots/twittergold4.png"
+  ],
+  youtube: "https://www.youtube.com/watch?v=YOUR_TWITTERGOLD_VIDEO",
+  download_apk: "https://example.com/twittergold-mod.apk",
+  download_extra: "https://example.com/twittergold-xapk.apk"
+},
+{
+  id: "netflix-mod",
+  name: "Netflix MOD",
+  category: "apps",
+  version: "8.12.0",
+  size: "60 MB",
+  image: "images/netflix.png",
+  modTitle: "Premium Unlocked",
+  updated: "December 13, 2025",
+  publisher: "Netflix Inc.",
+  genre: "Entertainment",
+  playstore: "https://play.google.com/store/apps/details?id=com.netflix.mediaclient",
+  description: `
+    <strong>WATCH EVERYTHING FREE</strong><br><br>
+    Netflix MOD - 4K streaming, no ads, download all content.<br><br>
+
+    <strong>ALL CONTENT UNLOCKED</strong><br><br>
+    Watch any movie or series from any region.<br><br>
+
+    <strong>NO ADS</strong><br><br>
+    Uninterrupted viewing experience.<br><br>
+
+    <strong>OFFLINE DOWNLOAD</strong><br><br>
+    Download for offline watching.<br><br>
+
+    <strong>4K & HDR</strong><br><br>
+    Highest quality streaming.
+  `,
+  features: [
+    "Premium Unlocked",
+    "4K Streaming",
+    "No Ads",
+    "Download All",
+    "All Regions"
+  ],
+  screenshots: [
+    "images/screenshots/netflix1.png",
+    "images/screenshots/netflix2.png",
+    "images/screenshots/netflix3.png",
+    "images/screenshots/netflix4.png"
+  ],
+  youtube: "https://www.youtube.com/watch?v=YOUR_NETFLIX_VIDEO",
+  download_apk: "https://example.com/netflix-mod.apk",
+  download_extra: "https://example.com/netflix-xapk.apk"
+},
+{
+  id: "crunchyroll-mod",
+  name: "Crunchyroll MOD",
+  category: "apps",
+  version: "3.5.0",
+  size: "70 MB",
+  image: "images/crunchyroll.png",
+  modTitle: "Premium Unlocked",
+  updated: "December 12, 2025",
+  publisher: "Crunchyroll",
+  genre: "Entertainment",
+  playstore: "https://play.google.com/store/apps/details?id=com.crunchyroll.crunchyroid",
+  description: `
+    <strong>ULTIMATE ANIME STREAMING</strong><br><br>
+    Crunchyroll MOD - Ad-free anime, offline download, simulcasts.<br><br>
+
+    <strong>NO ADS</strong><br><br>
+    Watch without interruptions.<br><br>
+
+    <strong>OFFLINE DOWNLOAD</strong><br><br>
+    Download episodes for offline.<br><br>
+
+    <strong>SIMULCASTS</strong><br><br>
+    New episodes 1 hour after Japan.<br><br>
+
+    <strong>HD & FULL LIBRARY</strong><br><br>
+    Access everything in high quality.
+  `,
+  features: [
+    "Premium Unlocked",
+    "No Ads",
+    "Offline Download",
+    "Simulcasts",
+    "HD Streaming"
+  ],
+  screenshots: [
+    "images/screenshots/crunchyroll1.png",
+    "images/screenshots/crunchyroll2.png",
+    "images/screenshots/crunchyroll3.png",
+    "images/screenshots/crunchyroll4.png"
+  ],
+  youtube: "https://www.youtube.com/watch?v=YOUR_CRUNCHYROLL_VIDEO",
+  download_apk: "https://example.com/crunchyroll-mod.apk",
+  download_extra: "https://example.com/crunchyroll-xapk.apk"
+  },
   
   // ========== GAME MODS ==========
   {
