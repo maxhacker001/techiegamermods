@@ -12,16 +12,22 @@ const apps = [
   publisher: "ByteDance Pte. Ltd.",
   genre: "Video Players & Editors",
   playstore: "https://play.google.com/store/apps/details?id=com.lemon.lvoverseas",
-  description: `<strong>UNLIMITED CREATIVITY FOR VIDEO EDITING</strong><br><br>
-CapCut MOD APK is the ultimate all-in-one video editing app.<br><br>
-<strong>ADVANCED KEYFRAME ANIMATION</strong><br><br>
-Add precise control to your edits.<br><br>
-<strong>THOUSANDS OF PREMIUM EFFECTS & TEMPLATES</strong><br><br>
-Access pro templates and trending effects.<br><br>
-<strong>PROFESSIONAL TOOLS WITHOUT LIMITS</strong><br><br>
-Multi-layer editing, voice-over, speed control.<br><br>
-<strong>PERFECT FOR CONTENT CREATORS</strong><br><br>
-TikTok, YouTube shorts, Reels.`,
+  description: `
+    <strong>UNLIMITED CREATIVITY FOR VIDEO EDITING</strong><br><br>
+    CapCut MOD APK is the ultimate all-in-one video editing app that empowers you to create stunning content.<br><br>
+
+    <strong>ADVANCED KEYFRAME ANIMATION</strong><br><br>
+    Add precise control to your edits with keyframe animation. Animate any element smoothly.<br><br>
+
+    <strong>THOUSANDS OF PREMIUM EFFECTS & TEMPLATES</strong><br><br>
+    Access a massive library of pro templates, trending effects, transitions, and filters.<br><br>
+
+    <strong>PROFESSIONAL TOOLS WITHOUT LIMITS</strong><br><br>
+    Multi-layer editing, voice-over recording, speed control, chroma key, and more.<br><br>
+
+    <strong>PERFECT FOR CONTENT CREATORS</strong><br><br>
+    Whether you're making TikTok videos, YouTube shorts, or Instagram Reels — CapCut MOD gives you everything unlocked.
+  `,
   features: [
     "Pro Unlocked",
     "No Watermark",
@@ -36,7 +42,7 @@ TikTok, YouTube shorts, Reels.`,
     "images/screenshots/capcut3.png",
     "images/screenshots/capcut4.png"
   ],
-  youtube: "https://youtube.com/watch?v=capcut-tutorial",
+  youtube: "https://www.youtube.com/watch?v=YOUR_CAPCUT_VIDEO",
   download_apk: "https://example.com/capcut-mod.apk",
   download_extra: "https://example.com/capcut-xapk.apk"
 },
@@ -52,16 +58,22 @@ TikTok, YouTube shorts, Reels.`,
   publisher: "Spotify AB",
   genre: "Music & Audio",
   playstore: "https://play.google.com/store/apps/details?id=com.spotify.music",
-  description: `<strong>PREMIUM EXPERIENCE WITHOUT SUBSCRIPTION</strong><br><br>
-Spotify MOD APK gives you full Premium experience for free.<br><br>
-<strong>AD-FREE LISTENING</strong><br><br>
-No interruptions.<br><br>
-<strong>UNLIMITED SKIPS</strong><br><br>
-Skip any track.<br><br>
-<strong>OFFLINE DOWNLOAD</strong><br><br>
-Download for offline.<br><br>
-<strong>HIGH QUALITY</strong><br><br>
-320kbps audio.`,
+  description: `
+    <strong>PREMIUM EXPERIENCE WITHOUT SUBSCRIPTION</strong><br><br>
+    Spotify MOD APK gives you full Premium experience for free. Listen to millions of songs and podcasts without restrictions.<br><br>
+
+    <strong>AD-FREE LISTENING FOREVER</strong><br><br>
+    No interruptions from audio or banner ads. Stream smoothly.<br><br>
+
+    <strong>UNLIMITED SKIPS & ON-DEMAND PLAYBACK</strong><br><br>
+    Skip as many tracks as you want. Choose any song instantly — no shuffle required.<br><br>
+
+    <strong>OFFLINE DOWNLOADS</strong><br><br>
+    Download playlists, albums, and podcasts for offline listening.<br><br>
+
+    <strong>VERY HIGH AUDIO QUALITY</strong><br><br>
+    Stream at 320kbps — hear every detail as the artist intended.
+  `,
   features: [
     "Premium Unlocked",
     "No Ads",
@@ -75,7 +87,7 @@ Download for offline.<br><br>
     "images/screenshots/spotify3.png",
     "images/screenshots/spotify4.png"
   ],
-  youtube: "https://youtube.com/watch?v=spotify-tutorial",
+  youtube: "https://www.youtube.com/watch?v=YOUR_SPOTIFY_VIDEO",
   download_apk: "https://example.com/spotify-mod.apk",
   download_extra: "https://example.com/spotify-xapk.apk"
 },
@@ -91,14 +103,22 @@ Download for offline.<br><br>
   publisher: "Bending Spoons",
   genre: "Photo Editing",
   playstore: "https://play.google.com/store/apps/details?id=com.remini.app",
-  description: `<strong>AI PHOTO ENHANCER</strong><br><br>
-Remini MOD - Unlimited AI credits, HD enhancement.<br><br>
-<strong>RESTORE OLD PHOTOS</strong><br><br>
-Bring old photos back to life.<br><br>
-<strong>ENHANCE QUALITY</strong><br><br>
-Turn blurry photos into HD.<br><br>
-<strong>BATCH PROCESSING</strong><br><br>
-Enhance multiple photos.`,
+  description: `
+    <strong>AI PHOTO ENHANCER</strong><br><br>
+    Remini MOD APK - Unlimited AI credits, HD enhancement, no ads.<br><br>
+
+    <strong>RESTORE OLD PHOTOS</strong><br><br>
+    Bring blurry or old photos back to life with AI.<br><br>
+
+    <strong>ENHANCE QUALITY</strong><br><br>
+    Turn low-resolution photos into HD.<br><br>
+
+    <strong>BATCH PROCESSING</strong><br><br>
+    Enhance multiple photos at once.<br><br>
+
+    <strong>NO LIMITS</strong><br><br>
+    Unlimited processing without waiting.
+  `,
   features: [
     "Pro Unlocked",
     "Unlimited Credits",
@@ -112,7 +132,7 @@ Enhance multiple photos.`,
     "images/screenshots/remini3.png",
     "images/screenshots/remini4.png"
   ],
-  youtube: "https://youtube.com/watch?v=remini-tutorial",
+  youtube: "https://www.youtube.com/watch?v=YOUR_REMINI_VIDEO",
   download_apk: "https://example.com/remini-mod.apk",
   download_extra: "https://example.com/remini-xapk.apk"
 },
@@ -128,14 +148,22 @@ Enhance multiple photos.`,
   publisher: "Alight Creative, Inc.",
   genre: "Video Editing",
   playstore: "https://play.google.com/store/apps/details?id=com.alightcreative.motion",
-  description: `<strong>PROFESSIONAL MOTION DESIGN</strong><br><br>
-Alight Motion MOD - Full Pro unlocked, no watermark, all effects.<br><br>
-<strong>KEYFRAME ANIMATION</strong><br><br>
-Precise control.<br><br>
-<strong>PREMIUM EFFECTS</strong><br><br>
-Blur, glow, distortion.<br><br>
-<strong>XML PROJECT SUPPORT</strong><br><br>
-Import/export projects.`,
+  description: `
+    <strong>PROFESSIONAL MOTION DESIGN</strong><br><br>
+    Alight Motion MOD APK - Full Pro unlocked, no watermark, all premium effects.<br><br>
+
+    <strong>KEYFRAME ANIMATION</strong><br><br>
+    Precise control over every element.<br><br>
+
+    <strong>PREMIUM EFFECTS & PRESETS</strong><br><br>
+    Blur, glow, distortion, vector graphics.<br><br>
+
+    <strong>XML PROJECT SUPPORT</strong><br><br>
+    Import and export projects easily.<br><br>
+
+    <strong>NO WATERMARK</strong><br><br>
+    Export clean videos.
+  `,
   features: [
     "Pro Unlocked",
     "No Watermark",
@@ -149,7 +177,7 @@ Import/export projects.`,
     "images/screenshots/alightmotion3.png",
     "images/screenshots/alightmotion4.png"
   ],
-  youtube: "https://youtube.com/watch?v=alightmotion-tutorial",
+  youtube: "https://www.youtube.com/watch?v=YOUR_ALIGHT_VIDEO",
   download_apk: "https://example.com/alightmotion-mod.apk",
   download_extra: "https://example.com/alightmotion-xapk.apk"
 },
@@ -165,14 +193,22 @@ Import/export projects.`,
   publisher: "KineMaster Corporation",
   genre: "Video Editing",
   playstore: "https://play.google.com/store/apps/details?id=com.nexstreaming.app.kinemasterfree",
-  description: `<strong>POWERFUL VIDEO EDITOR</strong><br><br>
-KineMaster MOD - No watermark, premium assets, chroma key.<br><br>
-<strong>CHROMA KEY</strong><br><br>
-Green screen effects.<br><br>
-<strong>PREMIUM ASSET STORE</strong><br><br>
-All transitions unlocked.<br><br>
-<strong>4K EXPORT</strong><br><br>
-High quality output.`,
+  description: `
+    <strong>POWERFUL VIDEO EDITOR</strong><br><br>
+    KineMaster MOD APK - No watermark, premium assets, chroma key.<br><br>
+
+    <strong>CHROMA KEY</strong><br><br>
+    Professional green screen effects.<br><br>
+
+    <strong>PREMIUM ASSET STORE</strong><br><br>
+    All transitions, effects, music unlocked.<br><br>
+
+    <strong>4K EXPORT</strong><br><br>
+    High quality video output.<br><br>
+
+    <strong>MULTI-LAYER EDITING</strong><br><br>
+    Add multiple video, image, text layers.
+  `,
   features: [
     "Diamond Unlocked",
     "No Watermark",
@@ -186,7 +222,7 @@ High quality output.`,
     "images/screenshots/kinemaster3.png",
     "images/screenshots/kinemaster4.png"
   ],
-  youtube: "https://youtube.com/watch?v=kinemaster-tutorial",
+  youtube: "https://www.youtube.com/watch?v=YOUR_KINEMASTER_VIDEO",
   download_apk: "https://example.com/kinemaster-mod.apk",
   download_extra: "https://example.com/kinemaster-xapk.apk"
 },
@@ -202,14 +238,22 @@ High quality output.`,
   publisher: "InShot Inc.",
   genre: "Video Editing",
   playstore: "https://play.google.com/store/apps/details?id=com.camerasideas.instashot",
-  description: `<strong>EASY & POWERFUL VIDEO EDITOR</strong><br><br>
-InShot MOD - Pro filters, no ads, all effects.<br><br>
-<strong>ALL FILTERS & EFFECTS</strong><br><br>
-Premium transitions.<br><br>
-<strong>NO WATERMARK</strong><br><br>
-Clean export.<br><br>
-<strong>MUSIC LIBRARY</strong><br><br>
-Trending music.`,
+  description: `
+    <strong>EASY & POWERFUL VIDEO EDITOR</strong><br><br>
+    InShot MOD APK - Pro unlocked, no ads, all filters.<br><br>
+
+    <strong>ALL FILTERS & EFFECTS</strong><br><br>
+    Premium transitions and effects.<br><br>
+
+    <strong>NO WATERMARK</strong><br><br>
+    Clean export.<br><br>
+
+    <strong>MUSIC LIBRARY</strong><br><br>
+    Add trending music.<br><br>
+
+    <strong>TEXT & STICKERS</strong><br><br>
+    Animated text and stickers.
+  `,
   features: [
     "Pro Unlocked",
     "No Ads",
@@ -223,7 +267,7 @@ Trending music.`,
     "images/screenshots/inshot3.png",
     "images/screenshots/inshot4.png"
   ],
-  youtube: "https://youtube.com/watch?v=inshot-tutorial",
+  youtube: "https://www.youtube.com/watch?v=YOUR_INSHOT_VIDEO",
   download_apk: "https://example.com/inshot-mod.apk",
   download_extra: "https://example.com/inshot-xapk.apk"
 },
@@ -239,14 +283,22 @@ Trending music.`,
   publisher: "Ubiquiti Labs",
   genre: "Video Editing",
   playstore: "https://play.google.com/store/apps/details?id=com.frontrow.vlog",
-  description: `<strong>PROFESSIONAL VIDEO EDITOR</strong><br><br>
-VN MOD - Pro templates, multi-layer, no watermark.<br><br>
-<strong>MULTI-LAYER TIMELINE</strong><br><br>
-Professional editing.<br><br>
-<strong>PRO TEMPLATES</strong><br><br>
-Ready-to-use.<br><br>
-<strong>KEYFRAME & MASK</strong><br><br>
-Advanced control.`,
+  description: `
+    <strong>PROFESSIONAL VIDEO EDITOR</strong><br><br>
+    VN MOD APK - Pro templates, multi-layer editing, no watermark.<br><br>
+
+    <strong>MULTI-LAYER TIMELINE</strong><br><br>
+    Professional editing control.<br><br>
+
+    <strong>PRO TEMPLATES</strong><br><br>
+    Ready-to-use professional templates.<br><br>
+
+    <strong>KEYFRAME & MASK</strong><br><br>
+    Advanced animation and masking tools.<br><br>
+
+    <strong>NO WATERMARK</strong><br><br>
+    Export clean videos.
+  `,
   features: [
     "Pro Unlocked",
     "No Watermark",
@@ -260,7 +312,7 @@ Advanced control.`,
     "images/screenshots/vn3.png",
     "images/screenshots/vn4.png"
   ],
-  youtube: "https://youtube.com/watch?v=vn-tutorial",
+  youtube: "https://www.youtube.com/watch?v=YOUR_VN_VIDEO",
   download_apk: "https://example.com/vn-mod.apk",
   download_extra: "https://example.com/vn-xapk.apk"
 },
@@ -276,14 +328,22 @@ Advanced control.`,
   publisher: "CyberLink",
   genre: "Video Editing",
   playstore: "https://play.google.com/store/apps/details?id=com.cyberlink.powerdirector.DRA140225_01",
-  description: `<strong>PROFESSIONAL VIDEO EDITOR</strong><br><br>
-PowerDirector MOD - Premium effects, chroma key, 4K.<br><br>
-<strong>CHROMA KEY</strong><br><br>
-Green screen.<br><br>
-<strong>4K SUPPORT</strong><br><br>
-High quality.<br><br>
-<strong>PREMIUM EFFECTS</strong><br><br>
-All pro effects.`,
+  description: `
+    <strong>PROFESSIONAL VIDEO EDITOR</strong><br><br>
+    PowerDirector MOD - Premium effects, chroma key, 4K support.<br><br>
+
+    <strong>CHROMA KEY</strong><br><br>
+    Professional green screen effects.<br><br>
+
+    <strong>4K SUPPORT</strong><br><br>
+    Export in ultra high definition.<br><br>
+
+    <strong>PREMIUM EFFECTS</strong><br><br>
+    All pro effects and transitions unlocked.<br><br>
+
+    <strong>NO ADS</strong><br><br>
+    Clean editing experience.
+  `,
   features: [
     "Premium Unlocked",
     "Chroma Key",
@@ -297,7 +357,7 @@ All pro effects.`,
     "images/screenshots/powerdirector3.png",
     "images/screenshots/powerdirector4.png"
   ],
-  youtube: "https://youtube.com/watch?v=powerdirector-tutorial",
+  youtube: "https://www.youtube.com/watch?v=YOUR_POWERDIRECTOR_VIDEO",
   download_apk: "https://example.com/powerdirector-mod.apk",
   download_extra: "https://example.com/powerdirector-xapk.apk"
 },
@@ -313,14 +373,22 @@ All pro effects.`,
   publisher: "Canva",
   genre: "Graphic Design",
   playstore: "https://play.google.com/store/apps/details?id=com.canva.editor",
-  description: `<strong>GRAPHIC DESIGN MADE EASY</strong><br><br>
-Canva MOD - Pro templates, elements, background remover.<br><br>
-<strong>PRO TEMPLATES</strong><br><br>
-Thousands of premium templates.<br><br>
-<strong>ALL ELEMENTS</strong><br><br>
-Premium photos, icons.<br><br>
-<strong>NO WATERMARK</strong><br><br>
-Export clean.`,
+  description: `
+    <strong>GRAPHIC DESIGN MADE EASY</strong><br><br>
+    Canva MOD - Pro templates, elements, background remover unlocked.<br><br>
+
+    <strong>PRO TEMPLATES</strong><br><br>
+    Thousands of premium templates.<br><br>
+
+    <strong>ALL ELEMENTS</strong><br><br>
+    Premium photos, icons, fonts.<br><br>
+
+    <strong>BACKGROUND REMOVER</strong><br><br>
+    Remove backgrounds with one tap.<br><br>
+
+    <strong>NO WATERMARK</strong><br><br>
+    Export clean designs.
+  `,
   features: [
     "Pro Unlocked",
     "All Premium Templates",
@@ -334,7 +402,7 @@ Export clean.`,
     "images/screenshots/canva3.png",
     "images/screenshots/canva4.png"
   ],
-  youtube: "https://youtube.com/watch?v=canva-tutorial",
+  youtube: "https://www.youtube.com/watch?v=YOUR_CANVA_VIDEO",
   download_apk: "https://example.com/canva-mod.apk",
   download_extra: "https://example.com/canva-xapk.apk"
 },
@@ -348,14 +416,22 @@ Export clean.`,
   modTitle: "Pro Unlocked",
   updated: "December 22, 2025",
   genre: "Communication",
-  description: `<strong>ENHANCED WHATSAPP EXPERIENCE</strong><br><br>
-GBWhatsApp MOD - Privacy, themes, dual account.<br><br>
-<strong>PRIVACY OPTIONS</strong><br><br>
-Hide online, blue ticks.<br><br>
-<strong>CUSTOM THEMES</strong><br><br>
-Thousands of themes.<br><br>
-<strong>DUAL ACCOUNT</strong><br><br>
-Run two WhatsApp.`,
+  description: `
+    <strong>ENHANCED WHATSAPP EXPERIENCE</strong><br><br>
+    GBWhatsApp MOD - Privacy options, custom themes, dual account.<br><br>
+
+    <strong>PRIVACY OPTIONS</strong><br><br>
+    Hide online status, blue ticks, typing.<br><br>
+
+    <strong>CUSTOM THEMES</strong><br><br>
+    Thousands of themes available.<br><br>
+
+    <strong>DUAL ACCOUNT</strong><br><br>
+    Run two WhatsApp on one phone.<br><br>
+
+    <strong>MESSAGE SCHEDULER</strong><br><br>
+    Schedule messages to send later.
+  `,
   features: [
     "Privacy Options",
     "Custom Themes",
@@ -369,11 +445,11 @@ Run two WhatsApp.`,
     "images/screenshots/gbwhatsapp3.png",
     "images/screenshots/gbwhatsapp4.png"
   ],
-  youtube: "https://youtube.com/watch?v=gbwhatsapp-tutorial",
+  youtube: "https://www.youtube.com/watch?v=YOUR_GBWHATSAPP_VIDEO",
   download_apk: "https://example.com/gbwhatsapp-mod.apk",
   download_extra: "https://example.com/gbwhatsapp-xapk.apk"
-    }
-
+    },
+  
   // ========== GAME MODS ==========
   {
     id: "freefire-mod",
