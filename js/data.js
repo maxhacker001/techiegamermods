@@ -44,7 +44,7 @@ const apps = [
   ],
   youtube: "https://www.youtube.com/watch?v=YOUR_CAPCUT_VIDEO",
   download_apk: "https://example.com/capcut-mod.apk",
-  download_extra: "https://cold4.gofile.io/download/web/949a5dfa-7335-44d2-8fdb-87efcc16ca47/Medium_4.5.1300579_apks.apk"
+  download_extra: "https://cold2.gofile.io/download/web/da9f6b0f-acc7-4688-933d-bcd8b0e3f7e1/Medium_4.5.1300579_apks.apk"
 },
 {
   id: "spotify-mod",
