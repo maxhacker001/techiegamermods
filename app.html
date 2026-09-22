@@ -2,8 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>TECHIE GAMER MODS</title>
+  <title>Techie Gamer Mods</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Techie Gamer Mods app and game details, version information, screenshots, and tutorials.">
+  <meta name="robots" content="index,follow">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0b0f0c">
   <link rel="stylesheet" href="css/style.css">
 </head>
 
@@ -96,7 +100,7 @@
     <div class="info-row play-store">
       <span class="info-label">📱 Get it On</span>
       <a href="#" id="playstoreLink" target="_blank">
-        <img src="images/playstore.png" alt="Google Play" style="height:40px;">
+        <span style="display:inline-block;padding:10px 14px;border:1px solid rgba(0,255,156,.35);border-radius:10px;color:var(--neon);font-weight:700;">Google Play</span>
       </a>
     </div>
   </div>
@@ -189,9 +193,10 @@
       <span style="color:white; font-size:20px; font-weight:800; margin-left:8px;">8,901</span>
     </div>
   </div>
-  © 2025 TECHIE GAMER MODS • Clean • Safe • Hacker-Styled
+  © 2026 TECHIE GAMER MODS • Clean • Safe • Hacker-Styled
 </footer>
 
+<script src="js/pwa.js"></script>
 <script src="js/data.js"></script>
 
 <script>
@@ -204,6 +209,31 @@
     if (!app) return;
 
     const isTutorial = app.category === "tutorials";
+
+    // Dynamic search metadata for app-specific pages.
+    const plainDescription = String(app.description || "")
+      .replace(/<[^>]*>/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+      .slice(0, 155);
+
+    document.title = `${app.name} v${app.version} | Techie Gamer Mods`;
+
+    let descriptionMeta = document.querySelector('meta[name="description"]');
+    if (!descriptionMeta) {
+      descriptionMeta = document.createElement("meta");
+      descriptionMeta.name = "description";
+      document.head.appendChild(descriptionMeta);
+    }
+    descriptionMeta.content = plainDescription || `Details, screenshots, version information, and tutorial for ${app.name}.`;
+
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement("link");
+      canonical.rel = "canonical";
+      document.head.appendChild(canonical);
+    }
+    canonical.href = window.location.href;
 
     // Header
     document.getElementById("appImage").src = app.image;
@@ -259,11 +289,11 @@
       });
     }
 
-    // Trust badges
+    // Verification state: never claim a package is clean or signed unless the V2 verifier has actually checked it.
     const trustBox = document.getElementById("trustBox");
-    trustBox.innerHTML = isTutorial ? 
-      "<span>✓ Verified Steps</span><span>✓ Beginner Friendly</span><span>✓ Updated 2025</span><span>✓ No Root Needed</span>" :
-      "<span>✓ VirusTotal Clean</span><span>✓ No Malware</span><span>✓ Signed APK</span><span>✓ Daily Scans</span>";
+    trustBox.innerHTML = isTutorial
+      ? "<span>✓ Tutorial metadata</span><span>✓ Updated when source is verified</span>"
+      : "<span>ℹ Verification status shown when available</span><span>ℹ Modified package</span><span>ℹ Inspect before installing</span>";
 
     // Recommended apps
     const recommendedGrid = document.getElementById("recommendedGrid");
