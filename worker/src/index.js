@@ -180,6 +180,88 @@ async function adminStats(env) {
     downloads: Number(queries[4]?.count || 0)
   }, 200, env);
 }
+async function adminListApps(request, env) {
+  if (!requireAdmin(request, env)) return json({ error: "Unauthorized" }, 401, env);
+  const url = new URL(request.url);
+  const status = url.searchParams.get("status") || "all";
+  const search = (url.searchParams.get("search") || "").trim().toLowerCase();
+  const limit = Math.min(Math.max(Number(url.searchParams.get("limit") || 50), 1), 200);
+  let sql = "SELECT a.id,a.slug,a.name,a.publisher,a.genre,a.package_name,a.icon_url,a.play_store_url,a.status,a.created_at,a.updated_at,c.slug AS category_slug,c.name AS category_name,(SELECT COUNT(*) FROM versions v WHERE v.app_id=a.id) AS version_count,(SELECT COUNT(*) FROM files f JOIN versions v2 ON v2.id=f.version_id WHERE v2.app_id=a.id) AS file_count FROM apps a JOIN categories c ON c.id=a.category_id WHERE 1=1";
+  const bindings = [];
+  if (status !== "all") { sql += " AND a.status=?"; bindings.push(status); }
+  if (search) { sql += " AND (lower(a.name) LIKE ? OR lower(COALESCE(a.publisher,'')) LIKE ? OR lower(COALESCE(a.package_name,'')) LIKE ? OR lower(a.slug) LIKE ?)"; const p="%"+search+"%"; bindings.push(p,p,p,p); }
+  sql += " ORDER BY datetime(a.updated_at) DESC LIMIT ?";
+  bindings.push(limit);
+  const result = await env.DB.prepare(sql).bind(...bindings).all();
+  return json({ apps: result.results || [] },200,env);
+}
+
+async function adminListVersions(appId, env) {
+  const app = await env.DB.prepare("SELECT id,slug,name FROM apps WHERE id=? LIMIT 1").bind(appId).first();
+  if (!app) return json({ error:"App not found" },404,env);
+  const result = await env.DB.prepare("SELECT v.id,v.app_id,v.version_name,v.mod_info,v.changelog,v.android_min,v.architecture,v.size_bytes,v.status,v.created_at,v.updated_at,(SELECT COUNT(*) FROM files f WHERE f.version_id=v.id) AS file_count,(SELECT COUNT(*) FROM files f WHERE f.version_id=v.id AND f.scan_status='clean' AND f.published=1) AS published_clean_file_count FROM versions v WHERE v.app_id=? ORDER BY datetime(v.updated_at) DESC").bind(appId).all();
+  return json({ app,versions:result.results || [] },200,env);
+}
+
+async function adminSetAppStatus(request, appId, env) {
+  if (!requireAdmin(request, env)) return json({ error:"Unauthorized" },401,env);
+  const body=await parseJson(request);
+  const status=body?.status;
+  if (!["draft","published","archived"].includes(status)) return json({error:"Invalid app status"},400,env);
+  const app=await env.DB.prepare("SELECT a.id,c.slug AS category_slug FROM apps a JOIN categories c ON c.id=a.category_id WHERE a.id=? LIMIT 1").bind(appId).first();
+  if (!app) return json({error:"App not found"},404,env);
+  if(status==="published"){
+    const version=await env.DB.prepare("SELECT id FROM versions WHERE app_id=? AND status='published' ORDER BY datetime(updated_at) DESC LIMIT 1").bind(appId).first();
+    if(!version) return json({error:"Publish at least one version first"},409,env);
+    if(app.category_slug!=="tutorials"){
+      const file=await env.DB.prepare("SELECT f.id FROM files f JOIN versions v ON v.id=f.version_id WHERE v.app_id=? AND v.status='published' AND f.published=1 AND f.scan_status='clean' LIMIT 1").bind(appId).first();
+      if(!file) return json({error:"Publish at least one verified clean file first"},409,env);
+    }
+  }
+  await env.DB.prepare("UPDATE apps SET status=?,updated_at=CURRENT_TIMESTAMP WHERE id=?").bind(status,appId).run();
+  await env.DB.prepare("INSERT INTO admin_audit_log(actor,action,entity_type,entity_id,details_json) VALUES('admin','status_change','app',?,?)").bind(appId,JSON.stringify({status})).run();
+  return json({id:appId,status},200,env);
+}
+
+async function adminSetVersionStatus(request, versionId, env) {
+  if (!requireAdmin(request, env)) return json({ error:"Unauthorized" },401,env);
+  const body=await parseJson(request);
+  const status=body?.status;
+  if (!["draft","published","archived"].includes(status)) return json({error:"Invalid version status"},400,env);
+  const version=await env.DB.prepare("SELECT id,app_id FROM versions WHERE id=? LIMIT 1").bind(versionId).first();
+  if(!version) return json({error:"Version not found"},404,env);
+  if(status==="published"){
+    const file=await env.DB.prepare("SELECT id FROM files WHERE version_id=? AND published=1 AND scan_status='clean' LIMIT 1").bind(versionId).first();
+    if(!file) return json({error:"Publish at least one clean, published file first"},409,env);
+  }
+  await env.DB.prepare("UPDATE versions SET status=?,updated_at=CURRENT_TIMESTAMP WHERE id=?").bind(status,versionId).run();
+  await env.DB.prepare("INSERT INTO admin_audit_log(actor,action,entity_type,entity_id,details_json) VALUES('admin','status_change','version',?,?)").bind(versionId,JSON.stringify({status})).run();
+  return json({id:versionId,status},200,env);
+}
+
+async function adminVerifyFile(request, fileId, env) {
+  if (!requireAdmin(request, env)) return json({ error:"Unauthorized" },401,env);
+  const body=await parseJson(request);
+  const scanStatus=body?.scan_status;
+  const note=String(body?.note || "").slice(0,2000);
+  if (!["pending","clean","flagged","failed","unknown"].includes(scanStatus)) return json({error:"Invalid scan_status"},400,env);
+  const file=await env.DB.prepare("SELECT id,sha256,original_name FROM files WHERE id=? LIMIT 1").bind(fileId).first();
+  if(!file) return json({error:"File not found"},404,env);
+  await env.DB.prepare("UPDATE files SET scan_status=?,published=0 WHERE id=?").bind(scanStatus,fileId).run();
+  await env.DB.prepare("INSERT INTO admin_audit_log(actor,action,entity_type,entity_id,details_json) VALUES('admin','manual_verification','file',?,?)").bind(fileId,JSON.stringify({scan_status:scanStatus,note,sha256:file.sha256,original_name:file.original_name})).run();
+  return json({id:fileId,scan_status:scanStatus,published:0,note},200,env);
+}
+
+async function adminPublishFile(request, fileId, env) {
+  if (!requireAdmin(request, env)) return json({ error:"Unauthorized" },401,env);
+  const file=await env.DB.prepare("SELECT f.id,f.scan_status,v.status AS version_status FROM files f JOIN versions v ON v.id=f.version_id WHERE f.id=? LIMIT 1").bind(fileId).first();
+  if(!file) return json({error:"File not found"},404,env);
+  if(file.scan_status!=="clean") return json({error:"Only clean files can be published"},409,env);
+  if(file.version_status!=="published") return json({error:"Publish the version first"},409,env);
+  await env.DB.prepare("UPDATE files SET published=1 WHERE id=?").bind(fileId).run();
+  await env.DB.prepare("INSERT INTO admin_audit_log(actor,action,entity_type,entity_id,details_json) VALUES('admin','publish','file',?,?)").bind(fileId,JSON.stringify({published:1})).run();
+  return json({id:fileId,published:1},200,env);
+}
 
 async function adminCreateApp(request, env) {
   if (!requireAdmin(request, env)) return json({ error: "Unauthorized" }, 401, env);
@@ -368,7 +450,7 @@ export default {
     }
 
     const url = new URL(request.url);
-    const path = url.pathname.replace(//+$/, "") || "/";
+    const path = url.pathname.replace(/\/+$/, "") || "/";
 
     try {
       if (path === "/api/health" && request.method === "GET") {
@@ -393,16 +475,44 @@ export default {
         return adminStats(env);
       }
 
+      if (path === "/api/admin/apps" && request.method === "GET") {
+        return adminListApps(request, env);
+      }
+
       if (path === "/api/admin/apps" && request.method === "POST") {
         return adminCreateApp(request, env);
+      }
+
+      if (path.startsWith("/api/admin/apps/") && path.endsWith("/status") && request.method === "PATCH") {
+        const appId = decodeURIComponent(path.slice("/api/admin/apps/".length, -"/status".length));
+        return adminSetAppStatus(request, appId, env);
+      }
+
+      if (path.startsWith("/api/admin/apps/") && path.endsWith("/versions") && request.method === "GET") {
+        return adminListVersions(decodeURIComponent(path.slice("/api/admin/apps/".length, -"/versions".length)), env);
       }
 
       if (path === "/api/admin/versions" && request.method === "POST") {
         return adminCreateVersion(request, env);
       }
 
+      if (path.startsWith("/api/admin/versions/") && path.endsWith("/status") && request.method === "PATCH") {
+        const versionId = decodeURIComponent(path.slice("/api/admin/versions/".length, -"/status".length));
+        return adminSetVersionStatus(request, versionId, env);
+      }
+
       if (path === "/api/admin/files" && request.method === "POST") {
         return uploadFile(request, env);
+      }
+
+      if (path.startsWith("/api/admin/files/") && path.endsWith("/verify") && request.method === "PATCH") {
+        const fileId = decodeURIComponent(path.slice("/api/admin/files/".length, -"/verify".length));
+        return adminVerifyFile(request, fileId, env);
+      }
+
+      if (path.startsWith("/api/admin/files/") && path.endsWith("/publish") && request.method === "PATCH") {
+        const fileId = decodeURIComponent(path.slice("/api/admin/files/".length, -"/publish".length));
+        return adminPublishFile(request, fileId, env);
       }
 
       if (path.startsWith("/download/") && request.method === "GET") {
