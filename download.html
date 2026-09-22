@@ -2,8 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Download - TECHIE GAMER MODS</title>
+  <title>Download | Techie Gamer Mods</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Download and version information for Techie Gamer Mods releases.">
+  <meta name="robots" content="noindex,follow">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0b0f0c">
   <link rel="stylesheet" href="css/style.css">
 </head>
 
@@ -134,9 +138,10 @@
       <span style="color:white; font-size:20px; font-weight:800; margin-left:8px;">8,901</span>
     </div>
   </div>
-  © 2025 TECHIE GAMER MODS • Clean • Safe • Hacker-Styled
+  © 2026 TECHIE GAMER MODS • Clean • Safe • Hacker-Styled
 </footer>
 
+<script src="js/pwa.js"></script>
 <script src="js/data.js"></script>
 
 <script>
@@ -158,84 +163,71 @@
     document.getElementById("downloadDate").textContent = (app.updated || "December 26, 2025") + " (3 hours ago)";
     document.getElementById("redBannerText").textContent = app.name + " - All Mod";
     document.getElementById("notesAppName").textContent = app.name;
-// MOD Versions — buttons clickable
+// Download buttons: treat missing/demo placeholders as unavailable instead of redirecting users.
 const modVersions = document.getElementById("modVersions");
-let secondButtonText = isGame ? "⬇ DOWNLOAD OBB/PATCH" : "⬇ DOWNLOAD XAPK";
+const secondButtonText = isGame ? "⬇ DOWNLOAD OBB/PATCH" : "⬇ DOWNLOAD XAPK";
 
-modVersions.innerHTML = `
-  <div class="download-box">
-    <button class="download-btn" onclick="window.location.href='` + app.download_apk + `'">⬇ DOWNLOAD MOD APK</button>
-    <p>v` + app.version + ` - ` + (app.modTitle || "Premium Unlocked") + `<span style="float:right;">` + app.size + `</span></p>
-  </div>
-  <div class="download-box">
-    <button class="download-btn" onclick="window.location.href='` + (app.download_extra || app.download_apk) + `'">` + secondButtonText + `</button>
-    <p>v` + app.version + ` - ` + (app.modTitle || "Premium Unlocked") + `<span style="float:right;">` + app.size + `</span></p>
-  </div>
-`;
+function isUsableUrl(value) {
+  if (!value || value === "#") return false;
+  try {
+    const url = new URL(value, window.location.href);
+    return (url.protocol === "http:" || url.protocol === "https:")
+      && !/(example\.com|YOUR_|yournumber|yourchannel|yourinsta)/i.test(value);
+  } catch (_) {
+    return false;
+  }
+}
 
-// Original version — clickable to Play Store
+function createDownloadBox(url, label) {
+  const box = document.createElement("div");
+  box.className = "download-box";
+
+  const button = document.createElement("button");
+  button.className = "download-btn";
+
+  if (isUsableUrl(url)) {
+    button.textContent = label;
+    button.addEventListener("click", () => {
+      window.location.href = url;
+    });
+  } else {
+    button.textContent = "Link unavailable";
+    button.disabled = true;
+    button.classList.add("disabled");
+    button.title = "This release does not have a live download URL yet.";
+  }
+
+  const info = document.createElement("p");
+  info.textContent = "v" + app.version + " - " + (app.modTitle || "Premium Unlocked");
+
+  const size = document.createElement("span");
+  size.style.float = "right";
+  size.textContent = app.size || "—";
+  info.appendChild(size);
+
+  box.appendChild(button);
+  box.appendChild(info);
+  return box;
+}
+
+modVersions.innerHTML = "";
+modVersions.appendChild(createDownloadBox(app.download_apk, "⬇ DOWNLOAD MOD APK"));
+modVersions.appendChild(
+  createDownloadBox(
+    app.download_extra || app.download_apk,
+    secondButtonText
+  )
+);
+
+// Original version — open the official store only when a real URL exists.
 const originalVersions = document.getElementById("originalVersions");
-originalVersions.innerHTML = `
-  <div class="download-box original">
-    <button class="download-btn" onclick="window.location.href='` + (app.playstore || "https://play.google.com") + `'">⬇ DOWNLOAD APK</button>
-    <p>Original - ` + app.version + `<span style="float:right;">` + app.size + `</span></p>
-  </div>
-`;
-
-    // Recommended apps
-    const recommendedGrid = document.getElementById("recommendedGrid");
-    const recommendedApps = apps.filter(a => a.id !== appId).slice(0, 4);
-    recommendedApps.forEach(rec => {
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.innerHTML = `
-        <img src="${rec.image}" style="width:70px;height:70px;border-radius:14px;margin-bottom:10px;" onerror="this.src='images/logo.png'">
-        <h3>${rec.name}</h3>
-        <p>${rec.version} • ${rec.size}</p>
-        <a href="app.html?id=${rec.id}">View Mod</a>
-      `;
-      recommendedGrid.appendChild(card);
-    });
-
-    // Drawer
-    const menuToggle = document.getElementById('menuToggle');
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('overlay');
-
-    menuToggle.addEventListener('click', () => {
-      sidebar.classList.toggle('open');
-      overlay.classList.toggle('open');
-    });
-
-    overlay.addEventListener('click', () => {
-      sidebar.classList.remove('open');
-      overlay.classList.remove('open');
-    });
-
-    // Light/Dark mode
-    const modeToggle = document.querySelector('.mode-toggle');
-    const modeText = document.getElementById('modeText');
-    const body = document.body;
-
-    if (localStorage.getItem('theme') === 'light') {
-      body.classList.add('light');
-      modeText.textContent = '🌙 Dark Mode';
-    } else {
-      modeText.textContent = '☀ Light Mode';
-    }
-
-    modeToggle.addEventListener('click', (e) => {
-      e.preventDefault();
-      body.classList.toggle('light');
-      if (body.classList.contains('light')) {
-        localStorage.setItem('theme', 'light');
-        modeText.textContent = '🌙 Dark Mode';
-      } else {
-        localStorage.setItem('theme', 'dark');
-        modeText.textContent = '☀ Light Mode';
-      }
-    });
-  });
+originalVersions.innerHTML = "";
+originalVersions.appendChild(
+  createDownloadBox(
+    app.playstore,
+    "↗ OPEN OFFICIAL STORE"
+  )
+);
 </script>
 
 <!-- MATRIX RAIN -->

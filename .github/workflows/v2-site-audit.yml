@@ -1,0 +1,67 @@
+name: V2 Site Audit
+
+on:
+  push:
+    branches:
+      - main
+      - v2-foundation
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Audit V2 foundation
+        run: |
+          python - <<'PY'
+          import json
+          import re
+          from pathlib import Path
+
+          root = Path(".")
+          required = [
+              "index.html",
+              "app.html",
+              "download.html",
+              "tutorial.html",
+              "manifest.json",
+              "sw.js",
+              "offline.html",
+              "robots.txt",
+              "sitemap.xml",
+              "js/pwa.js",
+          ]
+
+          missing = [p for p in required if not (root / p).exists()]
+          if missing:
+              raise SystemExit("Missing V2 foundation files: " + ", ".join(missing))
+
+          manifest = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
+          assert manifest["start_url"] == "./", "manifest start_url must be relative"
+          assert manifest["scope"] == "./", "manifest scope must be relative"
+
+          for page in ("index.html", "app.html", "download.html", "tutorial.html"):
+              text = (root / page).read_text(encoding="utf-8")
+              if 'href="manifest.json"' not in text:
+                  print(f"::warning file={page}::manifest.json is not linked")
+              if 'js/pwa.js' not in text:
+                  print(f"::warning file={page}::PWA registration script is not linked")
+
+          data = (root / "js/data.js").read_text(encoding="utf-8")
+          ids = re.findall(r'\bid\s*:\s*["\']([^"\']+)["\']', data)
+          duplicates = sorted({x for x in ids if ids.count(x) > 1})
+          if duplicates:
+              print("::warning::Duplicate catalog IDs remain: " + ", ".join(duplicates))
+
+          placeholders = len(re.findall(r'(?:example\\.com|YOUR_[A-Z0-9_]+)', data, flags=re.I))
+          if placeholders:
+              print(f"::warning::{placeholders} legacy placeholder URL/token references remain in js/data.js")
+
+          print("V2 foundation audit passed.")
+          PY

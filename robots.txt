@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://maxhacker001.github.io/techiegamermods/sitemap.xml
