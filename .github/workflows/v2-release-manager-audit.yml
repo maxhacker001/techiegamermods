@@ -32,8 +32,7 @@ jobs:
           scripts = re.findall(r"<script[^>]*>(.*?)</script>", html, flags=re.S|re.I)
           if not scripts:
               raise SystemExit("No inline admin script found")
-          Path("/tmp/admin.js").write_text("
-".join(scripts), encoding="utf-8")
+          Path("/tmp/admin.js").write_text(chr(10).join(scripts), encoding="utf-8")
           PY
           node --check /tmp/admin.js
 
