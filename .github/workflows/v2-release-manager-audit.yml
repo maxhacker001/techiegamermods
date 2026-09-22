@@ -1,0 +1,56 @@
+name: V2 Release Manager Audit
+
+on:
+  push:
+    branches:
+      - main
+      - v2-admin-release-manager
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check Worker syntax
+        run: node --check worker/src/index.js
+
+      - name: Check Admin JavaScript syntax
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          html = Path("admin/index.html").read_text(encoding="utf-8")
+          scripts = re.findall(r"<script[^>]*>(.*?)</script>", html, flags=re.S|re.I)
+          if not scripts:
+              raise SystemExit("No inline admin script found")
+          Path("/tmp/admin.js").write_text("
+".join(scripts), encoding="utf-8")
+          PY
+          node --check /tmp/admin.js
+
+      - name: Check release-manager routes
+        run: |
+          grep -q 'api/admin/apps' worker/src/index.js
+          grep -q 'api/admin/versions' worker/src/index.js
+          grep -q 'api/admin/files' worker/src/index.js
+          grep -q 'adminVerifyFile' worker/src/index.js
+          grep -q 'adminPublishFile' worker/src/index.js
+
+      - name: Check for committed credentials
+        run: |
+          if grep -RInE '(BEGIN PRIVATE KEY|ghp_[A-Za-z0-9]{20,}|sk-[A-Za-z0-9]{20,})' worker admin backend; then
+            echo "Potential credential found in source."
+            exit 1
+          fi
+
+      - name: Summary
+        run: echo "V2 release manager audit passed."
