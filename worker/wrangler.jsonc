@@ -8,8 +8,8 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "techie-gamer-mods",
-      "database_id": "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+      "database_name": "techiegamer-mods-db",
+      "database_id": "72fb6125-7a11-4472-9fc4-a8112683f770"
     }
   ],
 
