@@ -3,49 +3,90 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow">
   <title>Techie Gamer Mods — Admin</title>
   <style>
-    :root{--bg:#07100c;--panel:#101b15;--border:rgba(0,255,156,.2);--neon:#00ff9c;--muted:#9fbfb1;--text:#e6fff4}
+    :root{--bg:#07100c;--panel:#101b15;--panel2:#0b1510;--border:rgba(0,255,156,.2);--neon:#00ff9c;--muted:#9fbfb1;--text:#e6fff4;--danger:#ff6b6b;--warn:#ffd166}
     *{box-sizing:border-box}
-    body{margin:0;background:var(--bg);color:var(--text);font-family:Segoe UI,Roboto,Arial,sans-serif}
-    main{max-width:1000px;margin:auto;padding:24px}
-    h1,h2{color:var(--neon)}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
-    .panel{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:20px}
-    label{display:block;margin:12px 0 6px;color:var(--muted)}
-    input,textarea,select{width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;background:#06100b;color:var(--text)}
-    button{border:0;border-radius:10px;padding:12px 16px;background:var(--neon);color:#05100a;font-weight:800;cursor:pointer}
-    .danger{background:#7f1d1d;color:white}
-    pre{white-space:pre-wrap;word-break:break-word;color:var(--muted)}
-    small{color:var(--muted)}
+    body{margin:0;background:radial-gradient(circle at top,#0d1912,#060a08);color:var(--text);font-family:Segoe UI,Roboto,Arial,sans-serif}
+    main{max-width:1180px;margin:auto;padding:20px}
+    h1,h2,h3{color:var(--neon)}
+    .top{display:flex;justify-content:space-between;gap:16px;align-items:flex-end;flex-wrap:wrap;margin-bottom:20px}
+    .muted{color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+    .panel{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:18px}
+    .wide{grid-column:1/-1}
+    label{display:block;margin:12px 0 6px;color:var(--muted);font-size:13px}
+    input,textarea,select{width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--panel2);color:var(--text);outline:none}
+    input:focus,textarea:focus,select:focus{border-color:var(--neon)}
+    button{border:0;border-radius:10px;padding:11px 15px;background:var(--neon);color:#05100a;font-weight:800;cursor:pointer}
+    button.secondary{background:#173127;color:var(--text)}
+    button.danger{background:#7f1d1d;color:#fff}
+    button.warn{background:#735b12;color:#fff}
+    button:disabled{opacity:.45;cursor:not-allowed}
+    .toolbar{display:flex;gap:8px;flex-wrap:wrap}
+    .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+    .stat{background:var(--panel2);border:1px solid var(--border);border-radius:14px;padding:14px}
+    .stat strong{display:block;font-size:26px;color:var(--neon)}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:10px;border-bottom:1px solid rgba(0,255,156,.1);text-align:left;font-size:13px;vertical-align:top}
+    th{color:var(--muted)}
+    .badge{display:inline-block;border-radius:999px;padding:4px 8px;font-size:11px;border:1px solid var(--border)}
+    .ok{color:var(--neon);border-color:rgba(0,255,156,.4)}
+    .bad{color:var(--danger);border-color:rgba(255,107,107,.4)}
+    pre{white-space:pre-wrap;word-break:break-word;background:#050a07;padding:12px;border-radius:10px;color:var(--muted);min-height:52px}
+    .notice{padding:12px;border-radius:12px;background:rgba(255,209,102,.08);border:1px solid rgba(255,209,102,.22);color:#ffe9a7}
+    .hidden{display:none}
   </style>
 </head>
 <body>
 <main>
-  <h1>Techie Gamer Mods Admin</h1>
-  <p><small>V2 foundation panel. This page becomes the full release manager in the next phase.</small></p>
+  <div class="top">
+    <div>
+      <h1>Techie Gamer Mods Admin</h1>
+      <div class="muted">V2 release manager foundation</div>
+    </div>
+    <div class="toolbar">
+      <button id="refreshAll" class="secondary">Refresh</button>
+    </div>
+  </div>
 
-  <section class="panel">
+  <section class="panel wide">
     <h2>Connection</h2>
-    <label for="api">API base URL</label>
-    <input id="api" value="https://api.example.com">
-    <label for="token">Admin token</label>
-    <input id="token" type="password" placeholder="Stored only in this browser session">
-    <button id="save">Save session</button>
-    <p id="conn"></p>
+    <div class="grid">
+      <div>
+        <label for="api">API base URL</label>
+        <input id="api" placeholder="https://your-worker.workers.dev">
+      </div>
+      <div>
+        <label for="token">Admin token</label>
+        <input id="token" type="password" placeholder="Session-only">
+      </div>
+    </div>
+    <div class="toolbar" style="margin-top:12px">
+      <button id="save">Save session</button>
+      <button id="test" class="secondary">Test API</button>
+    </div>
+    <p id="conn" class="muted"></p>
   </section>
 
-  <div class="grid">
-    <section class="panel">
-      <h2>Statistics</h2>
-      <pre id="stats">Connect to the API to load statistics.</pre>
-      <button id="loadStats">Refresh</button>
-    </section>
+  <section class="panel wide" style="margin-top:16px">
+    <h2>Dashboard</h2>
+    <div class="stat-grid">
+      <div class="stat"><span class="muted">Apps</span><strong id="sApps">—</strong></div>
+      <div class="stat"><span class="muted">Published</span><strong id="sPublished">—</strong></div>
+      <div class="stat"><span class="muted">Versions</span><strong id="sVersions">—</strong></div>
+      <div class="stat"><span class="muted">Files</span><strong id="sFiles">—</strong></div>
+      <div class="stat"><span class="muted">Downloads</span><strong id="sDownloads">—</strong></div>
+    </div>
+    <pre id="stats">No data loaded.</pre>
+  </section>
 
+  <div class="grid" style="margin-top:16px">
     <section class="panel">
       <h2>Create app</h2>
-      <label>Name</label><input id="name">
-      <label>Slug (optional)</label><input id="slug">
+      <label>Name</label><input id="name" placeholder="Example App">
+      <label>Slug</label><input id="slug" placeholder="example-app">
       <label>Category</label>
       <select id="category">
         <option value="apps">App Mods</option>
@@ -56,12 +97,101 @@
       <label>Genre</label><input id="genre">
       <label>Package name</label><input id="package">
       <label>Google Play URL</label><input id="playstore">
-      <label>Description</label><textarea id="description" rows="5"></textarea>
-      <button id="createApp">Create draft</button>
+      <label>Icon URL</label><input id="icon">
+      <label>Description</label><textarea id="description" rows="6"></textarea>
+      <div class="toolbar" style="margin-top:12px"><button id="createApp">Create draft</button></div>
       <pre id="createResult"></pre>
+    </section>
+
+    <section class="panel">
+      <h2>Create version</h2>
+      <label>App ID</label><input id="versionAppId" placeholder="UUID from the app list">
+      <label>Version</label><input id="versionName" placeholder="1.0.0">
+      <label>MOD information</label><input id="modInfo" placeholder="Pro features unlocked">
+      <label>Android minimum</label><input id="androidMin" placeholder="8.0+">
+      <label>Architecture</label><input id="architecture" placeholder="arm64-v8a">
+      <label>Changelog</label><textarea id="changelog" rows="6"></textarea>
+      <div class="toolbar" style="margin-top:12px"><button id="createVersion">Create draft</button></div>
+      <pre id="versionResult"></pre>
+    </section>
+
+    <section class="panel">
+      <h2>Upload file</h2>
+      <label>Version ID</label><input id="fileVersionId" placeholder="Version UUID">
+      <label>File type</label>
+      <select id="fileType">
+        <option value="apk">APK</option>
+        <option value="xapk">XAPK</option>
+        <option value="apks">APKS</option>
+        <option value="obb">OBB</option>
+        <option value="data">DATA</option>
+        <option value="patch">PATCH</option>
+        <option value="zip">ZIP</option>
+        <option value="other">Other</option>
+      </select>
+      <label>File</label><input id="file" type="file">
+      <div class="notice" style="margin:12px 0">Uploaded files start as <b>pending</b> and are not downloadable. A real verification/review decision must be recorded before publication.</div>
+      <div class="toolbar">
+        <button id="upload">Upload</button>
+      </div>
+      <pre id="uploadResult"></pre>
+    </section>
+
+    <section class="panel">
+      <h2>Verify / publish file</h2>
+      <label>File ID</label><input id="fileId" placeholder="File UUID">
+      <label>Verification status</label>
+      <select id="scanStatus">
+        <option value="clean">clean</option>
+        <option value="flagged">flagged</option>
+        <option value="unknown">unknown</option>
+        <option value="failed">failed</option>
+        <option value="pending">pending</option>
+      </select>
+      <label>Review note</label><textarea id="verifyNote" rows="5"></textarea>
+      <div class="toolbar">
+        <button id="verify">Record verification</button>
+        <button id="publishFile" class="secondary">Publish file</button>
+      </div>
+      <pre id="verifyResult"></pre>
+    </section>
+
+    <section class="panel wide">
+      <h2>Catalog</h2>
+      <div class="toolbar">
+        <input id="search" placeholder="Search apps..." style="max-width:360px">
+        <select id="statusFilter" style="max-width:180px">
+          <option value="all">All statuses</option>
+          <option value="draft">Draft</option>
+          <option value="published">Published</option>
+          <option value="archived">Archived</option>
+        </select>
+        <button id="loadApps" class="secondary">Load</button>
+      </div>
+      <div style="overflow:auto;margin-top:12px">
+        <table>
+          <thead><tr><th>Name</th><th>Category</th><th>Status</th><th>Versions</th><th>Files</th><th>App ID</th><th></th></tr></thead>
+          <tbody id="appRows"></tbody>
+        </table>
+      </div>
+      <pre id="appsResult">No catalog loaded.</pre>
+    </section>
+
+    <section class="panel wide">
+      <h2>Selected app versions</h2>
+      <label>App ID</label><input id="selectedAppId" placeholder="Choose an App ID from the catalog">
+      <div class="toolbar"><button id="loadVersions" class="secondary">Load versions</button></div>
+      <div style="overflow:auto;margin-top:12px">
+        <table>
+          <thead><tr><th>Version</th><th>Status</th><th>Files</th><th>Clean published files</th><th>Version ID</th><th></th></tr></thead>
+          <tbody id="versionRows"></tbody>
+        </table>
+      </div>
+      <pre id="versionsResult">No versions loaded.</pre>
     </section>
   </div>
 </main>
+
 <script>
 const $ = (id) => document.getElementById(id);
 
@@ -69,53 +199,216 @@ function apiBase() {
   return $('api').value.trim().replace(/\/$/, '');
 }
 
-function headers(json=false) {
-  const h = { Authorization: 'Bearer ' + sessionStorage.getItem('tgm_admin_token') };
+function authHeaders(json=false) {
+  const token = sessionStorage.getItem('tgm_admin_token') || '';
+  const h = { Authorization: 'Bearer ' + token };
   if (json) h['content-type'] = 'application/json';
   return h;
 }
 
-$('save').onclick = () => {
+async function request(path, options={}) {
+  const r = await fetch(apiBase() + path, {
+    ...options,
+    headers: {
+      ...authHeaders(options.body && typeof options.body === 'string'),
+      ...(options.headers || {})
+    }
+  });
+  const text = await r.text();
+  let body;
+  try { body = JSON.parse(text); } catch { body = { raw:text }; }
+  if (!r.ok) throw new Error((body && body.error) || ('HTTP ' + r.status));
+  return body;
+}
+
+function saveSession() {
   sessionStorage.setItem('tgm_api_base', apiBase());
   sessionStorage.setItem('tgm_admin_token', $('token').value);
   $('conn').textContent = 'Saved for this browser session.';
-};
+}
 
-$('api').value = sessionStorage.getItem('tgm_api_base') || $('api').value;
-$('token').value = sessionStorage.getItem('tgm_admin_token') || '';
+function restoreSession() {
+  $('api').value = sessionStorage.getItem('tgm_api_base') || '';
+  $('token').value = sessionStorage.getItem('tgm_admin_token') || '';
+}
 
-$('loadStats').onclick = async () => {
+$('save').onclick = saveSession;
+$('test').onclick = async () => {
   try {
-    const r = await fetch(apiBase() + '/api/admin/stats', {headers: headers()});
-    $('stats').textContent = JSON.stringify(await r.json(), null, 2);
-  } catch (e) {
-    $('stats').textContent = 'Connection error: ' + e.message;
+    const result = await request('/api/health', {headers:{}});
+    $('conn').textContent = 'API OK: ' + JSON.stringify(result);
+  } catch(e) {
+    $('conn').textContent = 'API error: ' + e.message;
   }
 };
+
+async function loadStats() {
+  try {
+    const data = await request('/api/admin/stats');
+    $('sApps').textContent = data.apps ?? '0';
+    $('sPublished').textContent = data.published_apps ?? '0';
+    $('sVersions').textContent = data.versions ?? '0';
+    $('sFiles').textContent = data.files ?? '0';
+    $('sDownloads').textContent = data.downloads ?? '0';
+    $('stats').textContent = JSON.stringify(data, null, 2);
+  } catch(e) {
+    $('stats').textContent = 'Error: ' + e.message;
+  }
+}
+
+async function loadApps() {
+  try {
+    const params = new URLSearchParams({
+      status: $('statusFilter').value,
+      search: $('search').value.trim(),
+      limit: '200'
+    });
+    const data = await request('/api/admin/apps?' + params.toString());
+    const rows = $('appRows');
+    rows.innerHTML = '';
+    (data.apps || []).forEach(app => {
+      const tr = document.createElement('tr');
+      const status = document.createElement('span');
+      status.className = 'badge ' + (app.status === 'published' ? 'ok' : '');
+      status.textContent = app.status;
+      tr.innerHTML =
+        '<td>' + escapeHtml(app.name) + '<br><span class="muted">' + escapeHtml(app.slug || '') + '</span></td>' +
+        '<td>' + escapeHtml(app.category_name || app.category_slug || '') + '</td>' +
+        '<td></td>' +
+        '<td>' + (app.version_count ?? 0) + '</td>' +
+        '<td>' + (app.file_count ?? 0) + '</td>' +
+        '<td><code>' + escapeHtml(app.id) + '</code></td>' +
+        '<td><button class="secondary select-app" data-id="' + escapeAttr(app.id) + '">Select</button></td>';
+      tr.children[2].appendChild(status);
+      rows.appendChild(tr);
+    });
+    $('appsResult').textContent = JSON.stringify(data, null, 2);
+    document.querySelectorAll('.select-app').forEach(btn => {
+      btn.onclick = () => {
+        $('selectedAppId').value = btn.dataset.id;
+        $('versionAppId').value = btn.dataset.id;
+        loadVersions();
+      };
+    });
+  } catch(e) {
+    $('appsResult').textContent = 'Error: ' + e.message;
+  }
+}
+
+async function loadVersions() {
+  const id = $('selectedAppId').value.trim();
+  if (!id) return;
+  try {
+    const data = await request('/api/admin/apps/' + encodeURIComponent(id) + '/versions');
+    const rows = $('versionRows');
+    rows.innerHTML = '';
+    (data.versions || []).forEach(v => {
+      const tr=document.createElement('tr');
+      tr.innerHTML =
+        '<td>' + escapeHtml(v.version_name) + '</td>' +
+        '<td>' + escapeHtml(v.status) + '</td>' +
+        '<td>' + (v.file_count ?? 0) + '</td>' +
+        '<td>' + (v.published_clean_file_count ?? 0) + '</td>' +
+        '<td><code>' + escapeHtml(v.id) + '</code></td>' +
+        '<td><button class="secondary select-version" data-id="' + escapeAttr(v.id) + '">Use</button></td>';
+      rows.appendChild(tr);
+    });
+    $('versionsResult').textContent = JSON.stringify(data, null, 2);
+    document.querySelectorAll('.select-version').forEach(btn => {
+      btn.onclick=()=> $('fileVersionId').value=btn.dataset.id;
+    });
+  } catch(e) {
+    $('versionsResult').textContent='Error: '+e.message;
+  }
+}
 
 $('createApp').onclick = async () => {
-  const body = {
-    name: $('name').value.trim(),
-    slug: $('slug').value.trim() || undefined,
-    category_slug: $('category').value,
-    publisher: $('publisher').value.trim() || undefined,
-    genre: $('genre').value.trim() || undefined,
-    package_name: $('package').value.trim() || undefined,
-    play_store_url: $('playstore').value.trim() || undefined,
-    description_html: $('description').value.trim()
-  };
-
   try {
-    const r = await fetch(apiBase() + '/api/admin/apps', {
-      method: 'POST',
-      headers: headers(true),
-      body: JSON.stringify(body)
-    });
-    $('createResult').textContent = JSON.stringify(await r.json(), null, 2);
-  } catch (e) {
-    $('createResult').textContent = 'Connection error: ' + e.message;
-  }
+    const body = {
+      name: $('name').value.trim(),
+      slug: $('slug').value.trim() || undefined,
+      category_slug: $('category').value,
+      publisher: $('publisher').value.trim() || undefined,
+      genre: $('genre').value.trim() || undefined,
+      package_name: $('package').value.trim() || undefined,
+      play_store_url: $('playstore').value.trim() || undefined,
+      icon_url: $('icon').value.trim() || undefined,
+      description_html: $('description').value.trim()
+    };
+    const data=await request('/api/admin/apps',{method:'POST',body:JSON.stringify(body)});
+    $('createResult').textContent=JSON.stringify(data,null,2);
+    await loadStats(); await loadApps();
+  } catch(e) { $('createResult').textContent='Error: '+e.message; }
 };
+
+$('createVersion').onclick = async () => {
+  try {
+    const body = {
+      app_id: $('versionAppId').value.trim(),
+      version_name: $('versionName').value.trim(),
+      mod_info: $('modInfo').value.trim(),
+      android_min: $('androidMin').value.trim(),
+      architecture: $('architecture').value.trim(),
+      changelog: $('changelog').value.trim()
+    };
+    const data=await request('/api/admin/versions',{method:'POST',body:JSON.stringify(body)});
+    $('versionResult').textContent=JSON.stringify(data,null,2);
+    $('selectedAppId').value=body.app_id;
+    $('fileVersionId').value=data.id || '';
+    await loadStats(); await loadVersions();
+  } catch(e) { $('versionResult').textContent='Error: '+e.message; }
+};
+
+$('upload').onclick = async () => {
+  try {
+    const file = $('file').files[0];
+    const versionId = $('fileVersionId').value.trim();
+    if (!file || !versionId) throw new Error('Select a file and supply a version ID.');
+    const form = new FormData();
+    form.append('file',file);
+    form.append('version_id',versionId);
+    form.append('file_type',$('fileType').value);
+    const r=await fetch(apiBase()+'/api/admin/files',{method:'POST',headers:authHeaders(),body:form});
+    const data=await r.json();
+    if(!r.ok) throw new Error(data.error || ('HTTP '+r.status));
+    $('uploadResult').textContent=JSON.stringify(data,null,2);
+    $('fileId').value=data.id || '';
+    await loadStats(); await loadVersions();
+  } catch(e) { $('uploadResult').textContent='Error: '+e.message; }
+};
+
+$('verify').onclick = async () => {
+  try {
+    const id=$('fileId').value.trim();
+    const body={scan_status:$('scanStatus').value,note:$('verifyNote').value.trim()};
+    const data=await request('/api/admin/files/'+encodeURIComponent(id)+'/verify',{method:'PATCH',body:JSON.stringify(body)});
+    $('verifyResult').textContent=JSON.stringify(data,null,2);
+    await loadStats(); await loadVersions();
+  } catch(e) { $('verifyResult').textContent='Error: '+e.message; }
+};
+
+$('publishFile').onclick = async () => {
+  try {
+    const id=$('fileId').value.trim();
+    const data=await request('/api/admin/files/'+encodeURIComponent(id)+'/publish',{method:'PATCH'});
+    $('verifyResult').textContent=JSON.stringify(data,null,2);
+    await loadStats(); await loadVersions();
+  } catch(e) { $('verifyResult').textContent='Error: '+e.message; }
+};
+
+$('loadStats').onclick = loadStats;
+$('loadApps').onclick = loadApps;
+$('loadVersions').onclick = loadVersions;
+$('refreshAll').onclick = async ()=>{await loadStats();await loadApps();await loadVersions();};
+
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));
+}
+function escapeAttr(value) {
+  return String(value ?? '').replace(/[^a-zA-Z0-9_-]/g,'');
+}
+
+restoreSession();
 </script>
 </body>
 </html>
