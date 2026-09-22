@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Techie Gamer Mods — Admin</title>
+  <style>
+    :root{--bg:#07100c;--panel:#101b15;--border:rgba(0,255,156,.2);--neon:#00ff9c;--muted:#9fbfb1;--text:#e6fff4}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:Segoe UI,Roboto,Arial,sans-serif}
+    main{max-width:1000px;margin:auto;padding:24px}
+    h1,h2{color:var(--neon)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+    .panel{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:20px}
+    label{display:block;margin:12px 0 6px;color:var(--muted)}
+    input,textarea,select{width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;background:#06100b;color:var(--text)}
+    button{border:0;border-radius:10px;padding:12px 16px;background:var(--neon);color:#05100a;font-weight:800;cursor:pointer}
+    .danger{background:#7f1d1d;color:white}
+    pre{white-space:pre-wrap;word-break:break-word;color:var(--muted)}
+    small{color:var(--muted)}
+  </style>
+</head>
+<body>
+<main>
+  <h1>Techie Gamer Mods Admin</h1>
+  <p><small>V2 foundation panel. This page becomes the full release manager in the next phase.</small></p>
+
+  <section class="panel">
+    <h2>Connection</h2>
+    <label for="api">API base URL</label>
+    <input id="api" value="https://api.example.com">
+    <label for="token">Admin token</label>
+    <input id="token" type="password" placeholder="Stored only in this browser session">
+    <button id="save">Save session</button>
+    <p id="conn"></p>
+  </section>
+
+  <div class="grid">
+    <section class="panel">
+      <h2>Statistics</h2>
+      <pre id="stats">Connect to the API to load statistics.</pre>
+      <button id="loadStats">Refresh</button>
+    </section>
+
+    <section class="panel">
+      <h2>Create app</h2>
+      <label>Name</label><input id="name">
+      <label>Slug (optional)</label><input id="slug">
+      <label>Category</label>
+      <select id="category">
+        <option value="apps">App Mods</option>
+        <option value="games">Game Mods</option>
+        <option value="tutorials">Modding Tutorials</option>
+      </select>
+      <label>Publisher</label><input id="publisher">
+      <label>Genre</label><input id="genre">
+      <label>Package name</label><input id="package">
+      <label>Google Play URL</label><input id="playstore">
+      <label>Description</label><textarea id="description" rows="5"></textarea>
+      <button id="createApp">Create draft</button>
+      <pre id="createResult"></pre>
+    </section>
+  </div>
+</main>
+<script>
+const $ = (id) => document.getElementById(id);
+
+function apiBase() {
+  return $('api').value.trim().replace(/\/$/, '');
+}
+
+function headers(json=false) {
+  const h = { Authorization: 'Bearer ' + sessionStorage.getItem('tgm_admin_token') };
+  if (json) h['content-type'] = 'application/json';
+  return h;
+}
+
+$('save').onclick = () => {
+  sessionStorage.setItem('tgm_api_base', apiBase());
+  sessionStorage.setItem('tgm_admin_token', $('token').value);
+  $('conn').textContent = 'Saved for this browser session.';
+};
+
+$('api').value = sessionStorage.getItem('tgm_api_base') || $('api').value;
+$('token').value = sessionStorage.getItem('tgm_admin_token') || '';
+
+$('loadStats').onclick = async () => {
+  try {
+    const r = await fetch(apiBase() + '/api/admin/stats', {headers: headers()});
+    $('stats').textContent = JSON.stringify(await r.json(), null, 2);
+  } catch (e) {
+    $('stats').textContent = 'Connection error: ' + e.message;
+  }
+};
+
+$('createApp').onclick = async () => {
+  const body = {
+    name: $('name').value.trim(),
+    slug: $('slug').value.trim() || undefined,
+    category_slug: $('category').value,
+    publisher: $('publisher').value.trim() || undefined,
+    genre: $('genre').value.trim() || undefined,
+    package_name: $('package').value.trim() || undefined,
+    play_store_url: $('playstore').value.trim() || undefined,
+    description_html: $('description').value.trim()
+  };
+
+  try {
+    const r = await fetch(apiBase() + '/api/admin/apps', {
+      method: 'POST',
+      headers: headers(true),
+      body: JSON.stringify(body)
+    });
+    $('createResult').textContent = JSON.stringify(await r.json(), null, 2);
+  } catch (e) {
+    $('createResult').textContent = 'Connection error: ' + e.message;
+  }
+};
+</script>
+</body>
+</html>

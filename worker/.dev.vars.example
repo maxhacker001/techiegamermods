@@ -1,0 +1,3 @@
+# Example only — do not commit real secrets.
+ADMIN_TOKEN=replace-with-a-long-random-secret
+WEB_ORIGIN=https://maxhacker001.github.io

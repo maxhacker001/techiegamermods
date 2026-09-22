@@ -1,0 +1,41 @@
+name: V2 Backend Audit
+
+on:
+  push:
+    branches:
+      - main
+      - v2-backend-foundation
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check Worker syntax
+        run: node --check worker/src/index.js
+
+      - name: Check configuration placeholders
+        run: |
+          test -f worker/wrangler.jsonc
+          test -f backend/schema.sql
+          test -f backend/seed_categories.sql
+          if grep -RInE '(BEGIN PRIVATE KEY|ghp_[A-Za-z0-9]{20,}|sk-[A-Za-z0-9]{20,})' worker backend; then
+            echo "Potential credential found in backend source."
+            exit 1
+          fi
+
+      - name: Check schema tables
+        run: |
+          for table in apps categories versions files screenshots tutorials downloads admin_audit_log; do
+            grep -q "CREATE TABLE IF NOT EXISTS $table" backend/schema.sql
+          done
+          echo "V2 backend foundation audit passed."
