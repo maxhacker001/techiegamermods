@@ -466,6 +466,67 @@ async function adminSetAppStatus(request, appId, env) {
   return json({id:appId,status},200,env);
 }
 
+async function adminDeleteVersion(request, versionId, env) {
+  if (!requireAdmin(request, env)) return json({ error:"Unauthorized" },401,env);
+  if (!env.DB || !env.BUCKET) return json({ error:"Database/storage binding is not configured" },500,env);
+
+  const version = await env.DB.prepare(
+    "SELECT id,app_id,version_name,status FROM versions WHERE id=? LIMIT 1"
+  ).bind(versionId).first();
+  if (!version) return json({ error:"Version not found" },404,env);
+
+  // Never leave a published app without a published version. A published
+  // version can be deleted only when another published version will remain.
+  if (version.status === "published") {
+    const replacement = await env.DB.prepare(
+      "SELECT id FROM versions WHERE app_id=? AND status='published' AND id<>? LIMIT 1"
+    ).bind(version.app_id, versionId).first();
+    if (!replacement) {
+      return json({
+        error:"Cannot delete the only published version. Publish another version first, then delete this one."
+      },409,env);
+    }
+  }
+
+  const files = await env.DB.prepare(
+    "SELECT id,storage_key FROM files WHERE version_id=?"
+  ).bind(versionId).all();
+
+  // Remove the physical release files first. D1 rows are deleted by CASCADE.
+  for (const file of files.results || []) {
+    if (file.storage_key) {
+      try { await env.BUCKET.delete(file.storage_key); } catch (_) {}
+    }
+  }
+
+  const multipart = await env.DB.prepare(
+    "SELECT storage_key FROM multipart_uploads WHERE version_id=?"
+  ).bind(versionId).all();
+
+  for (const upload of multipart.results || []) {
+    if (upload.storage_key) {
+      try { await env.BUCKET.delete(upload.storage_key); } catch (_) {}
+    }
+  }
+
+  await env.DB.prepare("DELETE FROM versions WHERE id=?").bind(versionId).run();
+
+  await env.DB.prepare(
+    "INSERT INTO admin_audit_log(actor,action,entity_type,entity_id,details_json) VALUES('admin','delete','version',?,?)"
+  ).bind(versionId, JSON.stringify({
+    app_id: version.app_id,
+    version_name: version.version_name,
+    previous_status: version.status,
+    files_deleted: (files.results || []).length
+  })).run();
+
+  return json({
+    id: versionId,
+    deleted: true,
+    files_deleted: (files.results || []).length
+  },200,env);
+}
+
 async function adminSetVersionStatus(request, versionId, env) {
   if (!requireAdmin(request, env)) return json({ error:"Unauthorized" },401,env);
   const body=await parseJson(request);
@@ -1309,6 +1370,11 @@ export default {
       if (path.startsWith("/api/admin/versions/") && path.endsWith("/status") && request.method === "PATCH") {
         const versionId = decodeURIComponent(path.slice("/api/admin/versions/".length, -"/status".length));
         return adminSetVersionStatus(request, versionId, env);
+      }
+
+      if (path.startsWith("/api/admin/versions/") && request.method === "DELETE") {
+        const versionId = decodeURIComponent(path.slice("/api/admin/versions/".length));
+        return adminDeleteVersion(request, versionId, env);
       }
 
       if (path === "/api/admin/files" && request.method === "POST") {
