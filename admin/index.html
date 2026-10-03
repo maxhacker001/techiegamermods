@@ -748,6 +748,7 @@ async function loadFiles(versionId) {
 async function loadAppAssets(appId) {
   const id = String(appId || '').trim();
   if (!id) return;
+
   const requestId = ++assetRequestSeq;
   const rows = $('assetRows');
   const result = $('assetResult');
@@ -755,7 +756,8 @@ async function loadAppAssets(appId) {
   const render = (data) => {
     if (requestId !== assetRequestSeq || $('selectedAppId').value.trim() !== id) return;
     rows.innerHTML = '';
-    const assets = data?.assets || [];
+    const assets = Array.isArray(data?.assets) ? data.assets : [];
+
     assets.forEach(asset => {
       const tr = document.createElement('tr');
       tr.innerHTML =
@@ -766,18 +768,57 @@ async function loadAppAssets(appId) {
         '<td>' + formatBytes(asset.bytes) + '</td>';
       rows.appendChild(tr);
     });
-    result.textContent = assets.length ? JSON.stringify(data, null, 2) : 'No extra files saved for this app.';
+
+    result.textContent = assets.length
+      ? JSON.stringify(data, null, 2)
+      : 'No extra files saved for this app.';
   };
 
   const cached = appAssetsCache.get(id);
   if (cached) render(cached);
-  else result.textContent = 'Loading extra files...';
+  else {
+    rows.innerHTML = '';
+    result.textContent = 'No extra files saved for this app.';
+  }
 
   try {
     const data = await request('/api/admin/apps/' + encodeURIComponent(id) + '/assets');
     appAssetsCache.set(id, data);
     render(data);
-  } catch(e) {
+    return;
+  } catch (e) {
+    if (requestId !== assetRequestSeq || $('selectedAppId').value.trim() !== id) return;
+
+    const message = String(e.message || '');
+    if (!/404|not found/i.test(message)) {
+      result.textContent = 'Error: ' + message;
+      rows.innerHTML = '';
+      return;
+    }
+  }
+
+  try {
+    const versionsData = await request('/api/admin/apps/' + encodeURIComponent(id) + '/versions');
+    const versions = Array.isArray(versionsData?.versions) ? versionsData.versions : [];
+
+    const groups = await Promise.all(
+      versions.map(async version => {
+        try {
+          const data = await request('/api/admin/versions/' + encodeURIComponent(version.id) + '/assets');
+          return (data.assets || []).map(asset => ({
+            ...asset,
+            version_name: version.version_name
+          }));
+        } catch (_) {
+          return [];
+        }
+      })
+    );
+
+    const data = { app: appCache.get(id) || { id }, assets: groups.flat() };
+    appAssetsCache.set(id, data);
+    render(data);
+  } catch (e) {
     if (requestId === assetRequestSeq && $('selectedAppId').value.trim() === id) {
       result.textContent = 'Error: ' + e.message;
       rows.innerHTML = '';
@@ -1173,10 +1214,12 @@ $('uploadAsset').onclick = async () => {
     });
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || ('HTTP ' + response.status));
-    $('assetResult').textContent = JSON.stringify(data, null, 2);
     $('assetFile').value = '';
     appAssetsCache.delete($('selectedAppId').value.trim());
     await loadAppAssets($('selectedAppId').value.trim());
+    if (!($('assetRows').children.length)) {
+      $('assetResult').textContent = JSON.stringify(data, null, 2);
+    }
     await loadStats();
   } catch(e) {
     $('assetResult').textContent = 'Error: ' + e.message;
@@ -1192,8 +1235,14 @@ $('selectedAppId').addEventListener('change', async ()=>{
   $('tutorialAppId').value=id;
   const app = appCache.get(id);
   if (app) applyAdminContentMode(app);
+  $('assetVersionId').value = '';
+  $('assetLabel').value = '';
+  $('assetFile').value = '';
+  $('assetRows').innerHTML = '';
+  $('assetResult').textContent = 'No extra files saved for this app.';
   await Promise.all([
     loadVersions(),
+    loadAppAssets(id),
     loadTutorials(id)
   ]);
 });
