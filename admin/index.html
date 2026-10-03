@@ -529,16 +529,52 @@ async function loadVersions() {
           '<select class="version-status" data-id="' + escapeAttr(v.id) + '">' +
             '<option value="draft"' + (v.status === 'draft' ? ' selected' : '') + '>draft</option>' +
             '<option value="published"' + (v.status === 'published' ? ' selected' : '') + '>published</option>' +
-            '<option value="archived"' + (v.status === 'archived' ? ' selected' : '') + '>archived</option>' +
+            (v.status === 'archived' ? '<option value="archived" selected disabled>archived</option>' : '') +
           '</select>' +
         '</td>' +
         '<td>' + (v.file_count ?? 0) + '</td>' +
         '<td>' + (v.published_clean_file_count ?? 0) + '</td>' +
         '<td><code>' + escapeHtml(v.id) + '</code></td>' +
-        '<td><button class="secondary select-version" data-id="' + escapeAttr(v.id) + '">Use</button></td>';
+        '<td>' +
+          '<button class="secondary select-version" data-id="' + escapeAttr(v.id) + '">Use</button> ' +
+          '<button class="danger delete-version" data-id="' + escapeAttr(v.id) + '">Delete</button>' +
+        '</td>';
       rows.appendChild(tr);
     });
     $('versionsResult').textContent = JSON.stringify(data, null, 2);
+
+    document.querySelectorAll('.delete-version').forEach(btn => {
+      btn.onclick = async () => {
+        const version = versionCache.get(btn.dataset.id);
+        if (!version) return;
+
+        const label = 'version ' + (version.version_name || version.id);
+        if (!confirm('Delete ' + label + ' permanently? Any release files attached to this version will also be removed from storage.')) return;
+
+        btn.disabled = true;
+        try {
+          const result = await request('/api/admin/versions/' + encodeURIComponent(version.id), {
+            method: 'DELETE'
+          });
+
+          $('versionsResult').textContent = JSON.stringify(result, null, 2);
+
+          if ($('versionEditId').value === version.id) {
+            $('versionEditId').value = '';
+            $('fileVersionId').value = '';
+            $('filesResult').textContent = 'Version deleted.';
+          }
+
+          await loadStats();
+          await loadVersions();
+          await loadApps();
+        } catch (e) {
+          btn.disabled = false;
+          $('versionsResult').textContent = 'Error: ' + e.message;
+        }
+      };
+    });
+
     document.querySelectorAll('.select-version').forEach(btn => {
       btn.onclick=async()=>{
         const v=versionCache.get(btn.dataset.id);
@@ -743,22 +779,28 @@ function getLegacyCatalogAppForSelected() {
 }
 
 function setModInfoFields(value) {
+  const cleanLine = (s) => String(s || '')
+    .trim()
+    .replace(/^(?:[•●▪◦·—–-]+|[.:])+\s*/, '')
+    .trim();
+
   const liveLines = String(value || '')
     .replace(/\r/g, '')
     .split('\n')
-    .map(s => s.trim())
+    .map(cleanLine)
     .filter(Boolean);
 
   const legacy = getLegacyCatalogAppForSelected();
+  const legacySummary = cleanLine(legacy && legacy.modTitle);
   const legacyFeatures = legacy && Array.isArray(legacy.features)
-    ? legacy.features.map(s => String(s || '').trim()).filter(Boolean)
+    ? legacy.features.map(cleanLine).filter(Boolean)
     : [];
 
-  // Older migrated versions may contain only the one-line summary. Load the
-  // original site's detailed features into the same editable Admin form so
-  // nothing shown publicly is hidden from the CMS editor.
-  const summary = liveLines.shift() || (legacy && legacy.modTitle) || '';
-  const detailed = liveLines.length > 0 ? liveLines : legacyFeatures;
+  // Legacy releases seeded from js/data.js can have only a short summary in
+  // D1. Restore the original feature list for those versions without hiding
+  // a genuinely detailed live MOD list.
+  const summary = liveLines.shift() || legacySummary || '';
+  const detailed = liveLines.length > 1 ? liveLines : legacyFeatures;
 
   $('modSummary').value = summary;
   $('modFeatures').value = detailed.join('\n');
