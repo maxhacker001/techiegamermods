@@ -70,7 +70,7 @@
     <p id="conn" class="muted"></p>
   </section>
 
-  <section class="panel wide" style="margin-top:16px">
+  <section class="panel wide" id="adminStatusHelp" style="margin-top:16px">
     <h2>Dashboard</h2>
     <div class="stat-grid">
       <div class="stat"><span class="muted">Apps</span><strong id="sApps">—</strong></div>
@@ -278,7 +278,14 @@ async function loadApps() {
         '<td>' + (app.version_count ?? 0) + '</td>' +
         '<td>' + (app.file_count ?? 0) + '</td>' +
         '<td><code>' + escapeHtml(app.id) + '</code></td>' +
-        '<td><button class="secondary select-app" data-id="' + escapeAttr(app.id) + '">Select</button></td>';
+        '<td>' +
+          '<button class="secondary select-app" data-id="' + escapeAttr(app.id) + '">Select</button> ' +
+          '<select class="app-status" data-id="' + escapeAttr(app.id) + '">' +
+            '<option value="draft"' + (app.status === 'draft' ? ' selected' : '') + '>draft</option>' +
+            '<option value="published"' + (app.status === 'published' ? ' selected' : '') + '>published</option>' +
+            '<option value="archived"' + (app.status === 'archived' ? ' selected' : '') + '>archived</option>' +
+          '</select>' +
+        '</td>';
       tr.children[2].appendChild(status);
       rows.appendChild(tr);
     });
@@ -288,6 +295,21 @@ async function loadApps() {
         $('selectedAppId').value = btn.dataset.id;
         $('versionAppId').value = btn.dataset.id;
         loadVersions();
+      };
+    });
+    document.querySelectorAll('.app-status').forEach(sel => {
+      sel.onchange = async () => {
+        try {
+          await request('/api/admin/apps/' + encodeURIComponent(sel.dataset.id) + '/status', {
+            method:'PATCH',
+            body:JSON.stringify({status:sel.value})
+          });
+          await loadStats();
+          await loadApps();
+        } catch(e) {
+          $('appsResult').textContent = 'Error: ' + e.message;
+          await loadApps();
+        }
       };
     });
   } catch(e) {
@@ -306,7 +328,13 @@ async function loadVersions() {
       const tr=document.createElement('tr');
       tr.innerHTML =
         '<td>' + escapeHtml(v.version_name) + '</td>' +
-        '<td>' + escapeHtml(v.status) + '</td>' +
+        '<td>' +
+          '<select class="version-status" data-id="' + escapeAttr(v.id) + '">' +
+            '<option value="draft"' + (v.status === 'draft' ? ' selected' : '') + '>draft</option>' +
+            '<option value="published"' + (v.status === 'published' ? ' selected' : '') + '>published</option>' +
+            '<option value="archived"' + (v.status === 'archived' ? ' selected' : '') + '>archived</option>' +
+          '</select>' +
+        '</td>' +
         '<td>' + (v.file_count ?? 0) + '</td>' +
         '<td>' + (v.published_clean_file_count ?? 0) + '</td>' +
         '<td><code>' + escapeHtml(v.id) + '</code></td>' +
@@ -316,6 +344,22 @@ async function loadVersions() {
     $('versionsResult').textContent = JSON.stringify(data, null, 2);
     document.querySelectorAll('.select-version').forEach(btn => {
       btn.onclick=()=> $('fileVersionId').value=btn.dataset.id;
+    });
+    document.querySelectorAll('.version-status').forEach(sel => {
+      sel.onchange = async () => {
+        try {
+          await request('/api/admin/versions/' + encodeURIComponent(sel.dataset.id) + '/status', {
+            method:'PATCH',
+            body:JSON.stringify({status:sel.value})
+          });
+          await loadStats();
+          await loadVersions();
+          await loadApps();
+        } catch(e) {
+          $('versionsResult').textContent = 'Error: ' + e.message;
+          await loadVersions();
+        }
+      };
     });
   } catch(e) {
     $('versionsResult').textContent='Error: '+e.message;
@@ -396,7 +440,6 @@ $('publishFile').onclick = async () => {
   } catch(e) { $('verifyResult').textContent='Error: '+e.message; }
 };
 
-$('loadStats').onclick = loadStats;
 $('loadApps').onclick = loadApps;
 $('loadVersions').onclick = loadVersions;
 $('refreshAll').onclick = async ()=>{await loadStats();await loadApps();await loadVersions();};
