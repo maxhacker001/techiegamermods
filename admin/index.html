@@ -736,9 +736,11 @@ $('newApp').onclick = () => {
 
 function getLegacyCatalogAppForSelected() {
   const selected = appCache.get($('selectedAppId').value.trim());
-  if (!selected || !Array.isArray(window.apps)) return null;
+  const legacyCatalog =
+    (typeof apps !== 'undefined' && Array.isArray(apps)) ? apps : [];
+  if (!selected || !legacyCatalog.length) return null;
   const normalize = value => String(value || '').trim().toLowerCase();
-  return window.apps.find(legacy =>
+  return legacyCatalog.find(legacy =>
     normalize(legacy.id) === normalize(selected.slug) ||
     normalize(legacy.id) === normalize(selected.id) ||
     (
