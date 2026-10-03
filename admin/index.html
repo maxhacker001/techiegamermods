@@ -291,6 +291,8 @@
 </main>
 
 <script src="../js/data.js"></script>
+<script src="../js/site-config.js"></script>
+<script src="../js/api.js"></script>
 <script>
 const $ = (id) => document.getElementById(id);
 
@@ -1029,7 +1031,9 @@ async function loadExistingScreenshots() {
       row.style.cssText = 'display:grid;grid-template-columns:90px 1fr auto;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);';
 
       const img = document.createElement('img');
-      img.src = window.TGMApi.imageUrl(shot.media_url);
+      img.src = /^https?:\/\//i.test(String(shot.media_url || ''))
+        ? String(shot.media_url)
+        : apiBase() + (String(shot.media_url || '').startsWith('/') ? String(shot.media_url) : '/' + String(shot.media_url || ''));
       img.alt = shot.alt_text || ('Screenshot ' + (index + 1));
       img.style.cssText = 'width:80px;height:80px;object-fit:cover;border-radius:10px;border:1px solid var(--border);';
 
