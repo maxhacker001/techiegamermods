@@ -806,7 +806,7 @@ async function adminUploadScreenshot(request, appId, env) {
 async function adminListTutorials(request, appId, env) {
   if (!requireAdmin(request, env)) return json({ error: "Unauthorized" }, 401, env);
 
-  const app = await env.DB.prepare("SELECT id,name FROM apps WHERE id=? LIMIT 1").bind(appId).first();
+  const app = await env.DB.prepare("SELECT id,name,description_html FROM apps WHERE id=? LIMIT 1").bind(appId).first();
   if (!app) return json({ error: "App not found" }, 404, env);
 
   const result = await env.DB.prepare(
