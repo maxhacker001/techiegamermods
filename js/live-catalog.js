@@ -6,7 +6,7 @@
 
   const card = (app, tutorial = false) => {
     const el = document.createElement("div");
-    el.className = "card";
+    el.className = tutorial ? "card tutorial-card" : "card";
 
     const img = document.createElement("img");
     img.src = app.image;
@@ -20,9 +20,11 @@
     el.appendChild(h3);
 
     const p = document.createElement("p");
-    p.textContent = app.version === "—"
-      ? (app.size !== "—" ? "Release • " + app.size : "Tutorial")
-      : app.version + " • " + app.size;
+    p.textContent = tutorial
+      ? "▶ YouTube • Step-by-step guide"
+      : (app.version === "—"
+        ? (app.size !== "—" ? "Release • " + app.size : "Tutorial")
+        : app.version + " • " + app.size);
     el.appendChild(p);
 
     const a = document.createElement("a");
