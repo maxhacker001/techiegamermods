@@ -5,4 +5,4 @@
  * After the Cloudflare Worker is deployed, put its public URL here,
  * for example: https://techie-gamer-mods-api.<your-subdomain>.workers.dev
  */
-window.TGM_API_BASE = "";
+window.TGM_API_BASE = "https://techie-gamer-mods-api.talktomartinz.workers.dev";
