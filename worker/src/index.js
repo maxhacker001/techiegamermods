@@ -607,6 +607,11 @@ async function uploadFile(request, env) {
   });
 
   const fileId = crypto.randomUUID();
+  const version = await env.DB.prepare(
+    "SELECT id FROM versions WHERE id=? LIMIT 1"
+  ).bind(versionId).first();
+  if (!version) return json({ error: "Version not found" }, 404, env);
+
   await env.DB.prepare(`
     INSERT INTO files (
       id, version_id, file_type, storage_key, original_name,
@@ -623,6 +628,15 @@ async function uploadFile(request, env) {
     file.size,
     sha256
   ).run();
+
+  // Keep the version's displayed size tied to a real uploaded release file.
+  if (fileType === "apk" || !(await env.DB.prepare(
+    "SELECT id FROM files WHERE version_id=? AND file_type='apk' AND id<>? LIMIT 1"
+  ).bind(versionId, fileId).first())) {
+    await env.DB.prepare(
+      "UPDATE versions SET size_bytes=?, updated_at=CURRENT_TIMESTAMP WHERE id=?"
+    ).bind(file.size, versionId).run();
+  }
 
   return json({ id: fileId, storage_key: key, bytes: file.size, sha256 }, 201, env);
 }
