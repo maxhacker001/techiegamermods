@@ -68,6 +68,11 @@
       <button id="test" class="secondary">Test API</button>
     </div>
     <p id="conn" class="muted"></p>
+    <div class="notice" style="margin-top:12px">
+      <b>Why you may see HTTP 404:</b> this admin panel is a client for the Cloudflare Worker API.
+      GitHub Pages serves the admin page, but it does not provide the <code>/api/...</code> endpoints.
+      Enter your deployed Worker URL above, save it, then test the connection.
+    </div>
   </section>
 
   <section class="panel wide" id="adminStatusHelp" style="margin-top:16px">
@@ -256,13 +261,25 @@ function authHeaders(json=false) {
 }
 
 async function request(path, options={}) {
-  const r = await fetch(apiBase() + path, {
+  const base = apiBase();
+  if (!base) {
+    throw new Error('Backend not connected. Deploy the Cloudflare Worker, then enter its public URL above.');
+  }
+  if (/github\.io/i.test(base)) {
+    throw new Error('That is the GitHub Pages URL, not the API. Enter the deployed Cloudflare Worker URL instead.');
+  }
+  let r;
+  try {
+    r = await fetch(base + path, {
     ...options,
     headers: {
       ...authHeaders(options.body && typeof options.body === 'string'),
       ...(options.headers || {})
     }
-  });
+    });
+  } catch (error) {
+    throw new Error('Cannot reach the API. Check the Worker URL, deployment status, and CORS settings.');
+  }
   const text = await r.text();
   let body;
   try { body = JSON.parse(text); } catch { body = { raw:text }; }
@@ -270,10 +287,19 @@ async function request(path, options={}) {
   return body;
 }
 
+function setConnectionState(message, ok=false) {
+  $('conn').textContent = message;
+  $('conn').style.color = ok ? 'var(--neon)' : 'var(--warn)';
+}
+
 function saveSession() {
   sessionStorage.setItem('tgm_api_base', apiBase());
   sessionStorage.setItem('tgm_admin_token', $('token').value);
-  $('conn').textContent = 'Saved for this browser session.';
+  if (!apiBase()) {
+    setConnectionState('Backend not configured yet.');
+    return;
+  }
+  setConnectionState('Saved for this browser session.');
 }
 
 function restoreSession() {
@@ -285,9 +311,9 @@ $('save').onclick = saveSession;
 $('test').onclick = async () => {
   try {
     const result = await request('/api/health', {headers:{}});
-    $('conn').textContent = 'API OK: ' + JSON.stringify(result);
+    setConnectionState('API connected: ' + JSON.stringify(result), true);
   } catch(e) {
-    $('conn').textContent = 'API error: ' + e.message;
+    setConnectionState('API error: ' + e.message);
   }
 };
 
