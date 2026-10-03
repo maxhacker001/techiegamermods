@@ -1386,9 +1386,7 @@ async function loadExistingScreenshots() {
   }
 
   try {
-    const selected = appCache.get(appId);
-    const slug = selected?.slug || appId;
-    const data = await request('/api/apps/' + encodeURIComponent(slug));
+    const data = await request('/api/admin/apps/' + encodeURIComponent(appId) + '/screenshots');
     const shots = data.screenshots || [];
 
     if (!shots.length) {
@@ -1402,9 +1400,7 @@ async function loadExistingScreenshots() {
       row.style.cssText = 'display:grid;grid-template-columns:90px 1fr auto;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);';
 
       const img = document.createElement('img');
-      img.src = /^https?:\/\//i.test(String(shot.media_url || ''))
-        ? String(shot.media_url)
-        : apiBase() + (String(shot.media_url || '').startsWith('/') ? String(shot.media_url) : '/' + String(shot.media_url || ''));
+      img.src = apiBase() + '/media/screenshots/' + encodeURIComponent(shot.id);
       img.alt = shot.alt_text || ('Screenshot ' + (index + 1));
       img.style.cssText = 'width:80px;height:80px;object-fit:cover;border-radius:10px;border:1px solid var(--border);';
 
