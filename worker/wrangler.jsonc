@@ -21,7 +21,11 @@
   ],
 
   "vars": {
-    "WEB_ORIGIN": "https://maxhacker001.github.io"
+    "WEB_ORIGIN": "https://maxhacker001.github.io/techiegamermods"
+  },
+
+  "secrets": {
+    "required": ["ADMIN_TOKEN"]
   }
 
   // Set ADMIN_TOKEN as a Wrangler secret. Never commit the real token.
