@@ -557,7 +557,7 @@ async function adminListApps(request, env) {
 async function adminListVersions(appId, env) {
   const app = await env.DB.prepare("SELECT id,slug,name FROM apps WHERE id=? LIMIT 1").bind(appId).first();
   if (!app) return json({ error:"App not found" },404,env);
-  const result = await env.DB.prepare("SELECT v.id,v.app_id,v.version_name,v.mod_info,v.changelog,v.android_min,v.architecture,v.min_sdk,v.target_sdk,v.size_bytes,v.status,v.created_at,v.updated_at,(SELECT COUNT(*) FROM files f WHERE f.version_id=v.id) AS file_count,(SELECT COUNT(*) FROM files f WHERE f.version_id=v.id AND f.scan_status='clean' AND f.published=1) AS published_clean_file_count FROM versions v WHERE v.app_id=? ORDER BY datetime(v.updated_at) DESC").bind(appId).all();
+  const result = await env.DB.prepare("SELECT v.id,v.app_id,v.version_name,v.mod_info,v.changelog,v.android_min,v.architecture,v.min_sdk,v.target_sdk,v.size_bytes,v.status,v.created_at,v.updated_at,(SELECT COUNT(*) FROM files f WHERE f.version_id=v.id) AS file_count,(SELECT COUNT(*) FROM files f WHERE f.version_id=v.id AND f.scan_status='clean' AND f.published=1) AS published_clean_file_count,(SELECT COUNT(*) FROM release_assets ra WHERE ra.version_id=v.id AND ra.published=1) AS asset_count FROM versions v WHERE v.app_id=? ORDER BY datetime(v.updated_at) DESC").bind(appId).all();
   return json({ app,versions:result.results || [] },200,env);
 }
 
