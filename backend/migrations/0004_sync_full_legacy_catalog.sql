@@ -46,7 +46,8 @@ Premium Transitions
 Keyframe Animation',
     size_bytes=CASE WHEN EXISTS (SELECT 1 FROM files f WHERE f.version_id=versions.id) THEN size_bytes ELSE 81788928 END,
     status=CASE WHEN status='archived' THEN status ELSE 'published' END,
-    updated_at=CURRENT_TIMESTAMP
+    -- Keep an existing version's ordering timestamp intact so a newer live release
+    -- (for example a freshly uploaded InShot version) remains the public latest.
 WHERE app_id=(SELECT id FROM apps WHERE slug='capcut-mod' LIMIT 1)
   AND version_name='12.3.0';
 
@@ -91,7 +92,8 @@ Offline Download
 Very High Quality Audio',
     size_bytes=CASE WHEN EXISTS (SELECT 1 FROM files f WHERE f.version_id=versions.id) THEN size_bytes ELSE 47185920 END,
     status=CASE WHEN status='archived' THEN status ELSE 'published' END,
-    updated_at=CURRENT_TIMESTAMP
+    -- Keep an existing version's ordering timestamp intact so a newer live release
+    -- (for example a freshly uploaded InShot version) remains the public latest.
 WHERE app_id=(SELECT id FROM apps WHERE slug='spotify-mod' LIMIT 1)
   AND version_name='8.9.18';
 
@@ -136,7 +138,8 @@ Batch Processing
 No Ads',
     size_bytes=CASE WHEN EXISTS (SELECT 1 FROM files f WHERE f.version_id=versions.id) THEN size_bytes ELSE 68157440 END,
     status=CASE WHEN status='archived' THEN status ELSE 'published' END,
-    updated_at=CURRENT_TIMESTAMP
+    -- Keep an existing version's ordering timestamp intact so a newer live release
+    -- (for example a freshly uploaded InShot version) remains the public latest.
 WHERE app_id=(SELECT id FROM apps WHERE slug='remini-mod' LIMIT 1)
   AND version_name='3.8.5';
 
@@ -181,7 +184,8 @@ Keyframe Animation
 XML Import/Export',
     size_bytes=CASE WHEN EXISTS (SELECT 1 FROM files f WHERE f.version_id=versions.id) THEN size_bytes ELSE 104857600 END,
     status=CASE WHEN status='archived' THEN status ELSE 'published' END,
-    updated_at=CURRENT_TIMESTAMP
+    -- Keep an existing version's ordering timestamp intact so a newer live release
+    -- (for example a freshly uploaded InShot version) remains the public latest.
 WHERE app_id=(SELECT id FROM apps WHERE slug='alight-motion-mod' LIMIT 1)
   AND version_name='5.0.0';
 
@@ -226,7 +230,8 @@ Premium Assets
 4K Export',
     size_bytes=CASE WHEN EXISTS (SELECT 1 FROM files f WHERE f.version_id=versions.id) THEN size_bytes ELSE 99614720 END,
     status=CASE WHEN status='archived' THEN status ELSE 'published' END,
-    updated_at=CURRENT_TIMESTAMP
+    -- Keep an existing version's ordering timestamp intact so a newer live release
+    -- (for example a freshly uploaded InShot version) remains the public latest.
 WHERE app_id=(SELECT id FROM apps WHERE slug='kinemaster-mod' LIMIT 1)
   AND version_name='7.4.0';
 
@@ -271,7 +276,8 @@ No Watermark
 Music Library',
     size_bytes=CASE WHEN EXISTS (SELECT 1 FROM files f WHERE f.version_id=versions.id) THEN size_bytes ELSE 73400320 END,
     status=CASE WHEN status='archived' THEN status ELSE 'published' END,
-    updated_at=CURRENT_TIMESTAMP
+    -- Keep an existing version's ordering timestamp intact so a newer live release
+    -- (for example a freshly uploaded InShot version) remains the public latest.
 WHERE app_id=(SELECT id FROM apps WHERE slug='inshot-mod' LIMIT 1)
   AND version_name='2.0.0';
 
@@ -316,7 +322,8 @@ Pro Templates
 Keyframe & Mask',
     size_bytes=CASE WHEN EXISTS (SELECT 1 FROM files f WHERE f.version_id=versions.id) THEN size_bytes ELSE 167772160 END,
     status=CASE WHEN status='archived' THEN status ELSE 'published' END,
-    updated_at=CURRENT_TIMESTAMP
+    -- Keep an existing version's ordering timestamp intact so a newer live release
+    -- (for example a freshly uploaded InShot version) remains the public latest.
 WHERE app_id=(SELECT id FROM apps WHERE slug='vn-mod' LIMIT 1)
   AND version_name='2.2.0';
 
@@ -361,7 +368,8 @@ Premium Effects
 No Ads',
     size_bytes=CASE WHEN EXISTS (SELECT 1 FROM files f WHERE f.version_id=versions.id) THEN size_bytes ELSE 125829120 END,
     status=CASE WHEN status='archived' THEN status ELSE 'published' END,
-    updated_at=CURRENT_TIMESTAMP
+    -- Keep an existing version's ordering timestamp intact so a newer live release
+    -- (for example a freshly uploaded InShot version) remains the public latest.
 WHERE app_id=(SELECT id FROM apps WHERE slug='powerdirector-mod' LIMIT 1)
   AND version_name='13.0.0';
 
@@ -406,7 +414,8 @@ Background Remover
 No Watermark',
     size_bytes=CASE WHEN EXISTS (SELECT 1 FROM files f WHERE f.version_id=versions.id) THEN size_bytes ELSE 41943040 END,
     status=CASE WHEN status='archived' THEN status ELSE 'published' END,
-    updated_at=CURRENT_TIMESTAMP
+    -- Keep an existing version's ordering timestamp intact so a newer live release
+    -- (for example a freshly uploaded InShot version) remains the public latest.
 WHERE app_id=(SELECT id FROM apps WHERE slug='canva-mod' LIMIT 1)
   AND version_name='2.250.0';
 
@@ -451,7 +460,8 @@ Message Scheduler
 No Ads',
     size_bytes=CASE WHEN EXISTS (SELECT 1 FROM files f WHERE f.version_id=versions.id) THEN size_bytes ELSE 62914560 END,
     status=CASE WHEN status='archived' THEN status ELSE 'published' END,
-    updated_at=CURRENT_TIMESTAMP
+    -- Keep an existing version's ordering timestamp intact so a newer live release
+    -- (for example a freshly uploaded InShot version) remains the public latest.
 WHERE app_id=(SELECT id FROM apps WHERE slug='gbwhatsapp-mod' LIMIT 1)
   AND version_name='17.85';
 
@@ -496,7 +506,8 @@ Background Remover
 All Stickers & Effects',
     size_bytes=CASE WHEN EXISTS (SELECT 1 FROM files f WHERE f.version_id=versions.id) THEN size_bytes ELSE 83886080 END,
     status=CASE WHEN status='archived' THEN status ELSE 'published' END,
-    updated_at=CURRENT_TIMESTAMP
+    -- Keep an existing version's ordering timestamp intact so a newer live release
+    -- (for example a freshly uploaded InShot version) remains the public latest.
 WHERE app_id=(SELECT id FROM apps WHERE slug='picsart-mod' LIMIT 1)
   AND version_name='25.0.0';
 
@@ -541,7 +552,8 @@ Batch Edit
 HD Export',
     size_bytes=CASE WHEN EXISTS (SELECT 1 FROM files f WHERE f.version_id=versions.id) THEN size_bytes ELSE 57671680 END,
     status=CASE WHEN status='archived' THEN status ELSE 'published' END,
-    updated_at=CURRENT_TIMESTAMP
+    -- Keep an existing version's ordering timestamp intact so a newer live release
+    -- (for example a freshly uploaded InShot version) remains the public latest.
 WHERE app_id=(SELECT id FROM apps WHERE slug='photoroom-mod' LIMIT 1)
   AND version_name='4.8.0';
 
@@ -586,7 +598,8 @@ Who Viewed Profile
 Advanced Spam Block',
     size_bytes=CASE WHEN EXISTS (SELECT 1 FROM files f WHERE f.version_id=versions.id) THEN size_bytes ELSE 94371840 END,
     status=CASE WHEN status='archived' THEN status ELSE 'published' END,
-    updated_at=CURRENT_TIMESTAMP
+    -- Keep an existing version's ordering timestamp intact so a newer live release
+    -- (for example a freshly uploaded InShot version) remains the public latest.
 WHERE app_id=(SELECT id FROM apps WHERE slug='truecaller-mod' LIMIT 1)
   AND version_name='13.5.0';
 
@@ -631,7 +644,8 @@ Batch Download
 Audio Extract',
     size_bytes=CASE WHEN EXISTS (SELECT 1 FROM files f WHERE f.version_id=versions.id) THEN size_bytes ELSE 26214400 END,
     status=CASE WHEN status='archived' THEN status ELSE 'published' END,
-    updated_at=CURRENT_TIMESTAMP
+    -- Keep an existing version's ordering timestamp intact so a newer live release
+    -- (for example a freshly uploaded InShot version) remains the public latest.
 WHERE app_id=(SELECT id FROM apps WHERE slug='snaptube-mod' LIMIT 1)
   AND version_name='7.0.0';
 
@@ -676,7 +690,8 @@ Unlimited Cloud
 Premium Stickers',
     size_bytes=CASE WHEN EXISTS (SELECT 1 FROM files f WHERE f.version_id=versions.id) THEN size_bytes ELSE 57671680 END,
     status=CASE WHEN status='archived' THEN status ELSE 'published' END,
-    updated_at=CURRENT_TIMESTAMP
+    -- Keep an existing version's ordering timestamp intact so a newer live release
+    -- (for example a freshly uploaded InShot version) remains the public latest.
 WHERE app_id=(SELECT id FROM apps WHERE slug='telegram-premium-mod' LIMIT 1)
   AND version_name='10.5.0';
 
@@ -721,7 +736,8 @@ Privacy Options
 Dark Mode',
     size_bytes=CASE WHEN EXISTS (SELECT 1 FROM files f WHERE f.version_id=versions.id) THEN size_bytes ELSE 73400320 END,
     status=CASE WHEN status='archived' THEN status ELSE 'published' END,
-    updated_at=CURRENT_TIMESTAMP
+    -- Keep an existing version's ordering timestamp intact so a newer live release
+    -- (for example a freshly uploaded InShot version) remains the public latest.
 WHERE app_id=(SELECT id FROM apps WHERE slug='insta-thunder-mod' LIMIT 1)
   AND version_name='300.0';
 
@@ -766,7 +782,8 @@ Blue Tick Hide
 Longer Posts',
     size_bytes=CASE WHEN EXISTS (SELECT 1 FROM files f WHERE f.version_id=versions.id) THEN size_bytes ELSE 104857600 END,
     status=CASE WHEN status='archived' THEN status ELSE 'published' END,
-    updated_at=CURRENT_TIMESTAMP
+    -- Keep an existing version's ordering timestamp intact so a newer live release
+    -- (for example a freshly uploaded InShot version) remains the public latest.
 WHERE app_id=(SELECT id FROM apps WHERE slug='twitter-gold-mod' LIMIT 1)
   AND version_name='10.5.0';
 
@@ -811,7 +828,8 @@ Download All
 All Regions',
     size_bytes=CASE WHEN EXISTS (SELECT 1 FROM files f WHERE f.version_id=versions.id) THEN size_bytes ELSE 62914560 END,
     status=CASE WHEN status='archived' THEN status ELSE 'published' END,
-    updated_at=CURRENT_TIMESTAMP
+    -- Keep an existing version's ordering timestamp intact so a newer live release
+    -- (for example a freshly uploaded InShot version) remains the public latest.
 WHERE app_id=(SELECT id FROM apps WHERE slug='netflix-mod' LIMIT 1)
   AND version_name='8.12.0';
 
@@ -856,7 +874,8 @@ Simulcasts
 HD Streaming',
     size_bytes=CASE WHEN EXISTS (SELECT 1 FROM files f WHERE f.version_id=versions.id) THEN size_bytes ELSE 73400320 END,
     status=CASE WHEN status='archived' THEN status ELSE 'published' END,
-    updated_at=CURRENT_TIMESTAMP
+    -- Keep an existing version's ordering timestamp intact so a newer live release
+    -- (for example a freshly uploaded InShot version) remains the public latest.
 WHERE app_id=(SELECT id FROM apps WHERE slug='crunchyroll-mod' LIMIT 1)
   AND version_name='3.5.0';
 
@@ -901,7 +920,8 @@ ESP Wallhack
 Anti-Ban Protection',
     size_bytes=CASE WHEN EXISTS (SELECT 1 FROM files f WHERE f.version_id=versions.id) THEN size_bytes ELSE 681574400 END,
     status=CASE WHEN status='archived' THEN status ELSE 'published' END,
-    updated_at=CURRENT_TIMESTAMP
+    -- Keep an existing version's ordering timestamp intact so a newer live release
+    -- (for example a freshly uploaded InShot version) remains the public latest.
 WHERE app_id=(SELECT id FROM apps WHERE slug='freefire-mod' LIMIT 1)
   AND version_name='1.104.1';
 
@@ -946,7 +966,8 @@ No Grass + High Damage
 Magic Bullet',
     size_bytes=CASE WHEN EXISTS (SELECT 1 FROM files f WHERE f.version_id=versions.id) THEN size_bytes ELSE 1288490189 END,
     status=CASE WHEN status='archived' THEN status ELSE 'published' END,
-    updated_at=CURRENT_TIMESTAMP
+    -- Keep an existing version's ordering timestamp intact so a newer live release
+    -- (for example a freshly uploaded InShot version) remains the public latest.
 WHERE app_id=(SELECT id FROM apps WHERE slug='pubg-mod' LIMIT 1)
   AND version_name='3.5.0';
 
@@ -991,7 +1012,8 @@ Unlock All Skins
 Radar Hack',
     size_bytes=CASE WHEN EXISTS (SELECT 1 FROM files f WHERE f.version_id=versions.id) THEN size_bytes ELSE 146800640 END,
     status=CASE WHEN status='archived' THEN status ELSE 'published' END,
-    updated_at=CURRENT_TIMESTAMP
+    -- Keep an existing version's ordering timestamp intact so a newer live release
+    -- (for example a freshly uploaded InShot version) remains the public latest.
 WHERE app_id=(SELECT id FROM apps WHERE slug='mlbb-mod' LIMIT 1)
   AND version_name='1.8.66';
 
@@ -1023,7 +1045,8 @@ No Ads
 God Mode',
     size_bytes=CASE WHEN EXISTS (SELECT 1 FROM files f WHERE f.version_id=versions.id) THEN size_bytes ELSE 178257920 END,
     status=CASE WHEN status='archived' THEN status ELSE 'published' END,
-    updated_at=CURRENT_TIMESTAMP
+    -- Keep an existing version's ordering timestamp intact so a newer live release
+    -- (for example a freshly uploaded InShot version) remains the public latest.
 WHERE app_id=(SELECT id FROM apps WHERE slug='subway-surfers-mod' LIMIT 1)
   AND version_name='3.25.0';
 
@@ -1055,7 +1078,8 @@ Unlimited Gold
 No Ads',
     size_bytes=CASE WHEN EXISTS (SELECT 1 FROM files f WHERE f.version_id=versions.id) THEN size_bytes ELSE 94371840 END,
     status=CASE WHEN status='archived' THEN status ELSE 'published' END,
-    updated_at=CURRENT_TIMESTAMP
+    -- Keep an existing version's ordering timestamp intact so a newer live release
+    -- (for example a freshly uploaded InShot version) remains the public latest.
 WHERE app_id=(SELECT id FROM apps WHERE slug='candy-crush-mod' LIMIT 1)
   AND version_name='1.290.0';
 
@@ -1087,7 +1111,8 @@ All Troops Max
 No Ads',
     size_bytes=CASE WHEN EXISTS (SELECT 1 FROM files f WHERE f.version_id=versions.id) THEN size_bytes ELSE 314572800 END,
     status=CASE WHEN status='archived' THEN status ELSE 'published' END,
-    updated_at=CURRENT_TIMESTAMP
+    -- Keep an existing version's ordering timestamp intact so a newer live release
+    -- (for example a freshly uploaded InShot version) remains the public latest.
 WHERE app_id=(SELECT id FROM apps WHERE slug='clash-clans-mod' LIMIT 1)
   AND version_name='16.0.0';
 
@@ -1119,7 +1144,8 @@ God Mode
 Unlimited Robux',
     size_bytes=CASE WHEN EXISTS (SELECT 1 FROM files f WHERE f.version_id=versions.id) THEN size_bytes ELSE 157286400 END,
     status=CASE WHEN status='archived' THEN status ELSE 'published' END,
-    updated_at=CURRENT_TIMESTAMP
+    -- Keep an existing version's ordering timestamp intact so a newer live release
+    -- (for example a freshly uploaded InShot version) remains the public latest.
 WHERE app_id=(SELECT id FROM apps WHERE slug='roblox-mod' LIMIT 1)
   AND version_name='2.644.704';
 
@@ -1151,7 +1177,8 @@ Wall Hack
 Unlocked Skins',
     size_bytes=CASE WHEN EXISTS (SELECT 1 FROM files f WHERE f.version_id=versions.id) THEN size_bytes ELSE 2684354560 END,
     status=CASE WHEN status='archived' THEN status ELSE 'published' END,
-    updated_at=CURRENT_TIMESTAMP
+    -- Keep an existing version's ordering timestamp intact so a newer live release
+    -- (for example a freshly uploaded InShot version) remains the public latest.
 WHERE app_id=(SELECT id FROM apps WHERE slug='cod-mobile-mod' LIMIT 1)
   AND version_name='1.0.45';
 
@@ -1183,7 +1210,8 @@ See Impostor
 Unlocked Skins',
     size_bytes=CASE WHEN EXISTS (SELECT 1 FROM files f WHERE f.version_id=versions.id) THEN size_bytes ELSE 209715200 END,
     status=CASE WHEN status='archived' THEN status ELSE 'published' END,
-    updated_at=CURRENT_TIMESTAMP
+    -- Keep an existing version's ordering timestamp intact so a newer live release
+    -- (for example a freshly uploaded InShot version) remains the public latest.
 WHERE app_id=(SELECT id FROM apps WHERE slug='among-us-mod' LIMIT 1)
   AND version_name='2024.12.9';
 
@@ -1215,7 +1243,8 @@ Speed Hack
 God Mode',
     size_bytes=CASE WHEN EXISTS (SELECT 1 FROM files f WHERE f.version_id=versions.id) THEN size_bytes ELSE 188743680 END,
     status=CASE WHEN status='archived' THEN status ELSE 'published' END,
-    updated_at=CURRENT_TIMESTAMP
+    -- Keep an existing version's ordering timestamp intact so a newer live release
+    -- (for example a freshly uploaded InShot version) remains the public latest.
 WHERE app_id=(SELECT id FROM apps WHERE slug='stumble-guys-mod' LIMIT 1)
   AND version_name='0.63';
 
@@ -1247,7 +1276,8 @@ Private Server
 No Ads',
     size_bytes=CASE WHEN EXISTS (SELECT 1 FROM files f WHERE f.version_id=versions.id) THEN size_bytes ELSE 471859200 END,
     status=CASE WHEN status='archived' THEN status ELSE 'published' END,
-    updated_at=CURRENT_TIMESTAMP
+    -- Keep an existing version's ordering timestamp intact so a newer live release
+    -- (for example a freshly uploaded InShot version) remains the public latest.
 WHERE app_id=(SELECT id FROM apps WHERE slug='brawl-stars-mod' LIMIT 1)
   AND version_name='53.176';
 
@@ -1279,7 +1309,8 @@ All Weapons
 No Ads',
     size_bytes=CASE WHEN EXISTS (SELECT 1 FROM files f WHERE f.version_id=versions.id) THEN size_bytes ELSE 188743680 END,
     status=CASE WHEN status='archived' THEN status ELSE 'published' END,
-    updated_at=CURRENT_TIMESTAMP
+    -- Keep an existing version's ordering timestamp intact so a newer live release
+    -- (for example a freshly uploaded InShot version) remains the public latest.
 WHERE app_id=(SELECT id FROM apps WHERE slug='shadow-fight-3-mod' LIMIT 1)
   AND version_name='1.35.0';
 
@@ -1311,7 +1342,8 @@ Stadium Upgraded
 Infinite Energy',
     size_bytes=CASE WHEN EXISTS (SELECT 1 FROM files f WHERE f.version_id=versions.id) THEN size_bytes ELSE 524288000 END,
     status=CASE WHEN status='archived' THEN status ELSE 'published' END,
-    updated_at=CURRENT_TIMESTAMP
+    -- Keep an existing version's ordering timestamp intact so a newer live release
+    -- (for example a freshly uploaded InShot version) remains the public latest.
 WHERE app_id=(SELECT id FROM apps WHERE slug='dream-league-mod' LIMIT 1)
   AND version_name='11.0';
 
@@ -1343,7 +1375,8 @@ All Stages
 No Ads',
     size_bytes=CASE WHEN EXISTS (SELECT 1 FROM files f WHERE f.version_id=versions.id) THEN size_bytes ELSE 83886080 END,
     status=CASE WHEN status='archived' THEN status ELSE 'published' END,
-    updated_at=CURRENT_TIMESTAMP
+    -- Keep an existing version's ordering timestamp intact so a newer live release
+    -- (for example a freshly uploaded InShot version) remains the public latest.
 WHERE app_id=(SELECT id FROM apps WHERE slug='hill-climb-mod' LIMIT 1)
   AND version_name='1.61.0';
 
@@ -1375,7 +1408,8 @@ No Ads
 Level Max',
     size_bytes=CASE WHEN EXISTS (SELECT 1 FROM files f WHERE f.version_id=versions.id) THEN size_bytes ELSE 94371840 END,
     status=CASE WHEN status='archived' THEN status ELSE 'published' END,
-    updated_at=CURRENT_TIMESTAMP
+    -- Keep an existing version's ordering timestamp intact so a newer live release
+    -- (for example a freshly uploaded InShot version) remains the public latest.
 WHERE app_id=(SELECT id FROM apps WHERE slug='8-ball-pool-mod' LIMIT 1)
   AND version_name='5.14.0';
 
@@ -1418,7 +1452,8 @@ Bypass License Verification
 Custom Patches',
     size_bytes=CASE WHEN EXISTS (SELECT 1 FROM files f WHERE f.version_id=versions.id) THEN size_bytes ELSE 0 END,
     status=CASE WHEN status='archived' THEN status ELSE 'published' END,
-    updated_at=CURRENT_TIMESTAMP
+    -- Keep an existing version's ordering timestamp intact so a newer live release
+    -- (for example a freshly uploaded InShot version) remains the public latest.
 WHERE app_id=(SELECT id FROM apps WHERE slug='lucky-patcher-guide' LIMIT 1)
   AND version_name='2025';
 
@@ -1483,7 +1518,8 @@ ARSC Editor
 XML Editing',
     size_bytes=CASE WHEN EXISTS (SELECT 1 FROM files f WHERE f.version_id=versions.id) THEN size_bytes ELSE 0 END,
     status=CASE WHEN status='archived' THEN status ELSE 'published' END,
-    updated_at=CURRENT_TIMESTAMP
+    -- Keep an existing version's ordering timestamp intact so a newer live release
+    -- (for example a freshly uploaded InShot version) remains the public latest.
 WHERE app_id=(SELECT id FROM apps WHERE slug='mt-manager-tutorial' LIMIT 1)
   AND version_name='2025';
 
