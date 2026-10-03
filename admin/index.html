@@ -370,6 +370,48 @@ function restoreSession() {
   $('token').value = sessionStorage.getItem('tgm_admin_token') || '';
 }
 
+function clearAdminEditors() {
+  [
+    'selectedAppId','appEditId','name','slug','publisher','genre','package','playstore','icon',
+    'description','relatedApps','versionEditId','versionAppId','versionName','modSummary',
+    'modFeatures','modInfo','androidMin','architecture','changelog','fileVersionId',
+    'screenshotAppId','tutorialAppId','tutorialEditId','tutorialTitle','tutorialVideo',
+    'tutorialDescription','tutorialBody','studioTitle','studioSlug','studioVideo','studioIcon',
+    'studioDescription','studioBody'
+  ].forEach(id => {
+    const el = $(id);
+    if (el) el.value = '';
+  });
+
+  if ($('category')) $('category').value = 'apps';
+  if ($('fileType')) $('fileType').value = 'apk';
+  if ($('tutorialStatus')) $('tutorialStatus').value = 'draft';
+  if ($('studioStatus')) $('studioStatus').value = 'published';
+  if ($('versionRows')) $('versionRows').innerHTML = '';
+  if ($('fileRows')) $('fileRows').innerHTML = '';
+
+  [
+    ['versionsResult','No versions loaded.'],
+    ['filesResult','No files loaded.'],
+    ['createResult',''],
+    ['versionResult',''],
+    ['iconResult',''],
+    ['uploadResult',''],
+    ['tutorialResult',''],
+    ['studioResult','Ready to create a tutorial.']
+  ].forEach(([id, value]) => {
+    const el = $(id);
+    if (el) el.textContent = value;
+  });
+
+  const size = $('fileSize');
+  if (size) {
+    size.textContent = 'No file selected.';
+    size.dataset.bytes = '0';
+  }
+  applyAdminContentMode(null);
+}
+
 $('save').onclick = saveSession;
 $('test').onclick = async () => {
   try {
@@ -470,8 +512,8 @@ async function loadApps() {
         applyAdminContentMode(app);
         $('createApp').disabled = true;
         $('createApp').title = 'Select New / Clear to start another app.';
-        loadVersions();
-        loadTutorials(app.id);
+        await loadVersions(true);
+        await loadTutorials(app.id);
       };
     });
     document.querySelectorAll('.app-status').forEach(sel => {
@@ -512,7 +554,7 @@ async function loadApps() {
   }
 }
 
-async function loadVersions() {
+async function loadVersions(autoSelectLatest=false) {
   const id = $('selectedAppId').value.trim();
   if (!id) return;
   try {
@@ -542,22 +584,41 @@ async function loadVersions() {
     });
     $('versionsResult').textContent = JSON.stringify(data, null, 2);
 
+    const loadVersionIntoEditor = async (v) => {
+      if (!v) return;
+      $('versionEditId').value=v.id;
+      $('versionAppId').value=v.app_id;
+      $('versionName').value=v.version_name || '';
+      await setModInfoFields(v.mod_info || '');
+      $('androidMin').value=v.android_min || '';
+      $('architecture').value=v.architecture || '';
+      $('changelog').value=v.changelog || '';
+      $('fileVersionId').value=v.id;
+      $('filesResult').textContent='Loading...';
+      await loadFiles(v.id);
+    };
+
     document.querySelectorAll('.select-version').forEach(btn => {
       btn.onclick=async()=>{
         const v=versionCache.get(btn.dataset.id);
         if(!v) return;
-        $('versionEditId').value=v.id;
-        $('versionAppId').value=v.app_id;
-        $('versionName').value=v.version_name || '';
-        await setModInfoFields(v.mod_info || '');
-        $('androidMin').value=v.android_min || '';
-        $('architecture').value=v.architecture || '';
-        $('changelog').value=v.changelog || '';
-        $('fileVersionId').value=v.id;
-        $('filesResult').textContent='Loading...';
-        await loadFiles(v.id);
+        await loadVersionIntoEditor(v);
       };
     });
+
+    if (autoSelectLatest && (data.versions || []).length) {
+      const candidates = [...data.versions];
+      candidates.sort((a,b) => {
+        const af = Number(a.published_clean_file_count || 0) > 0 ? 0 : 1;
+        const bf = Number(b.published_clean_file_count || 0) > 0 ? 0 : 1;
+        if (af !== bf) return af - bf;
+        const as = a.status === 'published' ? 0 : 1;
+        const bs = b.status === 'published' ? 0 : 1;
+        if (as !== bs) return as - bs;
+        return String(b.updated_at || '').localeCompare(String(a.updated_at || ''));
+      });
+      await loadVersionIntoEditor(candidates[0]);
+    }
     document.querySelectorAll('.version-status').forEach(sel => {
       sel.onchange = async () => {
         const previous = sel.dataset.previousStatus || sel.value;
@@ -1273,6 +1334,7 @@ function escapeAttr(value) {
 }
 
 restoreSession();
+clearAdminEditors();
 </script>
 </body>
 </html>
