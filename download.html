@@ -116,7 +116,7 @@
 
   <!-- RECOMMENDED -->
   <div class="recommended-section">
-    <h3 style="color:var(--neon); text-align:center; margin:40px 0 20px;">🔥 Related Apps</h3>
+    <h3 style="color:var(--neon); text-align:center; margin:40px 0 20px;">🔥 Apps Related to This</h3>
     <div class="grid" id="recommendedGrid">
       <!-- Filled by JS -->
     </div>
@@ -326,12 +326,11 @@
       }
     }
 
-    // Legacy catalog path: preserve the original two mod-download slots.
+    // Legacy fallback: keep one mod download slot and the official store.
+    // The live Worker/R2 path is used whenever a published database record exists.
     if (typeof apps === "undefined") return;
     const app = apps.find(a => a.id === appId);
     if (!app) return;
-
-    const isGame = app.category === "games";
 
     document.getElementById("appIconDownload").src = app.image;
     document.getElementById("downloadTitle").textContent =
@@ -344,7 +343,10 @@
     document.getElementById("notesAppName").textContent = app.name;
 
     const modVersions = document.getElementById("modVersions");
-    const secondButtonText = isGame ? "⬇ DOWNLOAD OBB/PATCH" : "⬇ DOWNLOAD XAPK";
+    const originalVersions = document.getElementById("originalVersions");
+
+    modVersions.innerHTML = "";
+    originalVersions.innerHTML = "";
 
     function isUsableUrl(value) {
       if (!value || value === "#") return false;
@@ -357,62 +359,42 @@
       }
     }
 
-    function createDownloadBox(url, label) {
+    if (isUsableUrl(app.download_apk)) {
       const box = document.createElement("div");
       box.className = "download-box";
-
       const button = document.createElement("button");
       button.className = "download-btn";
-
-      if (isUsableUrl(url)) {
-        button.textContent = label;
-        button.addEventListener("click", () => {
-          window.location.href = url;
-        });
-      } else {
-        button.textContent = "Link unavailable";
-        button.disabled = true;
-        button.classList.add("disabled");
-        button.title = "This release does not have a live download URL yet.";
-      }
+      button.textContent = "⬇ DOWNLOAD MOD APK";
+      button.addEventListener("click", () => { window.location.href = app.download_apk; });
+      box.appendChild(button);
 
       const info = document.createElement("p");
-      info.textContent = "v" + app.version + " - " +
-        (app.modTitle || "Premium Unlocked");
-
+      info.textContent = "v" + app.version + " - " + (app.modTitle || "Premium Unlocked");
       const size = document.createElement("span");
       size.style.float = "right";
       size.textContent = app.size || "—";
       info.appendChild(size);
-
-      box.appendChild(button);
       box.appendChild(info);
-      return box;
+      modVersions.appendChild(box);
     }
 
-    modVersions.innerHTML = "";
-    modVersions.appendChild(
-      createDownloadBox(app.download_apk, "⬇ DOWNLOAD MOD APK")
-    );
-    modVersions.appendChild(
-      createDownloadBox(
-        app.download_extra || app.download_apk,
-        secondButtonText
-      )
-    );
+    if (isUsableUrl(app.playstore)) {
+      const box = document.createElement("div");
+      box.className = "download-box original";
+      const button = document.createElement("button");
+      button.className = "download-btn";
+      button.textContent = "↗ OPEN OFFICIAL STORE";
+      button.addEventListener("click", () => window.open(app.playstore, "_blank", "noopener"));
+      box.appendChild(button);
 
-    const originalVersions = document.getElementById("originalVersions");
-    originalVersions.innerHTML = "";
-    originalVersions.appendChild(
-      createDownloadBox(app.playstore, "↗ OPEN OFFICIAL STORE")
-    );
+      const info = document.createElement("p");
+      info.textContent = "Official Google Play listing";
+      box.appendChild(info);
+      originalVersions.appendChild(box);
+    }
 
     const relatedLegacy = apps
-      .filter(a =>
-        a.id !== appId &&
-        a.category === app.category &&
-        (a.genre === app.genre || !app.genre)
-      )
+      .filter(a => a.id !== appId && a.category === app.category)
       .slice(0, 4)
       .map(a => ({
         id: a.id,
