@@ -237,10 +237,8 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", async () => {
-    if (window.TGM_LIVE_READY) {
-      try { await window.TGM_LIVE_READY; } catch (_) {}
-    }
-
+    // Fetch the requested app directly. The full compatibility catalog can hydrate in the background.
+    // This prevents detail pages from waiting for dozens of unrelated catalog requests.
     const params = new URLSearchParams(window.location.search);
     const appId = params.get("id");
     const fail = (title, message) => {
