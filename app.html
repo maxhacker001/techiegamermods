@@ -297,17 +297,18 @@
           // value such as "Pro Unlocked" cannot erase the original bullets.
           const liveDescription = String(liveApp.description_html || "");
           const legacyDescription = String(legacy.description || "");
-          const chosenDescription = liveDescription.length >= legacyDescription.length
-            ? liveDescription : legacyDescription;
+          // A live CMS description is editable from Admin and therefore
+          // takes precedence over the legacy static copy.
+          const chosenDescription = liveDescription;
+          // For a migrated/live app, the Admin-controlled version field is
+          // the source of truth for MOD information/features. Legacy bullets
+          // are used only when there is no live MOD information yet.
           const liveFeatures = latest?.mod_info
             ? latest.mod_info.split(/[\n,;]+/).map(s => s.trim()).filter(Boolean)
             : [];
-          const allFeatures = [];
-          [...liveFeatures, ...(legacy.features || [])].forEach(feature => {
-            if (feature && !allFeatures.some(existing => existing.toLowerCase() === feature.toLowerCase())) {
-              allFeatures.push(feature);
-            }
-          });
+          const allFeatures = liveFeatures.length
+            ? [...liveFeatures]
+            : [...(legacy.features || [])];
 
           app = {
             id: liveApp.slug || liveApp.id || appId,
@@ -320,7 +321,9 @@
             image: liveApp.icon_url
               ? window.TGMApi.imageUrl(liveApp.icon_url)
               : legacy.image,
-            modTitle: latest?.mod_info || legacy.modTitle || "Release information",
+            modTitle: latest?.mod_info
+              ? latest.mod_info.split(/[\n,;]+/).map(s => s.trim()).filter(Boolean)[0] || "Release information"
+              : (legacy.modTitle || "Release information"),
             updated: liveApp.updated_at || legacy.updated || "",
             publisher: liveApp.publisher || legacy.publisher || "",
             genre: liveApp.genre || legacy.genre || "",
