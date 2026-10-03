@@ -220,9 +220,14 @@
 <script src="js/pwa.js"></script>
 <script src="js/site-config.js"></script>
 <script src="js/api.js"></script>
+<script src="js/data.js"></script>
 
 <script>
   document.addEventListener("DOMContentLoaded", async () => {
+    if (window.TGM_LIVE_READY) {
+      try { await window.TGM_LIVE_READY; } catch (_) {}
+    }
+
     const params = new URLSearchParams(window.location.search);
     const appId = params.get("id");
     const fail = (title, message) => {
