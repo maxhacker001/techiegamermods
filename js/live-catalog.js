@@ -9,22 +9,20 @@
     el.className = tutorial ? "card tutorial-card" : "card";
 
     const img = document.createElement("img");
-    img.src = app.image;
-    img.alt = app.name;
+    img.src = app.image || window.TGMApi.imageUrl(app.icon_url);
+    img.alt = app.name || "Release";
     img.loading = "lazy";
     img.onerror = () => { img.src = "images/logo.png"; };
     el.appendChild(img);
 
     const h3 = document.createElement("h3");
-    h3.textContent = app.name;
+    h3.textContent = app.name || "Untitled release";
     el.appendChild(h3);
 
     const p = document.createElement("p");
     p.textContent = tutorial
       ? "▶ YouTube • Step-by-step guide"
-      : (app.version === "—"
-        ? (app.size !== "—" ? "Release • " + app.size : "Tutorial")
-        : app.version + " • " + app.size);
+      : ((app.version && app.version !== "—") ? app.version + " • " + (app.size || "Release") : "Release");
     el.appendChild(p);
 
     const a = document.createElement("a");
@@ -38,134 +36,168 @@
   const render = (target, list, tutorial = false) => {
     if (!target) return;
     target.innerHTML = "";
+
     if (!list.length) {
       target.innerHTML = "<p style='grid-column:1/-1;text-align:center;color:var(--muted);margin:50px'>No releases found.</p>";
       return;
     }
+
     list.forEach(app => target.appendChild(card(app, tutorial)));
+  };
+
+  const titleFor = (slug) =>
+    ({ apps: "App Mods", games: "Game Mods", tutorials: "Modding Tutorials" })[slug] || "Catalog";
+
+  const showPage = (name) => {
+    ["homePage", "categoryPage", "blogPage", "faqPage"].forEach(id => {
+      const el = $(id);
+      if (el) el.style.display = id === name ? "block" : "none";
+    });
+  };
+
+  const renderTrending = () => {
+    const target = $("trendingGrid");
+    const section = $("trendingSection");
+    if (!target || !section) return;
+
+    const items = state.apps.filter(app => app.category !== "tutorials").slice(0, 4);
+    target.innerHTML = "";
+    items.forEach(app => target.appendChild(card(app, false)));
+    section.style.display = items.length ? "block" : "none";
   };
 
   const homeRender = () => {
     const grid = $("appsContainer");
     if (!grid) return;
-    let list = state.apps.filter(app => state.query ? true : app.category === state.category);
-    if (state.query) {
-      const q = state.query.toLowerCase();
-      list = state.apps.filter(app =>
-        [app.name, app.publisher, app.genre, app.description].join(" ").toLowerCase().includes(q)
-      );
-    }
-    render(grid, list, list.every(app => app.category === "tutorials"));
-    const trending = $("trendingSection");
+
+    let list = state.query
+      ? state.apps.filter(app =>
+          [app.name, app.publisher, app.genre, app.description]
+            .join(" ")
+            .toLowerCase()
+            .includes(state.query.toLowerCase())
+        )
+      : state.apps.filter(app => app.category === state.category);
+
+    render(grid, list, !state.query && state.category === "tutorials");
+    renderTrending();
     const filters = $("filtersSection");
-    if (state.query) {
-      if (trending) trending.style.display = "none";
-      if (filters) filters.style.display = "none";
-    } else {
-      if (trending) trending.style.display = "block";
-      if (filters) filters.style.display = "flex";
-    }
+    if (filters) filters.style.display = "flex";
   };
 
   const categoryRender = (category) => {
     state.category = category;
     const title = $("categoryTitle");
-    if (title) {
-      title.textContent = ({apps:"App Mods",games:"Game Mods",tutorials:"Modding Tutorials"})[category] || "Catalog";
-    }
+    if (title) title.textContent = titleFor(category);
+
     const grid = $("categoryGrid");
     const list = state.apps.filter(app => app.category === category);
     render(grid, list, category === "tutorials");
+    showPage("categoryPage");
+  };
 
-    const home = $("homePage"), categoryPage = $("categoryPage");
-    const blog = $("blogPage"), faq = $("faqPage");
-    if (home) home.style.display = "none";
-    if (categoryPage) categoryPage.style.display = "block";
-    if (blog) blog.style.display = "none";
-    if (faq) faq.style.display = "none";
+  const setupNavigation = () => {
+    const input = $("searchInput");
+
+    if (input && !input.dataset.liveCatalogBound) {
+      input.dataset.liveCatalogBound = "1";
+      input.addEventListener("input", () => {
+        state.query = input.value.trim();
+        homeRender();
+      });
+    }
+
+    document.querySelectorAll(".filter-btn").forEach(btn => {
+      if (btn.dataset.liveCatalogBound) return;
+      btn.dataset.liveCatalogBound = "1";
+      btn.addEventListener("click", () => {
+        state.query = "";
+        if (input) input.value = "";
+        state.category = btn.dataset.category || "apps";
+        document.querySelectorAll(".filter-btn")
+          .forEach(item => item.classList.toggle("active", item === btn));
+        showPage("homePage");
+        homeRender();
+      });
+    });
+
+    document.querySelectorAll(".sidebar-item").forEach(item => {
+      if (item.dataset.liveCatalogBound) return;
+      item.dataset.liveCatalogBound = "1";
+      item.addEventListener("click", event => {
+        event.preventDefault();
+
+        if (item.classList.contains("home")) {
+          state.category = "apps";
+          state.query = "";
+          if (input) input.value = "";
+          showPage("homePage");
+          homeRender();
+        } else if (item.dataset.category) {
+          categoryRender(item.dataset.category);
+        } else if (item.classList.contains("blog")) {
+          showPage("blogPage");
+        } else if (item.classList.contains("faq")) {
+          showPage("faqPage");
+        }
+
+        const sidebar = $("sidebar");
+        const overlay = $("overlay");
+        if (sidebar) sidebar.classList.remove("open");
+        if (overlay) overlay.classList.remove("open");
+      });
+    });
+
+    const menuToggle = $("menuToggle");
+    const sidebar = $("sidebar");
+    const overlay = $("overlay");
+
+    if (menuToggle && sidebar && overlay && !menuToggle.dataset.drawerBound) {
+      menuToggle.dataset.drawerBound = "1";
+      menuToggle.addEventListener("click", () => {
+        sidebar.classList.toggle("open");
+        overlay.classList.toggle("open");
+      });
+      overlay.addEventListener("click", () => {
+        sidebar.classList.remove("open");
+        overlay.classList.remove("open");
+      });
+    }
   };
 
   const setup = async () => {
+    const grid = $("appsContainer");
+    if (grid) {
+      grid.innerHTML =
+        "<p style='grid-column:1/-1;text-align:center;color:var(--muted);margin:50px'>Loading live catalog…</p>";
+    }
+
     try {
       const data = await window.TGMApi.listApps({ limit: 100 });
-      const legacyApps = (typeof apps !== "undefined" && Array.isArray(apps)) ? apps.slice() : [];
-      const liveApps = (data.apps || []).map(window.TGMApi.normalizeListApp);
+      state.apps = (data.apps || []).map(window.TGMApi.normalizeListApp);
+      setupNavigation();
 
-      // Keep the original catalog visible. Published live records replace their
-      // matching legacy entries, while apps that have not been migrated yet
-      // remain available for browsing until their release is uploaded/published.
-      // Match migrated live records to legacy records by slug/id first,
-      // then by normalized name + category. Legacy tutorial IDs such as
-      // "tut-lucky-patcher" may differ from the live CMS slug, so matching
-      // by ID alone can render the same tutorial twice.
-      const key = (app) => [
-        String(app.category || "").trim().toLowerCase(),
-        String(app.name || "").trim().toLowerCase()
-      ].join("::");
-
-      const liveById = new Map(liveApps.flatMap(app => [
-        [app.slug || app.id, app],
-        [app.id, app]
-      ]));
-      const liveByKey = new Map(liveApps.map(app => [key(app), app]));
-
-      // The legacy catalog contains some older repeated tutorial blocks.
-      // Collapse legacy entries by the same category + name before merging
-      // with the live CMS so a tutorial can never appear twice on the home
-      // page simply because the old static data contains duplicate records.
-      const legacySeen = new Set();
-      const merged = [];
-      legacyApps.forEach(legacy => {
-        const live = liveById.get(legacy.id) || liveByKey.get(key(legacy));
-        const entry = live || legacy;
-        const entryKey = key(entry);
-        if (legacySeen.has(entryKey)) return;
-        legacySeen.add(entryKey);
-        merged.push(entry);
-      });
-
-      const usedKeys = new Set(merged.map(key));
-      liveApps.forEach(app => {
-        const sameId = legacyApps.some(legacy =>
-          legacy.id === app.id || legacy.id === app.slug
-        );
-        const sameKey = usedKeys.has(key(app));
-        if (!sameId && !sameKey) {
-          merged.push(app);
-          usedKeys.add(key(app));
-        }
-      });
-
-      state.apps = merged;
-      if (!state.apps.length) return;
-
-      homeRender();
-
-      const input = $("searchInput");
-      if (input) {
-        input.addEventListener("input", () => {
-          state.query = input.value.trim();
+      if (state.apps.length) {
+        const hash = window.location.hash.replace(/^#/, "");
+        if (["apps","games","tutorials"].includes(hash)) {
+          categoryRender(hash);
+        } else if (hash === "blog") {
+          showPage("blogPage");
+        } else if (hash === "faq") {
+          showPage("faqPage");
+        } else {
+          showPage("homePage");
           homeRender();
-        });
+        }
+      } else {
+        render(grid, []);
       }
-
-      document.querySelectorAll(".filter-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-          state.query = "";
-          if (input) input.value = "";
-          state.category = btn.dataset.category || "apps";
-          homeRender();
-        });
-      });
-
-      document.querySelectorAll(".sidebar-item").forEach(item => {
-        const category = item.dataset.category;
-        if (category) {
-          item.addEventListener("click", () => setTimeout(() => categoryRender(category), 0));
-        }
-      });
     } catch (error) {
       console.warn("Live catalog unavailable:", error);
+      if (grid) {
+        grid.innerHTML =
+          "<p style='grid-column:1/-1;text-align:center;color:var(--warn);margin:50px'>The live catalog could not be loaded. Please refresh the page.</p>";
+      }
     }
   };
 
