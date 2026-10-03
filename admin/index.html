@@ -220,7 +220,7 @@
       <h3 style="margin-top:22px">Files in selected version</h3>
       <div style="overflow:auto">
         <table>
-          <thead><tr><th>File</th><th>Type</th><th>Size</th><th>Verification</th><th>Published</th><th>SHA-256</th><th></th></tr></thead>
+          <thead><tr><th>File</th><th>Type</th><th>Size</th><th>Published</th><th>SHA-256</th><th></th></tr></thead>
           <tbody id="fileRows"></tbody>
         </table>
       </div>
@@ -472,6 +472,42 @@ async function loadVersions() {
     });
   } catch(e) {
     $('versionsResult').textContent='Error: '+e.message;
+  }
+}
+
+async function loadFiles(versionId) {
+  const id = String(versionId || '').trim();
+  if (!id) return;
+  try {
+    const data = await request('/api/admin/versions/' + encodeURIComponent(id) + '/files');
+    const rows = $('fileRows');
+    rows.innerHTML = '';
+
+    (data.files || []).forEach(file => {
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td>' + escapeHtml(file.original_name || '—') + '</td>' +
+        '<td>' + escapeHtml(String(file.file_type || '').toUpperCase()) + '</td>' +
+        '<td>' + formatBytes(file.bytes) + '</td>' +
+        '<td>' + (file.published ? 'yes' : 'no') + '</td>' +
+        '<td><code>' + escapeHtml(file.sha256 || '—') + '</code></td>' +
+        '<td><button class="secondary use-file" data-id="' + escapeAttr(file.id) + '">Use</button></td>';
+      rows.appendChild(tr);
+    });
+
+    document.querySelectorAll('.use-file').forEach(btn => {
+      btn.onclick = () => {
+        $('filesResult').textContent = JSON.stringify(
+          (data.files || []).find(f => f.id === btn.dataset.id) || {},
+          null,
+          2
+        );
+      };
+    });
+
+    $('filesResult').textContent = JSON.stringify(data, null, 2);
+  } catch(e) {
+    $('filesResult').textContent = 'Error: ' + e.message;
   }
 }
 
