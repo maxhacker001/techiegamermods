@@ -88,8 +88,8 @@
   </section>
 
   <div class="grid" style="margin-top:16px">
-    <section class="panel">
-      <h2>Create app</h2>
+    <section class="panel" id="appEditorPanel">
+      <h2>📱 App / Game Editor</h2>
       <label>Name</label><input id="name" placeholder="Example App">
       <label>Slug</label><input id="slug" placeholder="example-app">
       <label>Category</label>
@@ -123,8 +123,8 @@
       <pre id="createResult"></pre>
     </section>
 
-    <section class="panel">
-      <h2>Create version</h2>
+    <section class="panel" id="versionEditorPanel">
+      <h2>📦 Version Editor</h2>
       <label>App ID</label><input id="versionAppId" placeholder="UUID from the app list">
       <label>Version</label><input id="versionName" placeholder="1.0.0">
       <label>MOD information</label><input id="modInfo" placeholder="Pro features unlocked">
@@ -141,8 +141,8 @@
       <pre id="versionResult"></pre>
     </section>
 
-    <section class="panel">
-      <h2>Upload file</h2>
+    <section class="panel" id="fileUploadPanel">
+      <h2>⬆️ Upload release file</h2>
       <label>Version ID</label><input id="fileVersionId" placeholder="Version UUID">
       <label>File type</label>
       <select id="fileType">
@@ -167,8 +167,8 @@
       <pre id="uploadResult"></pre>
     </section>
 
-    <section class="panel">
-      <h2>Screenshots</h2>
+    <section class="panel" id="screenshotPanel">
+      <h2>📸 App screenshots</h2>
       <label>App ID</label><input id="screenshotAppId" placeholder="UUID from the catalog">
       <label>Screenshot files</label><input id="screenshotFiles" type="file" accept="image/png,image/jpeg,image/webp,image/gif" multiple>
       <label>Alt text prefix</label><input id="screenshotAlt" placeholder="App screenshot">
@@ -176,15 +176,17 @@
       <pre id="screenshotResult"></pre>
     </section>
 
-    <section class="panel">
-      <h2>Tutorial</h2>
+    <section class="panel" id="tutorialPanel">
+      <h2>🎬 Video Tutorial Editor</h2>
+      <p class="muted">For Modding Tutorials only. Edit the video title, YouTube link, video description, key information, and publication status here.</p>
       <input id="tutorialEditId" type="hidden">
-      <label>App ID</label><input id="tutorialAppId" placeholder="UUID from the catalog">
-      <label>Title</label><input id="tutorialTitle" placeholder="How to install the mod">
-      <label>YouTube / video URL</label><input id="tutorialVideo" placeholder="https://www.youtube.com/watch?v=...">
+      <input id="tutorialAppId" type="hidden">
+      <label>Video title</label><input id="tutorialTitle" placeholder="How to install the mod">
+      <label>Watch Video URL</label><input id="tutorialVideo" placeholder="https://www.youtube.com/watch?v=...">
+      <label>Video description / write-up</label><textarea id="tutorialDescription" rows="6" placeholder="Explain what viewers will learn, tools required, and the expected result."></textarea>
+      <label>Video info / key points</label><textarea id="tutorialBody" rows="7" placeholder="One insight per line. Example: APK setup&#10;Patch workflow&#10;Testing and troubleshooting"></textarea>
       <label>Status</label>
       <select id="tutorialStatus"><option value="draft">draft</option><option value="published">published</option><option value="archived">archived</option></select>
-      <label>Body / instructions</label><textarea id="tutorialBody" rows="6"></textarea>
       <div class="toolbar" style="margin-top:12px">
         <button id="saveTutorial">Save tutorial</button>
         <button id="newTutorial" class="secondary">New / Clear</button>
@@ -251,8 +253,8 @@
       <pre id="appsResult">No catalog loaded.</pre>
     </section>
 
-    <section class="panel wide">
-      <h2>Selected app versions</h2>
+    <section class="panel wide" id="selectedVersionsPanel">
+      <h2>Selected app / game versions</h2>
       <label>App ID</label><input id="selectedAppId" placeholder="Choose an App ID from the catalog">
       <div class="toolbar"><button id="loadVersions" class="secondary">Load versions</button></div>
       <div style="overflow:auto;margin-top:12px">
@@ -376,6 +378,23 @@ async function loadStats() {
   }
 }
 
+function applyAdminContentMode(app) {
+  const isTutorial = String(app?.category_slug || '').toLowerCase() === 'tutorials';
+  const ids = ['appEditorPanel','versionEditorPanel','fileUploadPanel','screenshotPanel','selectedVersionsPanel'];
+  ids.forEach(id => {
+    const el = $(id);
+    if (el) el.style.display = isTutorial ? 'none' : '';
+  });
+  const tutorialPanel = $('tutorialPanel');
+  const tutorialStudio = $('tutorialStudio');
+  if (tutorialPanel) tutorialPanel.style.display = '';
+  if (tutorialStudio) tutorialStudio.style.display = '';
+
+  if (isTutorial && tutorialPanel) {
+    $('tutorialDescription').value = app.description_html || '';
+  }
+}
+
 async function loadApps() {
   try {
     const params = new URLSearchParams({
@@ -432,6 +451,7 @@ async function loadApps() {
         $('description').value = app.description_html || '';
         $('relatedApps').value = app.related_slugs || '';
         $('createApp').textContent = 'Create new app';
+        applyAdminContentMode(app);
         $('createApp').disabled = true;
         $('createApp').title = 'Select New / Clear to start another app.';
         loadVersions();
@@ -1008,7 +1028,8 @@ $('saveTutorial').onclick=async()=>{
       title:$('tutorialTitle').value.trim(),
       video_url:$('tutorialVideo').value.trim() || undefined,
       body:$('tutorialBody').value.trim(),
-      status:$('tutorialStatus').value
+      status:$('tutorialStatus').value,
+      description_html:$('tutorialDescription').value.trim()
     };
     if(!body.app_id || !body.title) throw new Error('App ID and title are required.');
     const endpoint=editId
@@ -1022,7 +1043,7 @@ $('saveTutorial').onclick=async()=>{
 };
 
 $('newTutorial').onclick=()=>{
-  ['tutorialEditId','tutorialAppId','tutorialTitle','tutorialVideo','tutorialBody'].forEach(id=>$(id).value='');
+  ['tutorialEditId','tutorialAppId','tutorialTitle','tutorialVideo','tutorialDescription','tutorialBody'].forEach(id=>$(id).value='');
   $('tutorialStatus').value='draft';
   $('tutorialResult').textContent='';
 };
@@ -1039,12 +1060,14 @@ async function loadTutorials(appId) {
       $('tutorialVideo').value=t.video_url||'';
       $('tutorialBody').value=t.body||'';
       $('tutorialStatus').value=t.status||'draft';
+      $('tutorialDescription').value = data.app?.description_html || '';
     } else {
       $('tutorialEditId').value='';
       $('tutorialAppId').value=appId;
       $('tutorialTitle').value='';
       $('tutorialVideo').value='';
       $('tutorialBody').value='';
+      $('tutorialDescription').value='';
       $('tutorialStatus').value='draft';
     }
     $('tutorialResult').textContent=JSON.stringify(data,null,2);
