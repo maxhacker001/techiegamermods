@@ -119,3 +119,29 @@ CREATE INDEX IF NOT EXISTS idx_versions_status ON versions(status);
 CREATE INDEX IF NOT EXISTS idx_files_version ON files(version_id);
 CREATE INDEX IF NOT EXISTS idx_files_published ON files(published);
 CREATE INDEX IF NOT EXISTS idx_downloads_file_date ON downloads(file_id, occurred_at);
+
+
+CREATE TABLE IF NOT EXISTS multipart_uploads (
+  id TEXT PRIMARY KEY,
+  upload_id TEXT NOT NULL UNIQUE,
+  version_id TEXT NOT NULL,
+  storage_key TEXT NOT NULL UNIQUE,
+  original_name TEXT NOT NULL,
+  file_type TEXT NOT NULL,
+  mime_type TEXT NOT NULL,
+  bytes INTEGER NOT NULL,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (version_id) REFERENCES versions(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS multipart_parts (
+  upload_session_id TEXT NOT NULL,
+  part_number INTEGER NOT NULL,
+  etag TEXT NOT NULL,
+  bytes INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (upload_session_id, part_number),
+  FOREIGN KEY (upload_session_id) REFERENCES multipart_uploads(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_multipart_uploads_version
+  ON multipart_uploads(version_id);
