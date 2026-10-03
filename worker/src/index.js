@@ -127,12 +127,19 @@ async function getApp(slug, env) {
     ORDER BY datetime(updated_at) DESC
   `).bind(app.id).all();
 
-  const screenshots = await env.DB.prepare(`
-    SELECT id, storage_key, alt_text, sort_order
-    FROM screenshots
-    WHERE app_id = ?
-    ORDER BY sort_order ASC, id ASC
-  `).bind(app.id).all();
+  const screenshots = await env.DB.prepare(
+    "SELECT id, storage_key, alt_text, sort_order FROM screenshots WHERE app_id=? ORDER BY sort_order ASC, id ASC"
+  ).bind(app.id).all();
+
+  const versionRows = versions.results || [];
+  let files = [];
+  if (versionRows.length) {
+    const placeholders = versionRows.map(() => "?").join(",");
+    const fileRows = await env.DB.prepare(
+      "SELECT id, version_id, file_type, original_name, mime_type, bytes, sha256, scan_status, published, created_at FROM files WHERE version_id IN (" + placeholders + ") AND published=1 AND scan_status='clean' ORDER BY datetime(created_at) DESC"
+    ).bind(...versionRows.map(v => v.id)).all();
+    files = fileRows.results || [];
+  }
 
   const tags = await env.DB.prepare(`
     SELECT tag FROM app_tags WHERE app_id = ? ORDER BY tag
@@ -148,7 +155,13 @@ async function getApp(slug, env) {
   return json({
     app,
     versions: versions.results || [],
-    screenshots: screenshots.results || [],
+    screenshots: (screenshots.results || []).map((row) => ({
+      id: row.id,
+      alt_text: row.alt_text,
+      sort_order: row.sort_order,
+      media_url: "/media/screenshots/" + row.id
+    })),
+    files,
     tags: (tags.results || []).map((row) => row.tag),
     tutorials: tutorials.results || []
   }, 200, env);
@@ -312,6 +325,49 @@ async function adminCreateApp(request, env) {
   return json({ id, slug }, 201, env);
 }
 
+
+async function adminEditApp(request, appId, env) {
+  if (!requireAdmin(request, env)) return json({ error: "Unauthorized" }, 401, env);
+  const body = await parseJson(request);
+  if (!body?.name || !body?.category_slug) {
+    return json({ error: "name and category_slug are required" }, 400, env);
+  }
+
+  const app = await env.DB.prepare("SELECT id FROM apps WHERE id=? LIMIT 1").bind(appId).first();
+  if (!app) return json({ error: "App not found" }, 404, env);
+
+  const category = await env.DB.prepare("SELECT id FROM categories WHERE slug=? LIMIT 1")
+    .bind(body.category_slug).first();
+  if (!category) return json({ error: "Unknown category" }, 400, env);
+
+  const slug = slugify(body.slug || body.name);
+  const existing = await env.DB.prepare(
+    "SELECT id FROM apps WHERE slug=? AND id<>? LIMIT 1"
+  ).bind(slug, appId).first();
+  if (existing) return json({ error: "That slug is already in use" }, 409, env);
+
+  await env.DB.prepare(
+    "UPDATE apps SET slug=?, name=?, category_id=?, package_name=?, publisher=?, genre=?, description_html=?, icon_url=?, play_store_url=?, updated_at=CURRENT_TIMESTAMP WHERE id=?"
+  ).bind(
+    slug,
+    String(body.name).trim(),
+    category.id,
+    body.package_name || null,
+    body.publisher || null,
+    body.genre || null,
+    body.description_html || "",
+    body.icon_url || null,
+    body.play_store_url || null,
+    appId
+  ).run();
+
+  await env.DB.prepare(
+    "INSERT INTO admin_audit_log(actor,action,entity_type,entity_id,details_json) VALUES('admin','edit','app',?,?)"
+  ).bind(appId, JSON.stringify({ name: body.name, slug })).run();
+
+  return json({ id: appId, slug }, 200, env);
+}
+
 async function adminCreateVersion(request, env) {
   if (!requireAdmin(request, env)) return json({ error: "Unauthorized" }, 401, env);
 
@@ -345,6 +401,173 @@ async function adminCreateVersion(request, env) {
   }
 
   return json({ id }, 201, env);
+}
+
+
+async function adminEditVersion(request, versionId, env) {
+  if (!requireAdmin(request, env)) return json({ error: "Unauthorized" }, 401, env);
+  const body = await parseJson(request);
+  if (!body?.version_name) return json({ error: "version_name is required" }, 400, env);
+
+  const version = await env.DB.prepare("SELECT id, app_id FROM versions WHERE id=? LIMIT 1")
+    .bind(versionId).first();
+  if (!version) return json({ error: "Version not found" }, 404, env);
+
+  try {
+    await env.DB.prepare(
+      "UPDATE versions SET version_name=?, mod_info=?, changelog=?, android_min=?, architecture=?, size_bytes=?, updated_at=CURRENT_TIMESTAMP WHERE id=?"
+    ).bind(
+      String(body.version_name).trim(),
+      body.mod_info || "",
+      body.changelog || "",
+      body.android_min || null,
+      body.architecture || null,
+      Number(body.size_bytes || 0),
+      versionId
+    ).run();
+  } catch (error) {
+    return json({ error: "Unable to update version", detail: String(error) }, 409, env);
+  }
+
+  await env.DB.prepare(
+    "INSERT INTO admin_audit_log(actor,action,entity_type,entity_id,details_json) VALUES('admin','edit','version',?,?)"
+  ).bind(versionId, JSON.stringify({ version_name: body.version_name })).run();
+
+  return json({ id: versionId }, 200, env);
+}
+
+async function adminListFilesForVersion(request, versionId, env) {
+  if (!requireAdmin(request, env)) return json({ error: "Unauthorized" }, 401, env);
+  const version = await env.DB.prepare("SELECT id, app_id, version_name FROM versions WHERE id=? LIMIT 1")
+    .bind(versionId).first();
+  if (!version) return json({ error: "Version not found" }, 404, env);
+
+  const result = await env.DB.prepare(
+    "SELECT id, version_id, file_type, original_name, mime_type, bytes, sha256, scan_status, published, created_at FROM files WHERE version_id=? ORDER BY datetime(created_at) DESC"
+  ).bind(versionId).all();
+
+  return json({ version, files: result.results || [] }, 200, env);
+}
+
+async function adminUploadScreenshot(request, appId, env) {
+  if (!requireAdmin(request, env)) return json({ error: "Unauthorized" }, 401, env);
+  if (!env.BUCKET) return json({ error: "R2 bucket binding is not configured" }, 500, env);
+
+  const app = await env.DB.prepare("SELECT id FROM apps WHERE id=? LIMIT 1").bind(appId).first();
+  if (!app) return json({ error: "App not found" }, 404, env);
+
+  const form = await request.formData();
+  const file = form.get("file");
+  if (!(file instanceof File)) return json({ error: "file is required" }, 400, env);
+
+  const mime = file.type || "application/octet-stream";
+  if (!/^image\/(png|jpeg|webp|gif)$/i.test(mime)) {
+    return json({ error: "Only PNG, JPEG, WebP, and GIF screenshots are accepted" }, 400, env);
+  }
+
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]+/g, "_").slice(0, 150);
+  const key = "screenshots/" + appId + "/" + crypto.randomUUID() + "-" + safeName;
+
+  await env.BUCKET.put(key, await file.arrayBuffer(), {
+    httpMetadata: {
+      contentType: mime,
+      cacheControl: "public, max-age=86400"
+    }
+  });
+
+  const id = crypto.randomUUID();
+  const alt = String(form.get("alt_text") || "").slice(0, 200);
+  const sortOrder = Number(form.get("sort_order") || 0);
+
+  await env.DB.prepare(
+    "INSERT INTO screenshots(id,app_id,storage_key,alt_text,sort_order) VALUES(?,?,?,?,?)"
+  ).bind(id, appId, key, alt, sortOrder).run();
+
+  return json({ id, storage_key: key, alt_text: alt, sort_order: sortOrder }, 201, env);
+}
+
+async function adminListTutorials(request, appId, env) {
+  if (!requireAdmin(request, env)) return json({ error: "Unauthorized" }, 401, env);
+
+  const app = await env.DB.prepare("SELECT id,name FROM apps WHERE id=? LIMIT 1").bind(appId).first();
+  if (!app) return json({ error: "App not found" }, 404, env);
+
+  const result = await env.DB.prepare(
+    "SELECT id, title, video_url, body, status, created_at, updated_at FROM tutorials WHERE app_id=? ORDER BY datetime(updated_at) DESC"
+  ).bind(appId).all();
+
+  return json({ app, tutorials: result.results || [] }, 200, env);
+}
+
+async function adminCreateTutorial(request, env) {
+  if (!requireAdmin(request, env)) return json({ error: "Unauthorized" }, 401, env);
+  const body = await parseJson(request);
+  if (!body?.app_id || !body?.title) {
+    return json({ error: "app_id and title are required" }, 400, env);
+  }
+
+  const app = await env.DB.prepare("SELECT id FROM apps WHERE id=? LIMIT 1").bind(body.app_id).first();
+  if (!app) return json({ error: "App not found" }, 404, env);
+
+  const id = crypto.randomUUID();
+
+  await env.DB.prepare(
+    "INSERT INTO tutorials(id,app_id,title,video_url,body,status) VALUES(?,?,?,?,?,?)"
+  ).bind(
+    id,
+    body.app_id,
+    String(body.title).trim(),
+    body.video_url || null,
+    body.body || "",
+    ["draft","published","archived"].includes(body.status) ? body.status : "draft"
+  ).run();
+
+  await env.DB.prepare(
+    "INSERT INTO admin_audit_log(actor,action,entity_type,entity_id,details_json) VALUES('admin','create','tutorial',?,?)"
+  ).bind(id, JSON.stringify({ app_id: body.app_id, title: body.title })).run();
+
+  return json({ id }, 201, env);
+}
+
+async function adminEditTutorial(request, tutorialId, env) {
+  if (!requireAdmin(request, env)) return json({ error: "Unauthorized" }, 401, env);
+  const body = await parseJson(request);
+  if (!body?.title) return json({ error: "title is required" }, 400, env);
+
+  const tutorial = await env.DB.prepare("SELECT id FROM tutorials WHERE id=? LIMIT 1").bind(tutorialId).first();
+  if (!tutorial) return json({ error: "Tutorial not found" }, 404, env);
+
+  await env.DB.prepare(
+    "UPDATE tutorials SET title=?, video_url=?, body=?, status=?, updated_at=CURRENT_TIMESTAMP WHERE id=?"
+  ).bind(
+    String(body.title).trim(),
+    body.video_url || null,
+    body.body || "",
+    ["draft","published","archived"].includes(body.status) ? body.status : "draft",
+    tutorialId
+  ).run();
+
+  return json({ id: tutorialId }, 200, env);
+}
+
+async function serveScreenshot(screenshotId, env) {
+  if (!env.DB || !env.BUCKET) return new Response("Media service is not configured", { status: 503 });
+
+  const shot = await env.DB.prepare(
+    "SELECT s.id, s.storage_key, s.alt_text, s.app_id FROM screenshots s JOIN apps a ON a.id=s.app_id WHERE s.id=? AND a.status='published' LIMIT 1"
+  ).bind(screenshotId).first();
+
+  if (!shot) return new Response("Screenshot not found", { status: 404 });
+
+  const object = await env.BUCKET.get(shot.storage_key);
+  if (!object) return new Response("Screenshot file not found", { status: 404 });
+
+  const headers = new Headers();
+  object.writeHttpMetadata(headers);
+  headers.set("etag", object.httpEtag);
+  headers.set("cache-control", "public, max-age=86400");
+  if (shot.alt_text) headers.set("content-description", shot.alt_text);
+  return new Response(object.body, { headers });
 }
 
 async function uploadFile(request, env) {
@@ -483,6 +706,30 @@ export default {
         return adminCreateApp(request, env);
       }
 
+      if (path === "/api/admin/tutorials" && request.method === "POST") {
+        return adminCreateTutorial(request, env);
+      }
+
+      if (path.startsWith("/api/admin/tutorials/") && request.method === "PATCH") {
+        const tutorialId = decodeURIComponent(path.slice("/api/admin/tutorials/".length));
+        return adminEditTutorial(request, tutorialId, env);
+      }
+
+      if (path.startsWith("/api/admin/apps/") && path.endsWith("/edit") && request.method === "PATCH") {
+        const appId = decodeURIComponent(path.slice("/api/admin/apps/".length, -"/edit".length));
+        return adminEditApp(request, appId, env);
+      }
+
+      if (path.startsWith("/api/admin/apps/") && path.endsWith("/screenshots") && request.method === "POST") {
+        const appId = decodeURIComponent(path.slice("/api/admin/apps/".length, -"/screenshots".length));
+        return adminUploadScreenshot(request, appId, env);
+      }
+
+      if (path.startsWith("/api/admin/apps/") && path.endsWith("/tutorials") && request.method === "GET") {
+        const appId = decodeURIComponent(path.slice("/api/admin/apps/".length, -"/tutorials".length));
+        return adminListTutorials(request, appId, env);
+      }
+
       if (path.startsWith("/api/admin/apps/") && path.endsWith("/status") && request.method === "PATCH") {
         const appId = decodeURIComponent(path.slice("/api/admin/apps/".length, -"/status".length));
         return adminSetAppStatus(request, appId, env);
@@ -494,6 +741,16 @@ export default {
 
       if (path === "/api/admin/versions" && request.method === "POST") {
         return adminCreateVersion(request, env);
+      }
+
+      if (path.startsWith("/api/admin/versions/") && path.endsWith("/edit") && request.method === "PATCH") {
+        const versionId = decodeURIComponent(path.slice("/api/admin/versions/".length, -"/edit".length));
+        return adminEditVersion(request, versionId, env);
+      }
+
+      if (path.startsWith("/api/admin/versions/") && path.endsWith("/files") && request.method === "GET") {
+        const versionId = decodeURIComponent(path.slice("/api/admin/versions/".length, -"/files".length));
+        return adminListFilesForVersion(request, versionId, env);
       }
 
       if (path.startsWith("/api/admin/versions/") && path.endsWith("/status") && request.method === "PATCH") {
@@ -513,6 +770,10 @@ export default {
       if (path.startsWith("/api/admin/files/") && path.endsWith("/publish") && request.method === "PATCH") {
         const fileId = decodeURIComponent(path.slice("/api/admin/files/".length, -"/publish".length));
         return adminPublishFile(request, fileId, env);
+      }
+
+      if (path.startsWith("/media/screenshots/") && request.method === "GET") {
+        return serveScreenshot(path.slice("/media/screenshots/".length), env);
       }
 
       if (path.startsWith("/download/") && request.method === "GET") {
