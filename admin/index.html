@@ -319,17 +319,28 @@ async function request(path, options={}) {
   if (/github\.io/i.test(base)) {
     throw new Error('That is the GitHub Pages URL, not the API. Enter the deployed Cloudflare Worker URL instead.');
   }
+
+  // Prevent a stalled network request from making the Admin panel appear
+  // frozen. Individual requests get a bounded lifetime and fail visibly.
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 60000);
   let r;
   try {
     r = await fetch(base + path, {
-    ...options,
-    headers: {
-      ...authHeaders(options.body && typeof options.body === 'string'),
-      ...(options.headers || {})
-    }
+      ...options,
+      signal: controller.signal,
+      headers: {
+        ...authHeaders(options.body && typeof options.body === 'string'),
+        ...(options.headers || {})
+      }
     });
   } catch (error) {
+    if (error?.name === 'AbortError') {
+      throw new Error('The API request timed out after 60 seconds. Check the Worker status or your network connection.');
+    }
     throw new Error('Cannot reach the API. Check the Worker URL, deployment status, and CORS settings.');
+  } finally {
+    clearTimeout(timeoutId);
   }
   const text = await r.text();
   let body;
