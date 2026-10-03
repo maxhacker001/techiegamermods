@@ -539,6 +539,17 @@ async function loadApps() {
         $('description').value = app.description_html || '';
         $('relatedApps').value = app.related_slugs || '';
         $('createApp').textContent = 'Create new app';
+
+        // Clear the previous app's upload/config state before loading the new app.
+        $('assetVersionId').value = '';
+        $('assetLabel').value = '';
+        $('assetFile').value = '';
+        $('assetRows').innerHTML = '';
+        $('assetResult').textContent = 'No extra files loaded.';
+        $('fileVersionId').value = '';
+        $('fileRows').innerHTML = '';
+        $('filesResult').textContent = 'No files loaded.';
+
         applyAdminContentMode(app);
         $('createApp').disabled = true;
         $('createApp').title = 'Select New / Clear to start another app.';
