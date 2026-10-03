@@ -17,11 +17,7 @@
       });
     };
 
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", start, { once: true });
-    } else {
-      start();
-    }
+    start();
   });
 
   const cleanLines = (value) => String(value || "")
