@@ -12,5 +12,7 @@ window.TGM_CONTACT_LINKS = {
   telegramChannel: "https://t.me/techiegamer10",
   whatsappPersonal: "https://wa.me/2349034211288",
   whatsappCommunity: "https://chat.whatsapp.com/I4Wvi5vhWHYGNEfrlwgEMv",
-  liveChatDestination: "whatsapp"
+  liveChatDestination: "whatsapp",
+  // Set this to your YouTube channel URL to enable the tutorial subscription button.
+  youtubeChannel: ""
 };
