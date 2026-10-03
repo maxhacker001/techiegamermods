@@ -235,10 +235,18 @@
     }
 
     let app = apps.find(a => a.id === appId);
+    const hasLegacyApp = Boolean(app);
+    let foundLiveApp = false;
     let relatedApps = [];
+
+    // Allow tutorial entries created entirely from Admin/D1 to open even
+    // when they have no hard-coded entry in js/data.js.
     if (!app) {
-      fail("Mod not found", "That app or game is not in the current catalog.");
-      return;
+      app = {
+        id: appId, name: appId, category: "tutorials", version: "—",
+        size: "—", image: "images/logo.png", features: [], screenshots: [],
+        description: "", youtube: "", modTitle: "Video Tutorial"
+      };
     }
 
     // Prefer the published Worker record when it exists. Fall back to the
@@ -247,6 +255,7 @@
       try {
         const live = await window.TGMApi.getApp(appId);
         if (live && live.app) {
+          foundLiveApp = true;
           const legacy = app;
           const liveApp = live.app;
           const versions = live.versions || [];
@@ -302,6 +311,11 @@
       } catch (error) {
         console.warn("Live app data unavailable; using legacy catalog:", error);
       }
+    }
+
+    if (!hasLegacyApp && !foundLiveApp) {
+      fail("Tutorial not found", "This tutorial is not published in the live catalog yet.");
+      return;
     }
 
     const isTutorial = app.category === "tutorials";
