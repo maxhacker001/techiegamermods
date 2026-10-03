@@ -474,19 +474,33 @@ async function loadVersions() {
     });
     document.querySelectorAll('.version-status').forEach(sel => {
       sel.onchange = async () => {
+        const previous = sel.dataset.previousStatus || sel.value;
+        const requested = sel.value;
+        sel.disabled = true;
         try {
-          await request('/api/admin/versions/' + encodeURIComponent(sel.dataset.id) + '/status', {
+          const result = await request('/api/admin/versions/' + encodeURIComponent(sel.dataset.id) + '/status', {
             method:'PATCH',
-            body:JSON.stringify({status:sel.value})
+            body:JSON.stringify({status:requested})
           });
+
+          sel.dataset.previousStatus = requested;
+          $('versionsResult').textContent = JSON.stringify(result, null, 2);
           await loadStats();
           await loadVersions();
           await loadApps();
         } catch(e) {
-          $('versionsResult').textContent = 'Error: ' + e.message;
-          await loadVersions();
+          sel.value = previous;
+          $('versionsResult').textContent =
+            'Cannot change version status to "' + requested + '".\n\n' +
+            e.message +
+            (requested === 'published'
+              ? '\n\nMake sure this version already has a published file.'
+              : '');
+        } finally {
+          sel.disabled = false;
         }
       };
+      sel.dataset.previousStatus = sel.value;
     });
   } catch(e) {
     $('versionsResult').textContent='Error: '+e.message;
