@@ -63,7 +63,14 @@ async function listApps(request, env) {
       v.id AS latest_version_id,
       v.version_name AS latest_version,
       v.mod_info AS latest_mod_info,
-      v.size_bytes AS latest_size_bytes
+      v.size_bytes AS latest_size_bytes,
+      COALESCE((
+        SELECT COUNT(*)
+        FROM downloads d
+        JOIN files f2 ON f2.id=d.file_id
+        JOIN versions v2 ON v2.id=f2.version_id
+        WHERE v2.app_id=a.id
+      ),0) AS download_count
     FROM apps a
     JOIN categories c ON c.id = a.category_id
     LEFT JOIN versions v ON v.id = (
@@ -172,6 +179,56 @@ async function listCategories(env) {
     "SELECT id, slug, name, description FROM categories ORDER BY name ASC"
   ).all();
   return json({ categories: results }, 200, env);
+}
+
+async function adminAuditLog(request, env) {
+  if (!requireAdmin(request, env)) return json({ error: "Unauthorized" }, 401, env);
+
+  const url = new URL(request.url);
+  const limit = Math.min(Math.max(Number(url.searchParams.get("limit") || 100), 1), 200);
+
+  const result = await env.DB.prepare(
+    "SELECT id,actor,action,entity_type,entity_id,details_json,created_at FROM admin_audit_log ORDER BY datetime(created_at) DESC LIMIT ?"
+  ).bind(limit).all();
+
+  return json({ events: result.results || [] }, 200, env);
+}
+
+async function adminArchiveFile(request, fileId, env) {
+  if (!requireAdmin(request, env)) return json({ error: "Unauthorized" }, 401, env);
+
+  const file = await env.DB.prepare(
+    "SELECT id,version_id,published FROM files WHERE id=? LIMIT 1"
+  ).bind(fileId).first();
+  if (!file) return json({ error: "File not found" }, 404, env);
+
+  await env.DB.prepare(
+    "UPDATE files SET published=0 WHERE id=?"
+  ).bind(fileId).run();
+
+  await env.DB.prepare(
+    "INSERT INTO admin_audit_log(actor,action,entity_type,entity_id,details_json) VALUES('admin','archive','file',?,?)"
+  ).bind(fileId, JSON.stringify({ version_id: file.version_id, previous_published: file.published })).run();
+
+  return json({ id: fileId, published: 0 }, 200, env);
+}
+
+async function adminDeleteScreenshot(request, screenshotId, env) {
+  if (!requireAdmin(request, env)) return json({ error: "Unauthorized" }, 401, env);
+  if (!env.BUCKET || !env.DB) return json({ error: "Storage/database binding is not configured" }, 500, env);
+
+  const shot = await env.DB.prepare(
+    "SELECT id,storage_key FROM screenshots WHERE id=? LIMIT 1"
+  ).bind(screenshotId).first();
+  if (!shot) return json({ error: "Screenshot not found" }, 404, env);
+
+  await env.BUCKET.delete(shot.storage_key);
+  await env.DB.prepare("DELETE FROM screenshots WHERE id=?").bind(screenshotId).run();
+  await env.DB.prepare(
+    "INSERT INTO admin_audit_log(actor,action,entity_type,entity_id,details_json) VALUES('admin','delete','screenshot',?,?)"
+  ).bind(screenshotId, JSON.stringify({ storage_key: shot.storage_key })).run();
+
+  return json({ id: screenshotId, deleted: true }, 200, env);
 }
 
 async function adminStats(env) {
@@ -874,6 +931,10 @@ export default {
         return adminStats(env);
       }
 
+      if (path === "/api/admin/audit" && request.method === "GET") {
+        return adminAuditLog(request, env);
+      }
+
       if (path === "/api/admin/apps" && request.method === "GET") {
         return adminListApps(request, env);
       }
@@ -965,6 +1026,16 @@ export default {
       if (path.startsWith("/api/admin/files/") && path.endsWith("/publish") && request.method === "PATCH") {
         const fileId = decodeURIComponent(path.slice("/api/admin/files/".length, -"/publish".length));
         return adminPublishFile(request, fileId, env);
+      }
+
+      if (path.startsWith("/api/admin/files/") && path.endsWith("/archive") && request.method === "PATCH") {
+        const fileId = decodeURIComponent(path.slice("/api/admin/files/".length, -"/archive".length));
+        return adminArchiveFile(request, fileId, env);
+      }
+
+      if (path.startsWith("/api/admin/screenshots/") && request.method === "DELETE") {
+        const screenshotId = decodeURIComponent(path.slice("/api/admin/screenshots/".length));
+        return adminDeleteScreenshot(request, screenshotId, env);
       }
 
       if (path.startsWith("/media/screenshots/") && request.method === "GET") {
