@@ -703,6 +703,7 @@ $('newApp').onclick = () => {
   $('iconFile').value='';
   $('iconResult').textContent='';
   $('category').value='apps';
+  applyAdminContentMode({ category_slug: 'apps' });
   $('createApp').textContent='Create draft';
   $('createApp').disabled=false;
   $('createApp').title='';
@@ -885,6 +886,8 @@ $('selectedAppId').addEventListener('change',()=> {
   $('versionAppId').value=id;
   $('screenshotAppId').value=id;
   $('tutorialAppId').value=id;
+  const app = appCache.get(id);
+  if (app) applyAdminContentMode(app);
   loadVersions();
   loadTutorials(id);
 });
@@ -1000,6 +1003,7 @@ $('createTutorialEntry').onclick = async () => {
     $('selectedAppId').value = app.id;
     $('appEditId').value = app.id;
     $('tutorialAppId').value = app.id;
+    applyAdminContentMode({ category_slug: 'tutorials', description_html: description });
     await loadStats();
     await loadApps();
     if (status === 'published') {
