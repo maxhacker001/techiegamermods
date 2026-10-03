@@ -259,6 +259,23 @@
           const liveTutorial = (live.tutorials || []).find(t => t.video_url);
           relatedApps = Array.isArray(live.related_apps) ? live.related_apps : [];
 
+          // Keep the richer original catalog copy when a migrated database
+          // record only contains a short summary. Combine feature lists so a
+          // value such as "Pro Unlocked" cannot erase the original bullets.
+          const liveDescription = String(liveApp.description_html || "");
+          const legacyDescription = String(legacy.description || "");
+          const chosenDescription = liveDescription.length >= legacyDescription.length
+            ? liveDescription : legacyDescription;
+          const liveFeatures = latest?.mod_info
+            ? latest.mod_info.split(/[\n,;]+/).map(s => s.trim()).filter(Boolean)
+            : [];
+          const allFeatures = [];
+          [...liveFeatures, ...(legacy.features || [])].forEach(feature => {
+            if (feature && !allFeatures.some(existing => existing.toLowerCase() === feature.toLowerCase())) {
+              allFeatures.push(feature);
+            }
+          });
+
           app = {
             id: liveApp.slug || liveApp.id || appId,
             name: liveApp.name || legacy.name,
@@ -275,12 +292,11 @@
             publisher: liveApp.publisher || legacy.publisher || "",
             genre: liveApp.genre || legacy.genre || "",
             playstore: liveApp.play_store_url || legacy.playstore || "",
-            description: liveApp.description_html || legacy.description || "",
-            features: latest?.mod_info
-              ? latest.mod_info.split(/[\n,;]+/).map(s => s.trim()).filter(Boolean)
-              : (legacy.features || []),
+            description: chosenDescription,
+            features: allFeatures,
             screenshots: liveShots.length ? liveShots : (legacy.screenshots || []),
-            youtube: liveTutorial?.video_url || legacy.youtube || ""
+            youtube: liveTutorial?.video_url || legacy.youtube || "",
+            tutorialBody: liveTutorial?.body || ""
           };
         }
       } catch (error) {
@@ -319,16 +335,18 @@
     document.getElementById("appImage").src = app.image;
 
     // Title
-    document.getElementById("modTitle").textContent = app.name + " v" + app.version + " MOD APK (" + (app.modTitle || "Premium Unlocked") + ")";
+    document.getElementById("modTitle").textContent = isTutorial
+      ? app.name + " — Modding Tutorial"
+      : app.name + " v" + app.version + " MOD APK (" + (app.modTitle || "Premium Unlocked") + ")";
     document.getElementById("updatedText").textContent = app.updated || "Release date unavailable";
 
     // Table
     document.getElementById("appNameTable").textContent = app.name;
-    document.getElementById("appPublisher").textContent = app.publisher || "TECHIE GAMER MODS";
-    document.getElementById("appGenre").textContent = app.genre || "Tools";
-    document.getElementById("appSizeTable").textContent = app.size || "—";
+    document.getElementById("appPublisher").textContent = isTutorial ? "TECHIE GAMER MODS" : (app.publisher || "TECHIE GAMER MODS");
+    document.getElementById("appGenre").textContent = isTutorial ? "YouTube Modding Tutorial" : (app.genre || "Tools");
+    document.getElementById("appSizeTable").textContent = isTutorial ? "Watch online" : (app.size || "—");
     document.getElementById("appVersionTable").textContent = app.version;
-    document.getElementById("modInfo").textContent = app.modTitle || "Premium Unlocked";
+    document.getElementById("modInfo").textContent = isTutorial ? "Step-by-step video" : (app.modTitle || "Premium Unlocked");
 
     // Play Store
     function isUsableUrl(value) {
@@ -353,7 +371,14 @@
     document.getElementById("guideBox").style.display = isTutorial ? "block" : "none";
 
     // Long description
-    document.getElementById("descriptionSection").innerHTML = app.description || "No description has been published for this release yet.";
+    document.getElementById("descriptionSection").innerHTML = app.description || app.tutorialBody || "No description has been published for this release yet.";
+    if (isTutorial && app.tutorialBody && app.description && !app.description.includes(app.tutorialBody)) {
+      const tutorialNotes = document.createElement("div");
+      tutorialNotes.className = "tutorial-notes";
+      tutorialNotes.style.cssText = "margin-top:18px;padding:18px;border:1px solid rgba(0,255,156,.25);border-radius:14px;background:rgba(0,255,156,.05);line-height:1.7;white-space:pre-wrap";
+      tutorialNotes.textContent = app.tutorialBody;
+      document.getElementById("descriptionSection").appendChild(tutorialNotes);
+    }
 
     // MOD Info bullet list
     const modFeaturesList = document.getElementById("modFeaturesList");
