@@ -188,7 +188,7 @@
       <pre id="assetResult">No extra files loaded.</pre>
       <div style="overflow:auto;margin-top:12px">
         <table>
-          <thead><tr><th>Label</th><th>Type</th><th>File</th><th>Size</th></tr></thead>
+          <thead><tr><th>Version</th><th>Label</th><th>Type</th><th>File</th><th>Size</th></tr></thead>
           <tbody id="assetRows"></tbody>
         </table>
       </div>
@@ -326,6 +326,8 @@ const $ = (id) => document.getElementById(id);
 
 const appCache = new Map();
 const versionCache = new Map();
+const appAssetsCache = new Map();
+let assetRequestSeq = 0;
 
 const DEFAULT_API_BASE = "https://techie-gamer-mods-api.talktomartinz.workers.dev";
 
@@ -545,7 +547,7 @@ async function loadApps() {
         $('assetLabel').value = '';
         $('assetFile').value = '';
         $('assetRows').innerHTML = '';
-        $('assetResult').textContent = 'No extra files loaded.';
+        $('assetResult').textContent = 'Loading extra files...';
         $('fileVersionId').value = '';
         $('fileRows').innerHTML = '';
         $('filesResult').textContent = 'No files loaded.';
@@ -553,8 +555,11 @@ async function loadApps() {
         applyAdminContentMode(app);
         $('createApp').disabled = true;
         $('createApp').title = 'Select New / Clear to start another app.';
-        await loadVersions(true);
-        await loadTutorials(app.id);
+        await Promise.all([
+          loadVersions(true),
+          loadAppAssets(app.id),
+          loadTutorials(app.id)
+        ]);
       };
     });
     document.querySelectorAll('.app-status').forEach(sel => {
@@ -646,7 +651,6 @@ async function loadVersions(autoSelectLatest=false) {
       $('assetVersionId').value=v.id;
       $('filesResult').textContent='Loading...';
       await loadFiles(v.id);
-      await loadVersionAssets(v.id);
     };
 
     document.querySelectorAll('.select-version').forEach(btn => {
@@ -738,6 +742,46 @@ async function loadFiles(versionId) {
     $('filesResult').textContent = JSON.stringify(data, null, 2);
   } catch(e) {
     $('filesResult').textContent = 'Error: ' + e.message;
+  }
+}
+
+async function loadAppAssets(appId) {
+  const id = String(appId || '').trim();
+  if (!id) return;
+  const requestId = ++assetRequestSeq;
+  const rows = $('assetRows');
+  const result = $('assetResult');
+
+  const render = (data) => {
+    if (requestId !== assetRequestSeq || $('selectedAppId').value.trim() !== id) return;
+    rows.innerHTML = '';
+    const assets = data?.assets || [];
+    assets.forEach(asset => {
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td>' + escapeHtml(asset.version_name || '—') + '</td>' +
+        '<td>' + escapeHtml(asset.label || '—') + '</td>' +
+        '<td>' + escapeHtml(String(asset.asset_type || 'config').toUpperCase()) + '</td>' +
+        '<td>' + escapeHtml(asset.original_name || '—') + '</td>' +
+        '<td>' + formatBytes(asset.bytes) + '</td>';
+      rows.appendChild(tr);
+    });
+    result.textContent = assets.length ? JSON.stringify(data, null, 2) : 'No extra files saved for this app.';
+  };
+
+  const cached = appAssetsCache.get(id);
+  if (cached) render(cached);
+  else result.textContent = 'Loading extra files...';
+
+  try {
+    const data = await request('/api/admin/apps/' + encodeURIComponent(id) + '/assets');
+    appAssetsCache.set(id, data);
+    render(data);
+  } catch(e) {
+    if (requestId === assetRequestSeq && $('selectedAppId').value.trim() === id) {
+      result.textContent = 'Error: ' + e.message;
+      rows.innerHTML = '';
+    }
   }
 }
 
@@ -979,6 +1023,8 @@ $('newVersion').onclick=()=> {
   ['versionEditId','versionAppId','versionName','modSummary','modFeatures','modInfo','androidMin','architecture','minSdk','targetSdk','changelog','assetVersionId','assetLabel'].forEach(id=>$(id).value='');
   if ($('assetFile')) $('assetFile').value='';
   if ($('assetRows')) $('assetRows').innerHTML='';
+  appAssetsCache.clear();
+  assetRequestSeq++;
   if ($('assetResult')) $('assetResult').textContent='No extra files loaded.';
   $('fileSize').dataset.bytes='0';
   $('versionResult').textContent='';
@@ -1129,7 +1175,8 @@ $('uploadAsset').onclick = async () => {
     if (!response.ok) throw new Error(data.error || ('HTTP ' + response.status));
     $('assetResult').textContent = JSON.stringify(data, null, 2);
     $('assetFile').value = '';
-    await loadVersionAssets(versionId);
+    appAssetsCache.delete($('selectedAppId').value.trim());
+    await loadAppAssets($('selectedAppId').value.trim());
     await loadStats();
   } catch(e) {
     $('assetResult').textContent = 'Error: ' + e.message;
