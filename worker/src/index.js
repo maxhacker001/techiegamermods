@@ -815,25 +815,51 @@ async function adminCompleteMultipart(request, sessionId, env) {
     return json({ error: "Multipart part verification failed" }, 409, env);
   }
 
+  const clientSha256 = String(body?.sha256 || "").trim().toLowerCase();
+  const sha256 = /^[0-9a-f]{64}$/.test(clientSha256) ? clientSha256 : null;
+
+  if (sha256) {
+    const existing = await env.DB.prepare(
+      "SELECT id,storage_key,original_name,bytes,sha256,published FROM files WHERE version_id=? AND sha256=? LIMIT 1"
+    ).bind(upload.version_id, sha256).first();
+
+    if (existing) {
+      await env.BUCKET.resumeMultipartUpload(upload.storage_key, upload.upload_id).abort();
+      await env.DB.prepare("DELETE FROM multipart_parts WHERE upload_session_id=?").bind(sessionId).run();
+      await env.DB.prepare("DELETE FROM multipart_uploads WHERE id=?").bind(sessionId).run();
+
+      return json({
+        error: "This exact file is already uploaded for this version.",
+        duplicate: true,
+        existing_file: existing
+      }, 409, env);
+    }
+  }
+
   const multipart = env.BUCKET.resumeMultipartUpload(upload.storage_key, upload.upload_id);
   await multipart.complete(parts);
 
   const fileId = crypto.randomUUID();
-  const clientSha256 = String(body?.sha256 || "").trim().toLowerCase();
-  const sha256 = /^[0-9a-f]{64}$/.test(clientSha256) ? clientSha256 : null;
 
-  await env.DB.prepare(
-    "INSERT INTO files(id,version_id,file_type,storage_key,original_name,mime_type,bytes,sha256,scan_status,published) VALUES(?,?,?,?,?,?,?,?,'clean',1)"
-  ).bind(
-    fileId,
-    upload.version_id,
-    upload.file_type,
-    upload.storage_key,
-    upload.original_name,
-    upload.mime_type,
-    upload.bytes,
-    sha256
-  ).run();
+  try {
+    await env.DB.prepare(
+      "INSERT INTO files(id,version_id,file_type,storage_key,original_name,mime_type,bytes,sha256,scan_status,published) VALUES(?,?,?,?,?,?,?,?,'clean',1)"
+    ).bind(
+      fileId,
+      upload.version_id,
+      upload.file_type,
+      upload.storage_key,
+      upload.original_name,
+      upload.mime_type,
+      upload.bytes,
+      sha256
+    ).run();
+  } catch (error) {
+    // Keep storage and database consistent if a race or uniqueness constraint
+    // rejects the new record after the object was completed.
+    await env.BUCKET.delete(upload.storage_key);
+    throw error;
+  }
 
   await env.DB.prepare(
     "UPDATE versions SET size_bytes=?,updated_at=CURRENT_TIMESTAMP WHERE id=?"
