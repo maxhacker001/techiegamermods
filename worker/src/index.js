@@ -115,10 +115,15 @@ async function listApps(request, env) {
 }
 
 async function getRelatedApps(appId, env) {
-  // Relationships are optional so older databases can continue serving the catalog
-  // until the related-apps migration has been applied.
+  const shape = (rows) => (rows || []).map(row => ({
+    ...row,
+    version: row.version || "—",
+    size_bytes: Number(row.size_bytes || 0),
+    image: row.icon_url || null
+  }));
+
   try {
-    const result = await env.DB.prepare(`
+    const explicit = await env.DB.prepare(`
       SELECT
         a.id,
         a.slug,
@@ -148,12 +153,74 @@ async function getRelatedApps(appId, env) {
       LIMIT 12
     `).bind(appId).all();
 
-    return (result.results || []).map(row => ({
-      ...row,
-      version: row.version || "—",
-      size_bytes: Number(row.size_bytes || 0),
-      image: row.icon_url || null
-    }));
+    if ((explicit.results || []).length) return shape(explicit.results);
+
+    // No explicit links: recommend from the live database using category and
+    // genre similarity. This keeps newly added apps related automatically.
+    const current = await env.DB.prepare(
+      "SELECT category_id, genre FROM apps WHERE id=? LIMIT 1"
+    ).bind(appId).first();
+    if (!current) return [];
+
+    const candidates = await env.DB.prepare(`
+      SELECT
+        a.id,
+        a.slug,
+        a.name,
+        a.publisher,
+        a.genre,
+        a.icon_url,
+        a.status,
+        (
+          SELECT vv.version_name
+          FROM versions vv
+          WHERE vv.app_id=a.id AND vv.status='published'
+          ORDER BY datetime(vv.updated_at) DESC
+          LIMIT 1
+        ) AS version,
+        (
+          SELECT vv.size_bytes
+          FROM versions vv
+          WHERE vv.app_id=a.id AND vv.status='published'
+          ORDER BY datetime(vv.updated_at) DESC
+          LIMIT 1
+        ) AS size_bytes
+      FROM apps a
+      WHERE a.id<>?
+        AND a.status='published'
+        AND a.category_id=?
+      ORDER BY datetime(a.updated_at) DESC, a.name ASC
+      LIMIT 100
+    `).bind(appId, current.category_id).all();
+
+    const sourceTokens = new Set(
+      String(current.genre || "")
+        .toLowerCase()
+        .split(/[^a-z0-9]+/)
+        .filter(token => token.length >= 4)
+    );
+
+    const ranked = (candidates.results || []).map(row => {
+      const targetTokens = String(row.genre || "")
+        .toLowerCase()
+        .split(/[^a-z0-9]+/)
+        .filter(token => token.length >= 4);
+
+      let score = 0;
+      for (const token of targetTokens) {
+        if (sourceTokens.has(token)) score += 3;
+      }
+
+      const sourceGenre = String(current.genre || "").toLowerCase();
+      const targetGenre = String(row.genre || "").toLowerCase();
+      for (const keyword of ["video","photo","music","graphic","communication","social","entertainment","game"]) {
+        if (sourceGenre.includes(keyword) && targetGenre.includes(keyword)) score += 4;
+      }
+
+      return { row, score };
+    }).sort((a,b) => b.score - a.score || String(a.row.name).localeCompare(String(b.row.name)));
+
+    return shape(ranked.slice(0, 12).map(item => item.row));
   } catch (_) {
     return [];
   }
