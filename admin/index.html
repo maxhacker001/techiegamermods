@@ -72,12 +72,7 @@
       <button id="test" class="secondary">Test API</button>
     </div>
     <p id="conn" class="muted">Live Worker detected. Enter your Admin token, save the session, then test.</p>
-    <div class="notice" style="margin-top:12px">
-      <b>Why you may see HTTP 404:</b> this admin panel is a client for the Cloudflare Worker API.
-      GitHub Pages serves the admin page, but it does not provide the <code>/api/...</code> endpoints.
-      Enter your deployed Worker URL above, save it, then test the connection.
-    </div>
-  </section>
+    </section>
 
   <section class="panel wide" id="adminStatusHelp" style="margin-top:16px">
     <h2>Dashboard</h2>
@@ -129,10 +124,6 @@
 
     <section class="panel" id="versionEditorPanel">
       <h2>📦 Version Editor</h2>
-      <div class="notice" style="margin:10px 0 14px">
-        <b>Public-page fields are editable here.</b> The MOD Info summary, detailed features,
-        Android minimum, architecture, changelog, version, and release file are saved to the live version record.
-      </div>
       <label>App ID</label><input id="versionAppId" placeholder="UUID from the app list">
       <label>Version</label><input id="versionName" placeholder="1.0.0">
       <label>Main MOD Info</label><input id="modSummary" placeholder="Premium Unlocked / Unlimited Coins">
@@ -169,10 +160,6 @@
       </select>
       <label>File</label><input id="file" type="file">
       <div id="fileSize" class="muted" style="margin-top:8px">No file selected.</div>
-      <div class="notice" style="margin:12px 0">
-        Upload APK, XAPK, APKS, OBB, DATA, PATCH or ZIP files here. Large files use the resumable R2 upload pipeline.
-        Uploading a file publishes the file, its version, and its app automatically; no separate file verification/publish step is required.
-      </div>
       <div class="toolbar">
         <button id="upload">Upload</button>
       </div>
@@ -245,8 +232,7 @@
 
     <section class="panel">
       <h2>Publishing</h2>
-      <div class="notice">There is no separate file verification step. Uploading a release stores it in Techie Gamer's R2, publishes the file/version/app automatically, and makes it available through the site's internal download route.</div>
-    </section>
+      </section>
 
     <section class="panel wide">
       <h2>Catalog</h2>
