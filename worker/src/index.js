@@ -922,6 +922,17 @@ async function adminUploadScreenshot(request, appId, env) {
   return json({ id, storage_key: key, alt_text: alt, sort_order: sortOrder }, 201, env);
 }
 
+async function adminListAppAssets(request, appId, env) {
+  if (!requireAdmin(request, env)) return json({ error: "Unauthorized" }, 401, env);
+  const app = await env.DB.prepare(
+    "SELECT a.id,a.slug,a.name FROM apps a WHERE a.id=? LIMIT 1"
+  ).bind(appId).first();
+  if (!app) return json({ error: "App not found" }, 404, env);
+  const result = await env.DB.prepare(
+    "SELECT ra.id,ra.version_id,ra.asset_type,ra.label,ra.original_name,ra.mime_type,ra.bytes,ra.sha256,ra.published,ra.created_at,v.version_name FROM release_assets ra JOIN versions v ON v.id=ra.version_id WHERE v.app_id=? AND ra.published=1 ORDER BY datetime(ra.created_at) DESC, ra.label ASC"
+  ).bind(appId).all();
+  return json({ app, assets: result.results || [] }, 200, env);
+}
 async function adminListVersionAssets(request, versionId, env) {
   if (!requireAdmin(request, env)) return json({ error: "Unauthorized" }, 401, env);
   const version = await env.DB.prepare("SELECT id,app_id,version_name FROM versions WHERE id=? LIMIT 1").bind(versionId).first();
@@ -1479,6 +1490,11 @@ export default {
       if (path.startsWith("/api/admin/versions/") && path.endsWith("/files") && request.method === "GET") {
         const versionId = decodeURIComponent(path.slice("/api/admin/versions/".length, -"/files".length));
         return adminListFilesForVersion(request, versionId, env);
+      }
+
+      if (path.startsWith("/api/admin/apps/") && path.endsWith("/assets") && request.method === "GET") {
+        const appId = decodeURIComponent(path.slice("/api/admin/apps/".length, -"/assets".length));
+        return adminListAppAssets(request, appId, env);
       }
 
       if (path.startsWith("/api/admin/versions/") && path.endsWith("/assets") && request.method === "GET") {
