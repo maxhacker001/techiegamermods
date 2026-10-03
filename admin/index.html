@@ -192,6 +192,36 @@
       <pre id="tutorialResult"></pre>
     </section>
 
+    <section class="panel wide" id="tutorialStudio">
+      <h2>🎬 Modding Tutorials Studio</h2>
+      <p class="muted">Create a standalone YouTube tutorial entry. It is saved in D1 under Modding Tutorials; no APK upload or R2 file is needed.</p>
+      <div class="grid">
+        <div>
+          <label for="studioTitle">Tutorial title</label>
+          <input id="studioTitle" placeholder="Example: How to patch an APK with MT Manager">
+          <label for="studioSlug">URL slug (optional)</label>
+          <input id="studioSlug" placeholder="patch-apk-mt-manager">
+          <label for="studioVideo">YouTube URL</label>
+          <input id="studioVideo" type="url" placeholder="https://www.youtube.com/watch?v=...">
+          <label for="studioIcon">Thumbnail / icon URL (optional)</label>
+          <input id="studioIcon" type="url" placeholder="https://...">
+        </div>
+        <div>
+          <label for="studioDescription">Card and page description (HTML supported)</label>
+          <textarea id="studioDescription" rows="5" placeholder="What viewers will learn, tools required, and expected result..."></textarea>
+          <label for="studioBody">Tutorial notes / extra details</label>
+          <textarea id="studioBody" rows="5" placeholder="Step-by-step notes, requirements, warnings, useful links..."></textarea>
+          <label for="studioStatus">Publication status</label>
+          <select id="studioStatus"><option value="published">Publish immediately</option><option value="draft">Save as draft</option></select>
+        </div>
+      </div>
+      <div class="toolbar" style="margin-top:14px">
+        <button id="createTutorialEntry">Create tutorial</button>
+        <button id="clearTutorialEntry" class="secondary">Clear form</button>
+      </div>
+      <pre id="studioResult">Ready to create a tutorial.</pre>
+    </section>
+
     <section class="panel">
       <h2>Publishing</h2>
       <div class="notice">There is no separate file verification step. Uploading a release stores it in Techie Gamer's R2, publishes the file/version/app automatically, and makes it available through the site's internal download route.</div>
@@ -402,6 +432,7 @@ async function loadApps() {
         $('createApp').disabled = true;
         $('createApp').title = 'Select New / Clear to start another app.';
         loadVersions();
+        loadTutorials(app.id);
       };
     });
     document.querySelectorAll('.app-status').forEach(sel => {
@@ -860,6 +891,97 @@ $('uploadScreenshots').onclick = async () => {
     $('screenshotResult').textContent=JSON.stringify(results,null,2);
     $('screenshotFiles').value='';
   } catch(e) { $('screenshotResult').textContent='Error: '+e.message; }
+};
+
+$('createTutorialEntry').onclick = async () => {
+  let createdAppId = '';
+  try {
+    const title = $('studioTitle').value.trim();
+    const videoUrl = $('studioVideo').value.trim();
+    if (!title) throw new Error('Enter a tutorial title.');
+    if (!videoUrl || !/^https?:\/\//i.test(videoUrl)) throw new Error('Enter a valid YouTube/video URL.');
+
+    const slug = $('studioSlug').value.trim() || title.toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80);
+    const status = $('studioStatus').value;
+    const description = $('studioDescription').value.trim();
+    const body = $('studioBody').value.trim();
+
+    $('createTutorialEntry').disabled = true;
+    $('studioResult').textContent = 'Creating tutorial catalog entry...';
+
+    const app = await request('/api/admin/apps', {
+      method: 'POST',
+      body: JSON.stringify({
+        name: title,
+        slug,
+        category_slug: 'tutorials',
+        publisher: 'TECHIE GAMER MODS',
+        genre: 'YouTube Tutorial',
+        icon_url: $('studioIcon').value.trim() || undefined,
+        description_html: description,
+        status: 'draft'
+      })
+    });
+    createdAppId = app.id;
+
+    const version = await request('/api/admin/versions', {
+      method: 'POST',
+      body: JSON.stringify({
+        app_id: app.id,
+        version_name: 'video',
+        mod_info: 'YouTube tutorial',
+        changelog: 'Tutorial catalog entry',
+        status: 'published'
+      })
+    });
+
+    if (status === 'published') {
+      await request('/api/admin/apps/' + encodeURIComponent(app.id) + '/status', {
+        method: 'PATCH',
+        body: JSON.stringify({ status: 'published' })
+      });
+    }
+
+    const tutorial = await request('/api/admin/tutorials', {
+      method: 'POST',
+      body: JSON.stringify({
+        app_id: app.id,
+        title,
+        video_url: videoUrl,
+        body,
+        status
+      })
+    });
+
+    $('studioResult').textContent = JSON.stringify({
+      message: status === 'published' ? 'Tutorial created and published.' : 'Tutorial saved as draft.',
+      app_id: app.id,
+      slug: app.slug,
+      version_id: version.id,
+      tutorial_id: tutorial.id
+    }, null, 2);
+
+    $('selectedAppId').value = app.id;
+    $('appEditId').value = app.id;
+    $('tutorialAppId').value = app.id;
+    await loadStats();
+    await loadApps();
+    if (status === 'published') {
+      $('studioResult').textContent += '\n\nPublic page: ' + location.origin.replace(/\/admin$/, '') + '/app.html?id=' + encodeURIComponent(app.slug);
+    }
+  } catch (e) {
+    $('studioResult').textContent = 'Error: ' + e.message +
+      (createdAppId ? '\nA tutorial app record was created with ID: ' + createdAppId + '. Select it in Catalog to continue editing if a later step failed.' : '');
+  } finally {
+    $('createTutorialEntry').disabled = false;
+  }
+};
+
+$('clearTutorialEntry').onclick = () => {
+  ['studioTitle','studioSlug','studioVideo','studioIcon','studioDescription','studioBody'].forEach(id => $(id).value = '');
+  $('studioStatus').value = 'published';
+  $('studioResult').textContent = 'Ready to create a tutorial.';
 };
 
 $('saveTutorial').onclick=async()=>{
