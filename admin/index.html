@@ -184,7 +184,11 @@
       <label>App ID</label><input id="screenshotAppId" placeholder="UUID from the catalog">
       <label>Screenshot files</label><input id="screenshotFiles" type="file" accept="image/png,image/jpeg,image/webp,image/gif" multiple>
       <label>Alt text prefix</label><input id="screenshotAlt" placeholder="App screenshot">
-      <div class="toolbar" style="margin-top:12px"><button id="uploadScreenshots">Upload screenshots</button></div>
+      <div class="toolbar" style="margin-top:12px">
+        <button id="uploadScreenshots">Upload screenshots</button>
+        <button id="loadScreenshots" class="secondary">Load current screenshots</button>
+      </div>
+      <div id="screenshotList" style="margin-top:14px"></div>
       <pre id="screenshotResult"></pre>
     </section>
 
@@ -1010,8 +1014,71 @@ $('uploadScreenshots').onclick = async () => {
     }
     $('screenshotResult').textContent=JSON.stringify(results,null,2);
     $('screenshotFiles').value='';
+    await loadExistingScreenshots();
   } catch(e) { $('screenshotResult').textContent='Error: '+e.message; }
 };
+
+async function loadExistingScreenshots() {
+  const appId = $('screenshotAppId').value.trim();
+  const target = $('screenshotList');
+  if (!appId) {
+    target.innerHTML = '<p class="muted">Select an app first.</p>';
+    return;
+  }
+
+  try {
+    const selected = appCache.get(appId);
+    const slug = selected?.slug || appId;
+    const data = await request('/api/apps/' + encodeURIComponent(slug));
+    const shots = data.screenshots || [];
+
+    if (!shots.length) {
+      target.innerHTML = '<p class="muted">No screenshots are currently linked to this app.</p>';
+      return;
+    }
+
+    target.innerHTML = '';
+    shots.forEach((shot, index) => {
+      const row = document.createElement('div');
+      row.style.cssText = 'display:grid;grid-template-columns:90px 1fr auto;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);';
+
+      const img = document.createElement('img');
+      img.src = window.TGMApi.imageUrl(shot.media_url);
+      img.alt = shot.alt_text || ('Screenshot ' + (index + 1));
+      img.style.cssText = 'width:80px;height:80px;object-fit:cover;border-radius:10px;border:1px solid var(--border);';
+
+      const info = document.createElement('div');
+      info.innerHTML =
+        '<div><b>' + escapeHtml(shot.alt_text || ('Screenshot ' + (index + 1))) + '</b></div>' +
+        '<div class="muted">Order: ' + escapeHtml(shot.sort_order) + '</div>';
+
+      const del = document.createElement('button');
+      del.className = 'danger';
+      del.textContent = 'Delete';
+      del.onclick = async () => {
+        if (!confirm('Delete this screenshot?')) return;
+        del.disabled = true;
+        try {
+          await request('/api/admin/screenshots/' + encodeURIComponent(shot.id), { method: 'DELETE' });
+          await loadExistingScreenshots();
+          $('screenshotResult').textContent = 'Screenshot deleted.';
+        } catch (e) {
+          del.disabled = false;
+          $('screenshotResult').textContent = 'Error: ' + e.message;
+        }
+      };
+
+      row.append(img, info, del);
+      target.appendChild(row);
+    });
+  } catch (e) {
+    target.innerHTML = '<p class="muted">Unable to load current screenshots.</p>';
+    $('screenshotResult').textContent = 'Error: ' + e.message;
+  }
+}
+
+$('loadScreenshots').onclick = loadExistingScreenshots;
+$('screenshotAppId').addEventListener('change', loadExistingScreenshots);
 
 $('createTutorialEntry').onclick = async () => {
   let createdAppId = '';
