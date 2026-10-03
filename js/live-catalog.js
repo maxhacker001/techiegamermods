@@ -66,85 +66,39 @@
     section.style.display = items.length ? "block" : "none";
   };
 
-  const renderSearchResults = (target, list) => {
-    if (!target) return;
-    target.innerHTML = "";
-
-    if (!list.length) {
-      target.innerHTML = "<p style='grid-column:1/-1;text-align:center;color:var(--muted);margin:50px'>No releases found.</p>";
-      return;
-    }
-
-    const categoryOrder = ["apps", "games", "tutorials"];
-    const labels = {
-      apps: "📱 App Mods",
-      games: "🎮 Game Mods",
-      tutorials: "🔧 Modding Tutorials"
-    };
-    let renderedAny = false;
-
-    categoryOrder.forEach(category => {
-      const items = list.filter(app => app.category === category);
-      if (!items.length) return;
-      renderedAny = true;
-
-      const heading = document.createElement("h2");
-      heading.textContent = labels[category];
-      heading.style.cssText = "grid-column:1/-1;color:var(--neon);text-align:left;margin:28px 0 4px;font-size:20px;";
-      target.appendChild(heading);
-
-      items.forEach(app => target.appendChild(card(app, category === "tutorials")));
-    });
-
-    if (!renderedAny) {
-      list.forEach(app => target.appendChild(card(app, app.category === "tutorials")));
-    }
-  };
-
   const homeRender = () => {
     const grid = $("appsContainer");
     if (!grid) return;
 
+    let list;
     if (state.query) {
       const normalizeSearch = (value) => String(value || "")
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, " ")
         .replace(/\s+/g, " ")
         .trim();
-
       const query = normalizeSearch(state.query);
-
-      const exactMatches = state.apps.filter(app => {
-        const name = normalizeSearch(app.name);
-        const slug = normalizeSearch(app.slug);
-        return name === query || slug === query;
+      const nameMatches = state.apps.filter(app => {
+        const haystack = normalizeSearch([app.name, app.slug].join(" "));
+        return haystack.includes(query);
       });
 
-      let list;
-      if (exactMatches.length) {
-        list = exactMatches;
-      } else {
-        const titleMatches = state.apps.filter(app => {
-          const name = normalizeSearch(app.name);
-          const slug = normalizeSearch(app.slug);
-          return name.includes(query) || slug.includes(query);
-        });
+      // Prefer actual title/slug matches. This prevents a search for
+      // "lucky patcher" from returning unrelated apps merely because the
+      // phrase appears somewhere in their description, while still allowing
+      // a full-catalog search when no title matches exist.
+      const searchPool = nameMatches.length ? nameMatches : state.apps.filter(app =>
+        normalizeSearch([
+          app.name,
+          app.slug,
+          app.publisher,
+          app.genre,
+          app.description,
+          app.category_name
+        ].join(" ")).includes(query)
+      );
 
-        const metadataMatches = state.apps.filter(app =>
-          [
-            app.name,
-            app.slug,
-            app.publisher,
-            app.genre,
-            app.description,
-            app.category_name
-          ].join(" ").toLowerCase().includes(query)
-        );
-
-        list = titleMatches.length ? titleMatches : metadataMatches;
-      }
-
-      list = [...list].sort((a, b) => {
+      list = [...searchPool].sort((a, b) => {
         const score = (app) => {
           const name = normalizeSearch(app.name);
           const slug = normalizeSearch(app.slug);
@@ -157,36 +111,28 @@
           if (slug.includes(query)) value += 150;
           return value;
         };
-
-        return score(b) - score(a) ||
-          String(a.category || "").localeCompare(String(b.category || "")) ||
-          String(a.name || "").localeCompare(String(b.name || ""));
+        return score(b) - score(a) || String(a.name || "").localeCompare(String(b.name || ""));
       });
-
-      renderSearchResults(grid, list);
-
-      const trendingSection = $("trendingSection");
-      if (trendingSection) trendingSection.style.display = "none";
-
-      document.querySelectorAll(".filter-btn").forEach(item => item.classList.remove("active"));
-      const filters = $("filtersSection");
-      if (filters) filters.style.display = "flex";
-      return;
+    } else {
+      list = state.apps.filter(app => app.category === state.category);
     }
 
-    const list = state.apps.filter(app => app.category === state.category);
-    render(grid, list, state.category === "tutorials");
+    render(grid, list, !state.query && state.category === "tutorials");
 
+    // Searching should show only search results. Trending is a home-only section.
     const trendingSection = $("trendingSection");
-    if (trendingSection) renderTrending();
+    if (trendingSection) {
+      if (state.query) {
+        trendingSection.style.display = "none";
+      } else {
+        renderTrending();
+      }
+    }
 
     const filters = $("filtersSection");
-    if (filters) filters.style.display = "flex";
-
-    document.querySelectorAll(".filter-btn").forEach(item =>
-      item.classList.toggle("active", item.dataset.category === state.category)
-    );
+    if (filters) filters.style.display = state.query ? "none" : "flex";
   };
+
   const categoryRender = (category) => {
     state.category = category;
     const title = $("categoryTitle");
@@ -205,15 +151,6 @@
       input.dataset.liveCatalogBound = "1";
       input.addEventListener("input", () => {
         state.query = input.value.trim();
-        homeRender();
-      });
-    }
-
-    const searchBtn = $("searchBtn");
-    if (searchBtn && !searchBtn.dataset.liveCatalogBound) {
-      searchBtn.dataset.liveCatalogBound = "1";
-      searchBtn.addEventListener("click", () => {
-        state.query = input ? input.value.trim() : "";
         homeRender();
       });
     }
