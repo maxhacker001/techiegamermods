@@ -133,6 +133,8 @@
       <input id="modInfo" type="hidden">
       <label>Android minimum</label><input id="androidMin" placeholder="8.0+">
       <label>Architecture</label><input id="architecture" placeholder="arm64-v8a">
+      <label>Minimum SDK</label><input id="minSdk" placeholder="23">
+      <label>Target SDK</label><input id="targetSdk" placeholder="35">
       <label>Changelog</label><textarea id="changelog" rows="6"></textarea>
       <input id="versionEditId" type="hidden">
       <div class="toolbar" style="margin-top:12px">
@@ -164,6 +166,32 @@
         <button id="upload">Upload</button>
       </div>
       <pre id="uploadResult"></pre>
+    </section>
+
+    <section class="panel" id="assetUploadPanel">
+      <h2>🧩 Config / Extra Downloads</h2>
+      <p class="muted">Optional. Use this only for games or apps that need config files or other extra download packages. APK uploads continue to use the normal release uploader above.</p>
+      <label>Version ID</label><input id="assetVersionId" placeholder="Version UUID">
+      <label>Download label</label><input id="assetLabel" placeholder="Config 1">
+      <label>Asset type</label>
+      <select id="assetType">
+        <option value="config">Config</option>
+        <option value="data">Data</option>
+        <option value="patch">Patch</option>
+        <option value="zip">ZIP</option>
+        <option value="other">Other</option>
+      </select>
+      <label>File</label><input id="assetFile" type="file">
+      <div class="toolbar" style="margin-top:12px">
+        <button id="uploadAsset">Upload extra file</button>
+      </div>
+      <pre id="assetResult">No extra files loaded.</pre>
+      <div style="overflow:auto;margin-top:12px">
+        <table>
+          <thead><tr><th>Label</th><th>Type</th><th>File</th><th>Size</th></tr></thead>
+          <tbody id="assetRows"></tbody>
+        </table>
+      </div>
     </section>
 
     <section class="panel" id="screenshotPanel">
@@ -374,7 +402,7 @@ function clearAdminEditors() {
   [
     'selectedAppId','appEditId','name','slug','publisher','genre','package','playstore','icon',
     'description','relatedApps','versionEditId','versionAppId','versionName','modSummary',
-    'modFeatures','modInfo','androidMin','architecture','changelog','fileVersionId',
+    'modFeatures','modInfo','androidMin','architecture','minSdk','targetSdk','changelog','fileVersionId','assetVersionId','assetLabel',
     'screenshotAppId','tutorialAppId','tutorialEditId','tutorialTitle','tutorialVideo',
     'tutorialDescription','tutorialBody','studioTitle','studioSlug','studioVideo','studioIcon',
     'studioDescription','studioBody'
@@ -385,6 +413,7 @@ function clearAdminEditors() {
 
   if ($('category')) $('category').value = 'apps';
   if ($('fileType')) $('fileType').value = 'apk';
+  if ($('assetType')) $('assetType').value = 'config';
   if ($('tutorialStatus')) $('tutorialStatus').value = 'draft';
   if ($('studioStatus')) $('studioStatus').value = 'published';
   if ($('versionRows')) $('versionRows').innerHTML = '';
@@ -398,7 +427,8 @@ function clearAdminEditors() {
     ['iconResult',''],
     ['uploadResult',''],
     ['tutorialResult',''],
-    ['studioResult','Ready to create a tutorial.']
+    ['studioResult','Ready to create a tutorial.'],
+    ['assetResult','No extra files loaded.']
   ].forEach(([id, value]) => {
     const el = $(id);
     if (el) el.textContent = value;
@@ -438,7 +468,7 @@ async function loadStats() {
 
 function applyAdminContentMode(app) {
   const isTutorial = String(app?.category_slug || '').toLowerCase() === 'tutorials';
-  const ids = ['appEditorPanel','versionEditorPanel','fileUploadPanel','screenshotPanel','selectedVersionsPanel'];
+  const ids = ['appEditorPanel','versionEditorPanel','fileUploadPanel','assetUploadPanel','screenshotPanel','selectedVersionsPanel'];
   ids.forEach(id => {
     const el = $(id);
     if (el) el.style.display = isTutorial ? 'none' : '';
@@ -592,10 +622,14 @@ async function loadVersions(autoSelectLatest=false) {
       await setModInfoFields(v.mod_info || '');
       $('androidMin').value=v.android_min || '';
       $('architecture').value=v.architecture || '';
+      $('minSdk').value=v.min_sdk || '';
+      $('targetSdk').value=v.target_sdk || '';
       $('changelog').value=v.changelog || '';
       $('fileVersionId').value=v.id;
+      $('assetVersionId').value=v.id;
       $('filesResult').textContent='Loading...';
       await loadFiles(v.id);
+      await loadVersionAssets(v.id);
     };
 
     document.querySelectorAll('.select-version').forEach(btn => {
@@ -687,6 +721,28 @@ async function loadFiles(versionId) {
     $('filesResult').textContent = JSON.stringify(data, null, 2);
   } catch(e) {
     $('filesResult').textContent = 'Error: ' + e.message;
+  }
+}
+
+async function loadVersionAssets(versionId) {
+  const id = String(versionId || '').trim();
+  if (!id) return;
+  try {
+    const data = await request('/api/admin/versions/' + encodeURIComponent(id) + '/assets');
+    const rows = $('assetRows');
+    rows.innerHTML = '';
+    (data.assets || []).forEach(asset => {
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td>' + escapeHtml(asset.label || '—') + '</td>' +
+        '<td>' + escapeHtml(String(asset.asset_type || 'config').toUpperCase()) + '</td>' +
+        '<td>' + escapeHtml(asset.original_name || '—') + '</td>' +
+        '<td>' + formatBytes(asset.bytes) + '</td>';
+      rows.appendChild(tr);
+    });
+    $('assetResult').textContent = JSON.stringify(data, null, 2);
+  } catch(e) {
+    $('assetResult').textContent = 'Error: ' + e.message;
   }
 }
 
@@ -859,6 +915,8 @@ function getVersionBody() {
     mod_info: getCombinedModInfo(),
     android_min: $('androidMin').value.trim(),
     architecture: $('architecture').value.trim(),
+    min_sdk: $('minSdk').value.trim(),
+    target_sdk: $('targetSdk').value.trim(),
     changelog: $('changelog').value.trim(),
     size_bytes: Number($('fileSize').dataset.bytes || 0)
   };
@@ -890,7 +948,10 @@ $('saveVersion').onclick = async () => {
 };
 
 $('newVersion').onclick=()=> {
-  ['versionEditId','versionAppId','versionName','modSummary','modFeatures','modInfo','androidMin','architecture','changelog'].forEach(id=>$(id).value='');
+  ['versionEditId','versionAppId','versionName','modSummary','modFeatures','modInfo','androidMin','architecture','minSdk','targetSdk','changelog','assetVersionId','assetLabel'].forEach(id=>$(id).value='');
+  if ($('assetFile')) $('assetFile').value='';
+  if ($('assetRows')) $('assetRows').innerHTML='';
+  if ($('assetResult')) $('assetResult').textContent='No extra files loaded.';
   $('fileSize').dataset.bytes='0';
   $('versionResult').textContent='';
 };
@@ -1018,6 +1079,32 @@ $('upload').onclick = async () => {
       } catch (_) {}
     }
     $('uploadResult').textContent = 'Error: ' + e.message;
+  }
+};
+
+$('uploadAsset').onclick = async () => {
+  try {
+    const versionId = $('assetVersionId').value.trim();
+    const label = $('assetLabel').value.trim();
+    const file = $('assetFile').files[0];
+    if (!versionId || !label || !file) throw new Error('Select a version, enter a label, and choose a file.');
+    const form = new FormData();
+    form.append('file', file);
+    form.append('label', label);
+    form.append('asset_type', $('assetType').value);
+    const response = await fetch(apiBase() + '/api/admin/versions/' + encodeURIComponent(versionId) + '/assets', {
+      method:'POST',
+      headers:authHeaders(),
+      body:form
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || ('HTTP ' + response.status));
+    $('assetResult').textContent = JSON.stringify(data, null, 2);
+    $('assetFile').value = '';
+    await loadVersionAssets(versionId);
+    await loadStats();
+  } catch(e) {
+    $('assetResult').textContent = 'Error: ' + e.message;
   }
 };
 
