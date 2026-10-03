@@ -13,6 +13,91 @@
 
 <body>
 
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+  const id = new URLSearchParams(window.location.search).get("id");
+  if (!id || !window.TGMApi) return;
+
+  try {
+    const live = await window.TGMApi.getApp(id);
+    if (!live || !live.app) return;
+
+    const app = live.app;
+    const versions = live.versions || [];
+    const screenshots = live.screenshots || [];
+    const tutorials = live.tutorials || [];
+
+    document.title = app.name + (versions[0] ? " v" + versions[0].version_name : "") + " | Techie Gamer Mods";
+    document.getElementById("appImage").src = window.TGMApi.imageUrl(app.icon_url);
+
+    document.getElementById("modTitle").textContent =
+      app.name + (versions[0] ? " v" + versions[0].version_name : "");
+    document.getElementById("updatedText").textContent = app.updated_at || "Release date unavailable";
+    document.getElementById("appNameTable").textContent = app.name || "—";
+    document.getElementById("appPublisher").textContent = app.publisher || "—";
+    document.getElementById("appGenre").textContent = app.genre || "—";
+
+    const latest = versions[0];
+    const files = live.files || [];
+    const latestFile = latest ? files.find(file => file.version_id === latest.id) : null;
+    document.getElementById("appSizeTable").textContent =
+      latestFile ? window.TGMApi.formatBytes(latestFile.bytes) : (latest && latest.size_bytes ? window.TGMApi.formatBytes(latest.size_bytes) : "—");
+    document.getElementById("appVersionTable").textContent = latest ? latest.version_name : "—";
+    document.getElementById("modInfo").textContent = latest?.mod_info || "Release information";
+
+    const store = document.getElementById("playstoreLink");
+    if (app.play_store_url) {
+      store.href = app.play_store_url;
+      store.style.display = "inline-block";
+    } else {
+      store.style.display = "none";
+    }
+
+    document.getElementById("descriptionSection").innerHTML =
+      app.description_html || "No description has been published for this release yet.";
+
+    const featureList = document.getElementById("modFeaturesList");
+    featureList.innerHTML = "";
+    if (latest?.mod_info) {
+      latest.mod_info.split(/[\n,;]+/).map(s => s.trim()).filter(Boolean).forEach(item => {
+        const li=document.createElement("li");
+        li.textContent=item;
+        featureList.appendChild(li);
+      });
+    }
+
+    const shotGrid=document.getElementById("screenshotsGrid");
+    shotGrid.innerHTML="";
+    screenshots.forEach(shot=>{
+      const img=document.createElement("img");
+      img.src=window.TGMApi.imageUrl(shot.media_url);
+      img.alt=shot.alt_text || app.name + " screenshot";
+      img.loading="lazy";
+      img.style.width="100%";
+      img.style.height="auto";
+      img.style.borderRadius="10px";
+      img.style.border="1px solid rgba(0,255,156,.3)";
+      shotGrid.appendChild(img);
+    });
+
+    const video=tutorials.find(t=>t.video_url);
+    const yt=document.getElementById("youtubeBtn");
+    if(video){
+      yt.style.display="block";
+      yt.onclick=()=>window.open(video.video_url,"_blank","noopener");
+    }else{
+      yt.style.display="none";
+    }
+
+    document.getElementById("warningBox").style.display = app.category_slug === "tutorials" ? "none" : "block";
+    document.getElementById("guideBox").style.display = app.category_slug === "tutorials" ? "block" : "none";
+  } catch (error) {
+    console.warn("Live app data unavailable; using legacy catalog:", error);
+  }
+});
+</script>
+
 <!-- MATRIX RAIN -->
 <canvas id="matrix-canvas"></canvas>
 
@@ -197,6 +282,8 @@
 </footer>
 
 <script src="js/pwa.js"></script>
+<script src="js/site-config.js"></script>
+<script src="js/api.js"></script>
 <script src="js/data.js"></script>
 
 <script>
