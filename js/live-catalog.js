@@ -94,11 +94,34 @@
       // Keep the original catalog visible. Published live records replace their
       // matching legacy entries, while apps that have not been migrated yet
       // remain available for browsing until their release is uploaded/published.
-      const liveBySlug = new Map(liveApps.map(app => [app.slug || app.id, app]));
-      const merged = legacyApps.map(legacy => liveBySlug.get(legacy.id) || legacy);
-      const legacyIds = new Set(legacyApps.map(app => app.id));
+      // Match migrated live records to legacy records by slug/id first,
+      // then by normalized name + category. Legacy tutorial IDs such as
+      // "tut-lucky-patcher" may differ from the live CMS slug, so matching
+      // by ID alone can render the same tutorial twice.
+      const key = (app) => [
+        String(app.category || "").trim().toLowerCase(),
+        String(app.name || "").trim().toLowerCase()
+      ].join("::");
+
+      const liveById = new Map(liveApps.flatMap(app => [
+        [app.slug || app.id, app],
+        [app.id, app]
+      ]));
+      const liveByKey = new Map(liveApps.map(app => [key(app), app]));
+      const merged = legacyApps.map(legacy =>
+        liveById.get(legacy.id) || liveByKey.get(key(legacy)) || legacy
+      );
+
+      const usedKeys = new Set(merged.map(key));
       liveApps.forEach(app => {
-        if (!legacyIds.has(app.slug || app.id)) merged.push(app);
+        const sameId = legacyApps.some(legacy =>
+          legacy.id === app.id || legacy.id === app.slug
+        );
+        const sameKey = usedKeys.has(key(app));
+        if (!sameId && !sameKey) {
+          merged.push(app);
+          usedKeys.add(key(app));
+        }
       });
 
       state.apps = merged;
