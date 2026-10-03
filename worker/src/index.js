@@ -344,14 +344,32 @@ async function adminListApps(request, env) {
   const status = url.searchParams.get("status") || "all";
   const search = (url.searchParams.get("search") || "").trim().toLowerCase();
   const limit = Math.min(Math.max(Number(url.searchParams.get("limit") || 50), 1), 200);
-  let sql = "SELECT a.id,a.slug,a.name,a.publisher,a.genre,a.package_name,a.description_html,a.icon_url,a.play_store_url,a.status,a.created_at,a.updated_at,c.slug AS category_slug,c.name AS category_name,(SELECT COUNT(*) FROM versions v WHERE v.app_id=a.id) AS version_count,(SELECT COUNT(*) FROM files f JOIN versions v2 ON v2.id=f.version_id WHERE v2.app_id=a.id) AS file_count,COALESCE((SELECT group_concat(a2.slug, ',') FROM app_relations ar JOIN apps a2 ON a2.id=ar.related_app_id WHERE ar.app_id=a.id), '') AS related_slugs FROM apps a JOIN categories c ON c.id=a.category_id WHERE 1=1";
+  let sql = "SELECT a.id,a.slug,a.name,a.publisher,a.genre,a.package_name,a.description_html,a.icon_url,a.play_store_url,a.status,a.created_at,a.updated_at,c.slug AS category_slug,c.name AS category_name,(SELECT COUNT(*) FROM versions v WHERE v.app_id=a.id) AS version_count,(SELECT COUNT(*) FROM files f JOIN versions v2 ON v2.id=f.version_id WHERE v2.app_id=a.id) AS file_count FROM apps a JOIN categories c ON c.id=a.category_id WHERE 1=1";
   const bindings = [];
   if (status !== "all") { sql += " AND a.status=?"; bindings.push(status); }
   if (search) { sql += " AND (lower(a.name) LIKE ? OR lower(COALESCE(a.publisher,'')) LIKE ? OR lower(COALESCE(a.package_name,'')) LIKE ? OR lower(a.slug) LIKE ?)"; const p="%"+search+"%"; bindings.push(p,p,p,p); }
   sql += " ORDER BY datetime(a.updated_at) DESC LIMIT ?";
   bindings.push(limit);
   const result = await env.DB.prepare(sql).bind(...bindings).all();
-  return json({ apps: result.results || [] },200,env);
+  let apps = result.results || [];
+
+  // Related-apps are optional until the migration is applied.
+  try {
+    const relationRows = await env.DB.prepare(
+      "SELECT r.app_id, group_concat(a.slug, ',') AS related_slugs FROM app_relations r JOIN apps a ON a.id=r.related_app_id GROUP BY r.app_id"
+    ).all();
+    const relationMap = new Map(
+      (relationRows.results || []).map(row => [row.app_id, row.related_slugs || ""])
+    );
+    apps = apps.map(app => ({
+      ...app,
+      related_slugs: relationMap.get(app.id) || ""
+    }));
+  } catch (_) {
+    apps = apps.map(app => ({ ...app, related_slugs: "" }));
+  }
+
+  return json({ apps },200,env);
 }
 
 async function adminListVersions(appId, env) {
