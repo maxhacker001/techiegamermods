@@ -116,7 +116,7 @@
 
   <!-- RECOMMENDED -->
   <div class="recommended-section">
-    <h3 style="color:var(--neon); text-align:center; margin:40px 0 20px;">🔥 Recommended For You</h3>
+    <h3 style="color:var(--neon); text-align:center; margin:40px 0 20px;">🔥 Related Apps</h3>
     <div class="grid" id="recommendedGrid">
       <!-- Filled by JS -->
     </div>
@@ -165,6 +165,47 @@
       document.getElementById("notesAppName").textContent = "the selected app";
       return;
     }
+
+    const renderRelated = (items, currentId) => {
+      const grid = document.getElementById("recommendedGrid");
+      if (!grid) return;
+      grid.innerHTML = "";
+      const list = (items || []).filter(item => (item.slug || item.id) !== currentId).slice(0, 4);
+      list.forEach(rec => {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        const img = document.createElement("img");
+        img.src = rec.image || (rec.icon_url
+          ? (String(rec.icon_url).startsWith("http") ? rec.icon_url : window.TGMApi.base + "/" + String(rec.icon_url).replace(/^\//, ""))
+          : "images/logo.png");
+        img.onerror = () => { img.src = "images/logo.png"; };
+        card.appendChild(img);
+
+        const title = document.createElement("h3");
+        title.textContent = rec.name || "Related app";
+        card.appendChild(title);
+
+        const p = document.createElement("p");
+        const version = rec.version && rec.version !== "—" ? rec.version : "Release";
+        const size = rec.size_bytes
+          ? window.TGMApi.formatBytes(rec.size_bytes)
+          : (rec.size && rec.size !== "—" ? rec.size : "");
+        p.textContent = version + (size ? " • " + size : "");
+        card.appendChild(p);
+
+        const a = document.createElement("a");
+        a.href = "app.html?id=" + encodeURIComponent(rec.slug || rec.id);
+        a.textContent = "View Mod";
+        card.appendChild(a);
+
+        grid.appendChild(card);
+      });
+
+      if (!list.length) {
+        grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--muted);">No related apps yet.</p>';
+      }
+    };
 
     // Live release path: published Worker/R2 files get real internal download buttons.
     if (window.TGMApi) {
@@ -261,6 +302,8 @@
           }
 
           const tutorialLink = tutorials.find(t => t.video_url);
+          renderRelated(live.related_apps || [], app.slug || app.id);
+          
           if (tutorialLink) {
             const social = document.querySelector(".social-section");
             if (social && !social.querySelector(".live-tutorial-link")) {
@@ -363,6 +406,23 @@
     originalVersions.appendChild(
       createDownloadBox(app.playstore, "↗ OPEN OFFICIAL STORE")
     );
+
+    const relatedLegacy = apps
+      .filter(a =>
+        a.id !== appId &&
+        a.category === app.category &&
+        (a.genre === app.genre || !app.genre)
+      )
+      .slice(0, 4)
+      .map(a => ({
+        id: a.id,
+        slug: a.id,
+        name: a.name,
+        version: a.version,
+        size: a.size,
+        image: a.image
+      }));
+    renderRelated(relatedLegacy, appId);
   });
 </script>
 
