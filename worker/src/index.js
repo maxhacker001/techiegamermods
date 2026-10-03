@@ -270,7 +270,8 @@ async function adminPublishFile(request, fileId, env) {
   const file=await env.DB.prepare("SELECT f.id,f.scan_status,v.status AS version_status FROM files f JOIN versions v ON v.id=f.version_id WHERE f.id=? LIMIT 1").bind(fileId).first();
   if(!file) return json({error:"File not found"},404,env);
   if(file.scan_status!=="clean") return json({error:"Only clean files can be published"},409,env);
-  if(file.version_status!=="published") return json({error:"Publish the version first"},409,env);
+  // A verified file may be published while its version is still draft.
+  // The public download route remains protected by version + app publication state.
   await env.DB.prepare("UPDATE files SET published=1 WHERE id=?").bind(fileId).run();
   await env.DB.prepare("INSERT INTO admin_audit_log(actor,action,entity_type,entity_id,details_json) VALUES('admin','publish','file',?,?)").bind(fileId,JSON.stringify({published:1})).run();
   return json({id:fileId,published:1},200,env);
