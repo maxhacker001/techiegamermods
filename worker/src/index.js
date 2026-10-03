@@ -280,7 +280,7 @@ async function getApp(slug, env) {
 
   const versions = await env.DB.prepare(`
     SELECT id, version_name, mod_info, changelog, android_min,
-           architecture, size_bytes, status, created_at, updated_at
+           architecture, min_sdk, target_sdk, size_bytes, status, created_at, updated_at
     FROM versions
     WHERE app_id = ? AND status = 'published'
     ORDER BY datetime(updated_at) DESC
@@ -298,6 +298,15 @@ async function getApp(slug, env) {
       "SELECT id, version_id, file_type, original_name, mime_type, bytes, sha256, scan_status, published, created_at FROM files WHERE version_id IN (" + placeholders + ") AND published=1 AND scan_status='clean' ORDER BY datetime(created_at) DESC"
     ).bind(...versionRows.map(v => v.id)).all();
     files = fileRows.results || [];
+  }
+
+  let assets = [];
+  if (versionRows.length) {
+    const placeholders = versionRows.map(() => "?").join(",");
+    const assetRows = await env.DB.prepare(
+      "SELECT id,version_id,asset_type,label,original_name,mime_type,bytes,sha256,published,created_at FROM release_assets WHERE version_id IN (" + placeholders + ") AND published=1 ORDER BY datetime(created_at) ASC,label ASC"
+    ).bind(...versionRows.map(v => v.id)).all();
+    assets = (assetRows.results || []).map(row => ({ ...row, download_url: "/download-asset/" + row.id }));
   }
 
   const tags = await env.DB.prepare(`
@@ -324,6 +333,7 @@ async function getApp(slug, env) {
       media_url: "/media/screenshots/" + row.id
     })),
     files,
+    assets,
     tags: (tags.results || []).map((row) => row.tag),
     tutorials: tutorials.results || []
   }, 200, env);
@@ -442,7 +452,7 @@ async function adminListApps(request, env) {
 async function adminListVersions(appId, env) {
   const app = await env.DB.prepare("SELECT id,slug,name FROM apps WHERE id=? LIMIT 1").bind(appId).first();
   if (!app) return json({ error:"App not found" },404,env);
-  const result = await env.DB.prepare("SELECT v.id,v.app_id,v.version_name,v.mod_info,v.changelog,v.android_min,v.architecture,v.size_bytes,v.status,v.created_at,v.updated_at,(SELECT COUNT(*) FROM files f WHERE f.version_id=v.id) AS file_count,(SELECT COUNT(*) FROM files f WHERE f.version_id=v.id AND f.scan_status='clean' AND f.published=1) AS published_clean_file_count FROM versions v WHERE v.app_id=? ORDER BY datetime(v.updated_at) DESC").bind(appId).all();
+  const result = await env.DB.prepare("SELECT v.id,v.app_id,v.version_name,v.mod_info,v.changelog,v.android_min,v.architecture,v.min_sdk,v.target_sdk,v.size_bytes,v.status,v.created_at,v.updated_at,(SELECT COUNT(*) FROM files f WHERE f.version_id=v.id) AS file_count,(SELECT COUNT(*) FROM files f WHERE f.version_id=v.id AND f.scan_status='clean' AND f.published=1) AS published_clean_file_count FROM versions v WHERE v.app_id=? ORDER BY datetime(v.updated_at) DESC").bind(appId).all();
   return json({ app,versions:result.results || [] },200,env);
 }
 
@@ -627,9 +637,9 @@ async function adminCreateVersion(request, env) {
     await env.DB.prepare(`
       INSERT INTO versions (
         id, app_id, version_name, mod_info, changelog,
-        android_min, architecture, size_bytes, status
+        android_min, architecture, min_sdk, target_sdk, size_bytes, status
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).bind(
       id,
       body.app_id,
@@ -638,6 +648,8 @@ async function adminCreateVersion(request, env) {
       body.changelog || "",
       body.android_min || null,
       body.architecture || null,
+      body.min_sdk || null,
+      body.target_sdk || null,
       Number(body.size_bytes || 0),
       body.status === "published" ? "published" : "draft"
     ).run();
@@ -660,13 +672,15 @@ async function adminEditVersion(request, versionId, env) {
 
   try {
     await env.DB.prepare(
-      "UPDATE versions SET version_name=?, mod_info=?, changelog=?, android_min=?, architecture=?, size_bytes=?, updated_at=CURRENT_TIMESTAMP WHERE id=?"
+      "UPDATE versions SET version_name=?, mod_info=?, changelog=?, android_min=?, architecture=?, min_sdk=?, target_sdk=?, size_bytes=?, updated_at=CURRENT_TIMESTAMP WHERE id=?"
     ).bind(
       String(body.version_name).trim(),
       body.mod_info || "",
       body.changelog || "",
       body.android_min || null,
       body.architecture || null,
+      body.min_sdk || null,
+      body.target_sdk || null,
       Number(body.size_bytes || 0),
       versionId
     ).run();
@@ -803,6 +817,62 @@ async function adminUploadScreenshot(request, appId, env) {
   return json({ id, storage_key: key, alt_text: alt, sort_order: sortOrder }, 201, env);
 }
 
+async function adminListVersionAssets(request, versionId, env) {
+  if (!requireAdmin(request, env)) return json({ error: "Unauthorized" }, 401, env);
+  const version = await env.DB.prepare("SELECT id,app_id,version_name FROM versions WHERE id=? LIMIT 1").bind(versionId).first();
+  if (!version) return json({ error: "Version not found" }, 404, env);
+  const result = await env.DB.prepare("SELECT id,version_id,asset_type,label,original_name,mime_type,bytes,sha256,published,created_at FROM release_assets WHERE version_id=? ORDER BY datetime(created_at) ASC,label ASC").bind(versionId).all();
+  return json({ version, assets: result.results || [] }, 200, env);
+}
+
+async function adminUploadVersionAsset(request, versionId, env) {
+  if (!requireAdmin(request, env)) return json({ error: "Unauthorized" }, 401, env);
+  if (!env.BUCKET || !env.DB) return json({ error: "Storage/database binding is not configured" }, 500, env);
+  const version = await env.DB.prepare("SELECT id FROM versions WHERE id=? LIMIT 1").bind(versionId).first();
+  if (!version) return json({ error: "Version not found" }, 404, env);
+  const form = await request.formData();
+  const file = form.get("file");
+  if (!(file instanceof File)) return json({ error: "file is required" }, 400, env);
+  const label = String(form.get("label") || "").trim();
+  const assetType = String(form.get("asset_type") || "config").trim().toLowerCase() || "config";
+  if (!label) return json({ error: "label is required" }, 400, env);
+  if (label.length > 100) return json({ error: "label is too long" }, 400, env);
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]+/g, "_").slice(0, 150);
+  const key = "release-assets/" + versionId + "/" + crypto.randomUUID() + "-" + safeName;
+  const arrayBuffer = await file.arrayBuffer();
+  const digest = await crypto.subtle.digest("SHA-256", arrayBuffer);
+  const sha256 = Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, "0")).join("");
+  await env.BUCKET.put(key, arrayBuffer, {
+    httpMetadata: {
+      contentType: file.type || "application/octet-stream",
+      contentDisposition: "attachment; filename=\"" + safeName.replace(/\"/g, "") + "\""
+    },
+    customMetadata: { originalName: file.name, versionId, assetType, label, sha256 }
+  });
+  const id = crypto.randomUUID();
+  try {
+    await env.DB.prepare("INSERT INTO release_assets(id,version_id,asset_type,label,storage_key,original_name,mime_type,bytes,sha256,published) VALUES(?,?,?,?,?,?,?,?,?,1)")
+      .bind(id, versionId, assetType, label, key, file.name, file.type || "application/octet-stream", file.size, sha256).run();
+  } catch (error) {
+    await env.BUCKET.delete(key);
+    throw error;
+  }
+  return json({ id, version_id: versionId, asset_type: assetType, label, original_name: file.name, bytes: file.size, sha256, published: 1 }, 201, env);
+}
+
+async function serveVersionAsset(assetId, env) {
+  if (!env.DB || !env.BUCKET) return new Response("Media service is not configured", { status: 503 });
+  const asset = await env.DB.prepare("SELECT ra.id,ra.storage_key,ra.original_name,ra.mime_type,ra.bytes,ra.sha256 FROM release_assets ra JOIN versions v ON v.id=ra.version_id JOIN apps a ON a.id=v.app_id WHERE ra.id=? AND ra.published=1 AND v.status='published' AND a.status='published' LIMIT 1").bind(assetId).first();
+  if (!asset) return new Response("Release asset not found", { status: 404 });
+  const object = await env.BUCKET.get(asset.storage_key);
+  if (!object) return new Response("Release asset file not found", { status: 404 });
+  const headers = new Headers();
+  object.writeHttpMetadata(headers);
+  headers.set("content-disposition", "attachment; filename=\"" + asset.original_name.replace(/\"/g, "") + "\"");
+  if (asset.sha256) headers.set("x-content-sha256", asset.sha256);
+  headers.set("cache-control", "private, max-age=0, must-revalidate");
+  return new Response(object.body, { headers });
+}
 async function adminListTutorials(request, appId, env) {
   if (!requireAdmin(request, env)) return json({ error: "Unauthorized" }, 401, env);
 
@@ -1306,6 +1376,16 @@ export default {
         return adminListFilesForVersion(request, versionId, env);
       }
 
+      if (path.startsWith("/api/admin/versions/") && path.endsWith("/assets") && request.method === "GET") {
+        const versionId = decodeURIComponent(path.slice("/api/admin/versions/".length, -"/assets".length));
+        return adminListVersionAssets(request, versionId, env);
+      }
+
+      if (path.startsWith("/api/admin/versions/") && path.endsWith("/assets") && request.method === "POST") {
+        const versionId = decodeURIComponent(path.slice("/api/admin/versions/".length, -"/assets".length));
+        return adminUploadVersionAsset(request, versionId, env);
+      }
+
       if (path.startsWith("/api/admin/versions/") && path.endsWith("/status") && request.method === "PATCH") {
         const versionId = decodeURIComponent(path.slice("/api/admin/versions/".length, -"/status".length));
         return adminSetVersionStatus(request, versionId, env);
@@ -1360,6 +1440,10 @@ export default {
 
       if (path.startsWith("/media/screenshots/") && request.method === "GET") {
         return serveScreenshot(path.slice("/media/screenshots/".length), env);
+      }
+
+      if (path.startsWith("/download-asset/") && request.method === "GET") {
+        return serveVersionAsset(path.slice("/download-asset/".length), env);
       }
 
       if (path.startsWith("/download/") && request.method === "GET") {
