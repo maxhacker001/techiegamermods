@@ -151,7 +151,7 @@ FROM apps a
 WHERE a.slug='inshot-mod' AND NOT EXISTS (SELECT 1 FROM versions v WHERE v.app_id=a.id AND v.version_name='2.0.0');
 
 INSERT INTO apps (id,slug,name,category_id,package_name,publisher,genre,description_html,icon_url,play_store_url,status)
-SELECT '00000000-0000-4000-8000-000000000007','vn-video-editor-mod','VN Video Editor MOD',c.id,'com.frontrow.vlog','Ubiquiti Labs','Video Editing','
+SELECT '00000000-0000-4000-8000-000000000007','vn-mod','VN Video Editor MOD',c.id,'com.frontrow.vlog','Ubiquiti Labs','Video Editing','
     <strong>PROFESSIONAL VIDEO EDITOR</strong><br><br>
     VN MOD APK - Pro templates, multi-layer editing, no watermark.<br><br>
 
@@ -168,11 +168,11 @@ SELECT '00000000-0000-4000-8000-000000000007','vn-video-editor-mod','VN Video Ed
     Export clean videos.
   ','https://maxhacker001.github.io/techiegamermods/images/vn.png','https://play.google.com/store/apps/details?id=com.frontrow.vlog','published'
 FROM categories c
-WHERE c.slug='apps' AND NOT EXISTS (SELECT 1 FROM apps a WHERE a.slug='vn-video-editor-mod');
+WHERE c.slug='apps' AND NOT EXISTS (SELECT 1 FROM apps a WHERE a.slug='vn-mod');
 INSERT INTO versions (id,app_id,version_name,mod_info,changelog,android_min,architecture,size_bytes,status)
 SELECT '00000000-0000-4000-8000-000000001008',a.id,'2.2.0','Pro Unlocked','Legacy catalog import','',NULL,167772160,'published'
 FROM apps a
-WHERE a.slug='vn-video-editor-mod' AND NOT EXISTS (SELECT 1 FROM versions v WHERE v.app_id=a.id AND v.version_name='2.2.0');
+WHERE a.slug='vn-mod' AND NOT EXISTS (SELECT 1 FROM versions v WHERE v.app_id=a.id AND v.version_name='2.2.0');
 
 INSERT INTO apps (id,slug,name,category_id,package_name,publisher,genre,description_html,icon_url,play_store_url,status)
 SELECT '00000000-0000-4000-8000-000000000008','powerdirector-mod','PowerDirector MOD',c.id,'com.cyberlink.powerdirector.DRA140225_01','CyberLink','Video Editing','
@@ -295,7 +295,7 @@ FROM apps a
 WHERE a.slug='photoroom-mod' AND NOT EXISTS (SELECT 1 FROM versions v WHERE v.app_id=a.id AND v.version_name='4.8.0');
 
 INSERT INTO apps (id,slug,name,category_id,package_name,publisher,genre,description_html,icon_url,play_store_url,status)
-SELECT '00000000-0000-4000-8000-000000000013','truecaller-premium-mod','Truecaller Premium MOD',c.id,'com.truecaller','Truecaller','Communication','
+SELECT '00000000-0000-4000-8000-000000000013','truecaller-mod','Truecaller Premium MOD',c.id,'com.truecaller','Truecaller','Communication','
     <strong>ADVANCED CALLER ID & SPAM PROTECTION</strong><br><br>
     Truecaller Premium MOD - No ads, ghost call, who viewed profile.<br><br>
 
@@ -312,11 +312,11 @@ SELECT '00000000-0000-4000-8000-000000000013','truecaller-premium-mod','Truecall
     Block by name, series, or country.
   ','https://maxhacker001.github.io/techiegamermods/images/truecaller.png','https://play.google.com/store/apps/details?id=com.truecaller','published'
 FROM categories c
-WHERE c.slug='apps' AND NOT EXISTS (SELECT 1 FROM apps a WHERE a.slug='truecaller-premium-mod');
+WHERE c.slug='apps' AND NOT EXISTS (SELECT 1 FROM apps a WHERE a.slug='truecaller-mod');
 INSERT INTO versions (id,app_id,version_name,mod_info,changelog,android_min,architecture,size_bytes,status)
 SELECT '00000000-0000-4000-8000-000000001014',a.id,'13.5.0','Premium Unlocked','Legacy catalog import','',NULL,94371840,'published'
 FROM apps a
-WHERE a.slug='truecaller-premium-mod' AND NOT EXISTS (SELECT 1 FROM versions v WHERE v.app_id=a.id AND v.version_name='13.5.0');
+WHERE a.slug='truecaller-mod' AND NOT EXISTS (SELECT 1 FROM versions v WHERE v.app_id=a.id AND v.version_name='13.5.0');
 
 INSERT INTO apps (id,slug,name,category_id,package_name,publisher,genre,description_html,icon_url,play_store_url,status)
 SELECT '00000000-0000-4000-8000-000000000014','snaptube-mod','SnapTube MOD',c.id,NULL,NULL,'Video Downloader','
@@ -367,7 +367,7 @@ FROM apps a
 WHERE a.slug='telegram-premium-mod' AND NOT EXISTS (SELECT 1 FROM versions v WHERE v.app_id=a.id AND v.version_name='10.5.0');
 
 INSERT INTO apps (id,slug,name,category_id,package_name,publisher,genre,description_html,icon_url,play_store_url,status)
-SELECT '00000000-0000-4000-8000-000000000016','instagram-pro-insta-thunder','Instagram Pro (Insta Thunder)',c.id,NULL,NULL,'Social','
+SELECT '00000000-0000-4000-8000-000000000016','insta-thunder-mod','Instagram Pro (Insta Thunder)',c.id,NULL,NULL,'Social','
     <strong>ADVANCED INSTAGRAM EXPERIENCE</strong><br><br>
     Insta Thunder MOD - Download media, no ads, privacy options.<br><br>
 
@@ -384,14 +384,14 @@ SELECT '00000000-0000-4000-8000-000000000016','instagram-pro-insta-thunder','Ins
     Clean feed and stories.
   ','https://maxhacker001.github.io/techiegamermods/images/instathunder.png',NULL,'published'
 FROM categories c
-WHERE c.slug='apps' AND NOT EXISTS (SELECT 1 FROM apps a WHERE a.slug='instagram-pro-insta-thunder');
+WHERE c.slug='apps' AND NOT EXISTS (SELECT 1 FROM apps a WHERE a.slug='insta-thunder-mod');
 INSERT INTO versions (id,app_id,version_name,mod_info,changelog,android_min,architecture,size_bytes,status)
 SELECT '00000000-0000-4000-8000-000000001017',a.id,'300.0','Pro Unlocked','Legacy catalog import','',NULL,73400320,'published'
 FROM apps a
-WHERE a.slug='instagram-pro-insta-thunder' AND NOT EXISTS (SELECT 1 FROM versions v WHERE v.app_id=a.id AND v.version_name='300.0');
+WHERE a.slug='insta-thunder-mod' AND NOT EXISTS (SELECT 1 FROM versions v WHERE v.app_id=a.id AND v.version_name='300.0');
 
 INSERT INTO apps (id,slug,name,category_id,package_name,publisher,genre,description_html,icon_url,play_store_url,status)
-SELECT '00000000-0000-4000-8000-000000000017','twitter-x-gold-mod','Twitter X Gold MOD',c.id,NULL,NULL,'Social','
+SELECT '00000000-0000-4000-8000-000000000017','twitter-gold-mod','Twitter X Gold MOD',c.id,NULL,NULL,'Social','
     <strong>ENHANCED TWITTER EXPERIENCE</strong><br><br>
     Twitter Gold MOD - No ads, download videos, premium features.<br><br>
 
@@ -408,11 +408,11 @@ SELECT '00000000-0000-4000-8000-000000000017','twitter-x-gold-mod','Twitter X Go
     Write longer tweets.
   ','https://maxhacker001.github.io/techiegamermods/images/twittergold.png',NULL,'published'
 FROM categories c
-WHERE c.slug='apps' AND NOT EXISTS (SELECT 1 FROM apps a WHERE a.slug='twitter-x-gold-mod');
+WHERE c.slug='apps' AND NOT EXISTS (SELECT 1 FROM apps a WHERE a.slug='twitter-gold-mod');
 INSERT INTO versions (id,app_id,version_name,mod_info,changelog,android_min,architecture,size_bytes,status)
 SELECT '00000000-0000-4000-8000-000000001018',a.id,'10.5.0','Premium Unlocked','Legacy catalog import','',NULL,104857600,'published'
 FROM apps a
-WHERE a.slug='twitter-x-gold-mod' AND NOT EXISTS (SELECT 1 FROM versions v WHERE v.app_id=a.id AND v.version_name='10.5.0');
+WHERE a.slug='twitter-gold-mod' AND NOT EXISTS (SELECT 1 FROM versions v WHERE v.app_id=a.id AND v.version_name='10.5.0');
 
 INSERT INTO apps (id,slug,name,category_id,package_name,publisher,genre,description_html,icon_url,play_store_url,status)
 SELECT '00000000-0000-4000-8000-000000000018','netflix-mod','Netflix MOD',c.id,'com.netflix.mediaclient','Netflix Inc.','Entertainment','
@@ -463,7 +463,7 @@ FROM apps a
 WHERE a.slug='crunchyroll-mod' AND NOT EXISTS (SELECT 1 FROM versions v WHERE v.app_id=a.id AND v.version_name='3.5.0');
 
 INSERT INTO apps (id,slug,name,category_id,package_name,publisher,genre,description_html,icon_url,play_store_url,status)
-SELECT '00000000-0000-4000-8000-000000000020','free-fire-mod','Free Fire MOD',c.id,'com.dts.freefireth','Garena International','Action','
+SELECT '00000000-0000-4000-8000-000000000020','freefire-mod','Free Fire MOD',c.id,'com.dts.freefireth','Garena International','Action','
       <strong>DOMINATE EVERY MATCH</strong><br><br>
       Free Fire MOD APK with unlimited diamonds, aimbot, ESP wallhack, and anti-ban protection. Get instant access to premium items and dominate the battlefield.<br><br>
 
@@ -480,14 +480,14 @@ SELECT '00000000-0000-4000-8000-000000000020','free-fire-mod','Free Fire MOD',c.
       Advanced protection keeps your account secure while enjoying all premium advantages.
     ','https://maxhacker001.github.io/techiegamermods/images/freefire.png','https://play.google.com/store/apps/details?id=com.dts.freefireth','published'
 FROM categories c
-WHERE c.slug='games' AND NOT EXISTS (SELECT 1 FROM apps a WHERE a.slug='free-fire-mod');
+WHERE c.slug='games' AND NOT EXISTS (SELECT 1 FROM apps a WHERE a.slug='freefire-mod');
 INSERT INTO versions (id,app_id,version_name,mod_info,changelog,android_min,architecture,size_bytes,status)
 SELECT '00000000-0000-4000-8000-000000001021',a.id,'1.104.1','Unlimited Diamonds','Legacy catalog import','',NULL,681574400,'published'
 FROM apps a
-WHERE a.slug='free-fire-mod' AND NOT EXISTS (SELECT 1 FROM versions v WHERE v.app_id=a.id AND v.version_name='1.104.1');
+WHERE a.slug='freefire-mod' AND NOT EXISTS (SELECT 1 FROM versions v WHERE v.app_id=a.id AND v.version_name='1.104.1');
 
 INSERT INTO apps (id,slug,name,category_id,package_name,publisher,genre,description_html,icon_url,play_store_url,status)
-SELECT '00000000-0000-4000-8000-000000000021','pubg-mobile-mod','PUBG Mobile MOD',c.id,'com.tencent.ig','Level Infinite','Action','
+SELECT '00000000-0000-4000-8000-000000000021','pubg-mod','PUBG Mobile MOD',c.id,'com.tencent.ig','Level Infinite','Action','
       <strong>ULTIMATE BATTLE ROYALE DOMINATION</strong><br><br>
       PUBG Mobile MOD APK with unlimited UC, wallhack, aimbot, and magic bullet. Unlock every premium item and dominate every match.<br><br>
 
@@ -504,14 +504,14 @@ SELECT '00000000-0000-4000-8000-000000000021','pubg-mobile-mod','PUBG Mobile MOD
       Fire with perfect stability and increased damage output for faster eliminations.
     ','https://maxhacker001.github.io/techiegamermods/images/pubg.png','https://play.google.com/store/apps/details?id=com.tencent.ig','published'
 FROM categories c
-WHERE c.slug='games' AND NOT EXISTS (SELECT 1 FROM apps a WHERE a.slug='pubg-mobile-mod');
+WHERE c.slug='games' AND NOT EXISTS (SELECT 1 FROM apps a WHERE a.slug='pubg-mod');
 INSERT INTO versions (id,app_id,version_name,mod_info,changelog,android_min,architecture,size_bytes,status)
 SELECT '00000000-0000-4000-8000-000000001022',a.id,'3.5.0','Global Unlimited UC','Legacy catalog import','',NULL,0,'published'
 FROM apps a
-WHERE a.slug='pubg-mobile-mod' AND NOT EXISTS (SELECT 1 FROM versions v WHERE v.app_id=a.id AND v.version_name='3.5.0');
+WHERE a.slug='pubg-mod' AND NOT EXISTS (SELECT 1 FROM versions v WHERE v.app_id=a.id AND v.version_name='3.5.0');
 
 INSERT INTO apps (id,slug,name,category_id,package_name,publisher,genre,description_html,icon_url,play_store_url,status)
-SELECT '00000000-0000-4000-8000-000000000022','mobile-legends-mod','Mobile Legends MOD',c.id,'com.mobile.legends','Moonton','MOBA','
+SELECT '00000000-0000-4000-8000-000000000022','mlbb-mod','Mobile Legends MOD',c.id,'com.mobile.legends','Moonton','MOBA','
       <strong>EPIC MOBA DOMINATION</strong><br><br>
       Mobile Legends MOD APK with map hack, drone view, unlimited diamonds, and all skins unlocked. Gain complete battlefield awareness and premium cosmetics.<br><br>
 
@@ -528,11 +528,11 @@ SELECT '00000000-0000-4000-8000-000000000022','mobile-legends-mod','Mobile Legen
       Track enemies precisely and spam skills without waiting—turn matches in your favor.
     ','https://maxhacker001.github.io/techiegamermods/images/mlbb.png','https://play.google.com/store/apps/details?id=com.mobile.legends','published'
 FROM categories c
-WHERE c.slug='games' AND NOT EXISTS (SELECT 1 FROM apps a WHERE a.slug='mobile-legends-mod');
+WHERE c.slug='games' AND NOT EXISTS (SELECT 1 FROM apps a WHERE a.slug='mlbb-mod');
 INSERT INTO versions (id,app_id,version_name,mod_info,changelog,android_min,architecture,size_bytes,status)
 SELECT '00000000-0000-4000-8000-000000001023',a.id,'1.8.66','Unlock All Skins','Legacy catalog import','',NULL,146800640,'published'
 FROM apps a
-WHERE a.slug='mobile-legends-mod' AND NOT EXISTS (SELECT 1 FROM versions v WHERE v.app_id=a.id AND v.version_name='1.8.66');
+WHERE a.slug='mlbb-mod' AND NOT EXISTS (SELECT 1 FROM versions v WHERE v.app_id=a.id AND v.version_name='1.8.66');
 
 INSERT INTO apps (id,slug,name,category_id,package_name,publisher,genre,description_html,icon_url,play_store_url,status)
 SELECT '00000000-0000-4000-8000-000000000023','subway-surfers-mod','Subway Surfers MOD',c.id,'com.kiloo.subwaysurf','SYBO Games','Endless Runner','Subway Surfers MOD APK - Unlimited coins & keys, all characters unlocked.','https://maxhacker001.github.io/techiegamermods/images/subwaysurfers.png','https://play.google.com/store/apps/details?id=com.kiloo.subwaysurf','published'
@@ -544,22 +544,22 @@ FROM apps a
 WHERE a.slug='subway-surfers-mod' AND NOT EXISTS (SELECT 1 FROM versions v WHERE v.app_id=a.id AND v.version_name='3.25.0');
 
 INSERT INTO apps (id,slug,name,category_id,package_name,publisher,genre,description_html,icon_url,play_store_url,status)
-SELECT '00000000-0000-4000-8000-000000000024','candy-crush-saga-mod','Candy Crush Saga MOD',c.id,'com.king.candycrushsaga','King','Puzzle','Candy Crush Saga MOD APK - Unlimited lives, boosters, all levels unlocked.','https://maxhacker001.github.io/techiegamermods/images/candycrush.png','https://play.google.com/store/apps/details?id=com.king.candycrushsaga','published'
+SELECT '00000000-0000-4000-8000-000000000024','candy-crush-mod','Candy Crush Saga MOD',c.id,'com.king.candycrushsaga','King','Puzzle','Candy Crush Saga MOD APK - Unlimited lives, boosters, all levels unlocked.','https://maxhacker001.github.io/techiegamermods/images/candycrush.png','https://play.google.com/store/apps/details?id=com.king.candycrushsaga','published'
 FROM categories c
-WHERE c.slug='games' AND NOT EXISTS (SELECT 1 FROM apps a WHERE a.slug='candy-crush-saga-mod');
+WHERE c.slug='games' AND NOT EXISTS (SELECT 1 FROM apps a WHERE a.slug='candy-crush-mod');
 INSERT INTO versions (id,app_id,version_name,mod_info,changelog,android_min,architecture,size_bytes,status)
 SELECT '00000000-0000-4000-8000-000000001025',a.id,'1.290.0','Unlimited Lives','Legacy catalog import','',NULL,94371840,'published'
 FROM apps a
-WHERE a.slug='candy-crush-saga-mod' AND NOT EXISTS (SELECT 1 FROM versions v WHERE v.app_id=a.id AND v.version_name='1.290.0');
+WHERE a.slug='candy-crush-mod' AND NOT EXISTS (SELECT 1 FROM versions v WHERE v.app_id=a.id AND v.version_name='1.290.0');
 
 INSERT INTO apps (id,slug,name,category_id,package_name,publisher,genre,description_html,icon_url,play_store_url,status)
-SELECT '00000000-0000-4000-8000-000000000025','clash-of-clans-mod','Clash of Clans MOD',c.id,'com.supercell.clashofclans','Supercell','Strategy','Clash of Clans MOD APK - Unlimited gems, gold, elixir, private server.','https://maxhacker001.github.io/techiegamermods/images/clashclans.png','https://play.google.com/store/apps/details?id=com.supercell.clashofclans','published'
+SELECT '00000000-0000-4000-8000-000000000025','clash-clans-mod','Clash of Clans MOD',c.id,'com.supercell.clashofclans','Supercell','Strategy','Clash of Clans MOD APK - Unlimited gems, gold, elixir, private server.','https://maxhacker001.github.io/techiegamermods/images/clashclans.png','https://play.google.com/store/apps/details?id=com.supercell.clashofclans','published'
 FROM categories c
-WHERE c.slug='games' AND NOT EXISTS (SELECT 1 FROM apps a WHERE a.slug='clash-of-clans-mod');
+WHERE c.slug='games' AND NOT EXISTS (SELECT 1 FROM apps a WHERE a.slug='clash-clans-mod');
 INSERT INTO versions (id,app_id,version_name,mod_info,changelog,android_min,architecture,size_bytes,status)
 SELECT '00000000-0000-4000-8000-000000001026',a.id,'16.0.0','Unlimited Gems','Legacy catalog import','',NULL,314572800,'published'
 FROM apps a
-WHERE a.slug='clash-of-clans-mod' AND NOT EXISTS (SELECT 1 FROM versions v WHERE v.app_id=a.id AND v.version_name='16.0.0');
+WHERE a.slug='clash-clans-mod' AND NOT EXISTS (SELECT 1 FROM versions v WHERE v.app_id=a.id AND v.version_name='16.0.0');
 
 INSERT INTO apps (id,slug,name,category_id,package_name,publisher,genre,description_html,icon_url,play_store_url,status)
 SELECT '00000000-0000-4000-8000-000000000026','roblox-mod','Roblox MOD',c.id,'com.roblox.client','Roblox Corporation','Adventure','Roblox MOD APK - Menu mod, fly, speed, god mode.','https://maxhacker001.github.io/techiegamermods/images/roblox.png','https://play.google.com/store/apps/details?id=com.roblox.client','published'
@@ -571,13 +571,13 @@ FROM apps a
 WHERE a.slug='roblox-mod' AND NOT EXISTS (SELECT 1 FROM versions v WHERE v.app_id=a.id AND v.version_name='2.644.704');
 
 INSERT INTO apps (id,slug,name,category_id,package_name,publisher,genre,description_html,icon_url,play_store_url,status)
-SELECT '00000000-0000-4000-8000-000000000027','call-of-duty-mobile-mod','Call of Duty Mobile MOD',c.id,'com.activision.callofduty.shooter','Activision','FPS','Call of Duty Mobile MOD APK - Unlimited CP, aimbot, no recoil.','https://maxhacker001.github.io/techiegamermods/images/codmobile.png','https://play.google.com/store/apps/details?id=com.activision.callofduty.shooter','published'
+SELECT '00000000-0000-4000-8000-000000000027','cod-mobile-mod','Call of Duty Mobile MOD',c.id,'com.activision.callofduty.shooter','Activision','FPS','Call of Duty Mobile MOD APK - Unlimited CP, aimbot, no recoil.','https://maxhacker001.github.io/techiegamermods/images/codmobile.png','https://play.google.com/store/apps/details?id=com.activision.callofduty.shooter','published'
 FROM categories c
-WHERE c.slug='games' AND NOT EXISTS (SELECT 1 FROM apps a WHERE a.slug='call-of-duty-mobile-mod');
+WHERE c.slug='games' AND NOT EXISTS (SELECT 1 FROM apps a WHERE a.slug='cod-mobile-mod');
 INSERT INTO versions (id,app_id,version_name,mod_info,changelog,android_min,architecture,size_bytes,status)
 SELECT '00000000-0000-4000-8000-000000001028',a.id,'1.0.45','Unlimited CP','Legacy catalog import','',NULL,0,'published'
 FROM apps a
-WHERE a.slug='call-of-duty-mobile-mod' AND NOT EXISTS (SELECT 1 FROM versions v WHERE v.app_id=a.id AND v.version_name='1.0.45');
+WHERE a.slug='cod-mobile-mod' AND NOT EXISTS (SELECT 1 FROM versions v WHERE v.app_id=a.id AND v.version_name='1.0.45');
 
 INSERT INTO apps (id,slug,name,category_id,package_name,publisher,genre,description_html,icon_url,play_store_url,status)
 SELECT '00000000-0000-4000-8000-000000000028','among-us-mod','Among Us MOD',c.id,'com.innersloth.spacemafia','Innersloth','Social Deduction','Among Us MOD APK - Always impostor, no kill cooldown, speed hack.','https://maxhacker001.github.io/techiegamermods/images/amongus.png','https://play.google.com/store/apps/details?id=com.innersloth.spacemafia','published'
@@ -616,22 +616,22 @@ FROM apps a
 WHERE a.slug='shadow-fight-3-mod' AND NOT EXISTS (SELECT 1 FROM versions v WHERE v.app_id=a.id AND v.version_name='1.35.0');
 
 INSERT INTO apps (id,slug,name,category_id,package_name,publisher,genre,description_html,icon_url,play_store_url,status)
-SELECT '00000000-0000-4000-8000-000000000032','dream-league-soccer-mod','Dream League Soccer MOD',c.id,'com.firsttouchgames.dls7','First Touch Games','Sports','Dream League Soccer MOD APK - Unlimited coins, all players unlocked.','https://maxhacker001.github.io/techiegamermods/images/dreamleague.png','https://play.google.com/store/apps/details?id=com.firsttouchgames.dls7','published'
+SELECT '00000000-0000-4000-8000-000000000032','dream-league-mod','Dream League Soccer MOD',c.id,'com.firsttouchgames.dls7','First Touch Games','Sports','Dream League Soccer MOD APK - Unlimited coins, all players unlocked.','https://maxhacker001.github.io/techiegamermods/images/dreamleague.png','https://play.google.com/store/apps/details?id=com.firsttouchgames.dls7','published'
 FROM categories c
-WHERE c.slug='games' AND NOT EXISTS (SELECT 1 FROM apps a WHERE a.slug='dream-league-soccer-mod');
+WHERE c.slug='games' AND NOT EXISTS (SELECT 1 FROM apps a WHERE a.slug='dream-league-mod');
 INSERT INTO versions (id,app_id,version_name,mod_info,changelog,android_min,architecture,size_bytes,status)
 SELECT '00000000-0000-4000-8000-000000001033',a.id,'11.0','Unlimited Coins','Legacy catalog import','',NULL,524288000,'published'
 FROM apps a
-WHERE a.slug='dream-league-soccer-mod' AND NOT EXISTS (SELECT 1 FROM versions v WHERE v.app_id=a.id AND v.version_name='11.0');
+WHERE a.slug='dream-league-mod' AND NOT EXISTS (SELECT 1 FROM versions v WHERE v.app_id=a.id AND v.version_name='11.0');
 
 INSERT INTO apps (id,slug,name,category_id,package_name,publisher,genre,description_html,icon_url,play_store_url,status)
-SELECT '00000000-0000-4000-8000-000000000033','hill-climb-racing-mod','Hill Climb Racing MOD',c.id,'com.fingersoft.hillclimb','Fingersoft','Racing','Hill Climb Racing MOD APK - Unlimited coins, fuel, all vehicles.','https://maxhacker001.github.io/techiegamermods/images/hillclimb.png','https://play.google.com/store/apps/details?id=com.fingersoft.hillclimb','published'
+SELECT '00000000-0000-4000-8000-000000000033','hill-climb-mod','Hill Climb Racing MOD',c.id,'com.fingersoft.hillclimb','Fingersoft','Racing','Hill Climb Racing MOD APK - Unlimited coins, fuel, all vehicles.','https://maxhacker001.github.io/techiegamermods/images/hillclimb.png','https://play.google.com/store/apps/details?id=com.fingersoft.hillclimb','published'
 FROM categories c
-WHERE c.slug='games' AND NOT EXISTS (SELECT 1 FROM apps a WHERE a.slug='hill-climb-racing-mod');
+WHERE c.slug='games' AND NOT EXISTS (SELECT 1 FROM apps a WHERE a.slug='hill-climb-mod');
 INSERT INTO versions (id,app_id,version_name,mod_info,changelog,android_min,architecture,size_bytes,status)
 SELECT '00000000-0000-4000-8000-000000001034',a.id,'1.61.0','Unlimited Coins','Legacy catalog import','',NULL,83886080,'published'
 FROM apps a
-WHERE a.slug='hill-climb-racing-mod' AND NOT EXISTS (SELECT 1 FROM versions v WHERE v.app_id=a.id AND v.version_name='1.61.0');
+WHERE a.slug='hill-climb-mod' AND NOT EXISTS (SELECT 1 FROM versions v WHERE v.app_id=a.id AND v.version_name='1.61.0');
 
 INSERT INTO apps (id,slug,name,category_id,package_name,publisher,genre,description_html,icon_url,play_store_url,status)
 SELECT '00000000-0000-4000-8000-000000000034','8-ball-pool-mod','8 Ball Pool MOD',c.id,'com.miniclip.eightballpool','Miniclip','Sports','8 Ball Pool MOD APK - Unlimited cash, long lines, all cues.','https://maxhacker001.github.io/techiegamermods/images/8ballpool.png','https://play.google.com/store/apps/details?id=com.miniclip.eightballpool','published'
@@ -740,33 +740,33 @@ WHERE slug IN (
   'alight-motion-mod',
   'kinemaster-mod',
   'inshot-mod',
-  'vn-video-editor-mod',
+  'vn-mod',
   'powerdirector-mod',
   'canva-mod',
   'gbwhatsapp-mod',
   'picsart-mod',
   'photoroom-mod',
-  'truecaller-premium-mod',
+  'truecaller-mod',
   'snaptube-mod',
   'telegram-premium-mod',
-  'instagram-pro-insta-thunder',
-  'twitter-x-gold-mod',
+  'insta-thunder-mod',
+  'twitter-gold-mod',
   'netflix-mod',
   'crunchyroll-mod',
-  'free-fire-mod',
-  'pubg-mobile-mod',
-  'mobile-legends-mod',
+  'freefire-mod',
+  'pubg-mod',
+  'mlbb-mod',
   'subway-surfers-mod',
-  'candy-crush-saga-mod',
-  'clash-of-clans-mod',
+  'candy-crush-mod',
+  'clash-clans-mod',
   'roblox-mod',
-  'call-of-duty-mobile-mod',
+  'cod-mobile-mod',
   'among-us-mod',
   'stumble-guys-mod',
   'brawl-stars-mod',
   'shadow-fight-3-mod',
-  'dream-league-soccer-mod',
-  'hill-climb-racing-mod',
+  'dream-league-mod',
+  'hill-climb-mod',
   '8-ball-pool-mod',
   'lucky-patcher-guide',
   'mt-manager-tutorial'
@@ -782,33 +782,33 @@ WHERE app_id IN (
     'alight-motion-mod',
     'kinemaster-mod',
     'inshot-mod',
-    'vn-video-editor-mod',
+    'vn-mod',
     'powerdirector-mod',
     'canva-mod',
     'gbwhatsapp-mod',
     'picsart-mod',
     'photoroom-mod',
-    'truecaller-premium-mod',
+    'truecaller-mod',
     'snaptube-mod',
     'telegram-premium-mod',
-    'instagram-pro-insta-thunder',
-    'twitter-x-gold-mod',
+    'insta-thunder-mod',
+    'twitter-gold-mod',
     'netflix-mod',
     'crunchyroll-mod',
-    'free-fire-mod',
-    'pubg-mobile-mod',
-    'mobile-legends-mod',
+    'freefire-mod',
+    'pubg-mod',
+    'mlbb-mod',
     'subway-surfers-mod',
-    'candy-crush-saga-mod',
-    'clash-of-clans-mod',
+    'candy-crush-mod',
+    'clash-clans-mod',
     'roblox-mod',
-    'call-of-duty-mobile-mod',
+    'cod-mobile-mod',
     'among-us-mod',
     'stumble-guys-mod',
     'brawl-stars-mod',
     'shadow-fight-3-mod',
-    'dream-league-soccer-mod',
-    'hill-climb-racing-mod',
+    'dream-league-mod',
+    'hill-climb-mod',
     '8-ball-pool-mod',
     'lucky-patcher-guide',
     'mt-manager-tutorial'
