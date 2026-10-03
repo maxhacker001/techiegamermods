@@ -490,7 +490,7 @@ async function loadApps() {
     });
     $('appsResult').textContent = JSON.stringify(data, null, 2);
     document.querySelectorAll('.select-app').forEach(btn => {
-      btn.onclick = () => {
+      btn.onclick = async () => {
         const app = appCache.get(btn.dataset.id);
         if (!app) return;
         $('selectedAppId').value = app.id;
