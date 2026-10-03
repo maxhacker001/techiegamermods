@@ -399,7 +399,9 @@ async function loadApps() {
         $('playstore').value = app.play_store_url || '';
         $('icon').value = app.icon_url || '';
         $('description').value = app.description_html || '';
-        $('createApp').textContent = 'Create another draft';
+        $('createApp').textContent = 'Create new app';
+        $('createApp').disabled = true;
+        $('createApp').title = 'Select New / Clear to start another app.';
         loadVersions();
       };
     });
@@ -525,9 +527,15 @@ async function loadAudit() {
 
 $('createApp').onclick = async () => {
   try {
+    if ($('appEditId').value.trim()) {
+      throw new Error('This app already exists. Use Save changes to edit it, or use New / Clear to create a different app.');
+    }
     const data=await request('/api/admin/apps',{method:'POST',body:JSON.stringify(getAppBody())});
     $('createResult').textContent=JSON.stringify(data,null,2);
     $('appEditId').value='';
+    $('createApp').textContent='Create draft';
+    $('createApp').disabled=false;
+    $('createApp').title='';
     await loadStats(); await loadApps();
   } catch(e) { $('createResult').textContent='Error: '+e.message; }
 };
@@ -546,6 +554,8 @@ $('newApp').onclick = () => {
   ['appEditId','name','slug','publisher','genre','package','playstore','icon','description'].forEach(id => $(id).value='');
   $('category').value='apps';
   $('createApp').textContent='Create draft';
+  $('createApp').disabled=false;
+  $('createApp').title='';
   $('createResult').textContent='';
 };
 
