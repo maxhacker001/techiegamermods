@@ -80,42 +80,103 @@
     });
   };
 
+  const normalizeSearch = (value) => String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/\\s+/g, " ")
+    .trim();
+
+  const searchScore = (app, query) => {
+    const name = normalizeSearch(app.name);
+    const slug = normalizeSearch(app.slug);
+    let value = 0;
+    if (name === query) value += 1000;
+    if (slug === query) value += 900;
+    if (name.startsWith(query)) value += 500;
+    if (slug.startsWith(query)) value += 400;
+    if (name.includes(query)) value += 200;
+    if (slug.includes(query)) value += 150;
+    return value;
+  };
+
+  const searchMatches = (query) => {
+    const exact = state.apps.filter(app => {
+      const name = normalizeSearch(app.name);
+      const slug = normalizeSearch(app.slug);
+      return name === query || slug === query;
+    });
+    if (exact.length) return exact;
+
+    const titleMatches = state.apps.filter(app =>
+      normalizeSearch([app.name, app.slug].join(" ")).includes(query)
+    );
+    if (titleMatches.length) return titleMatches;
+
+    return state.apps.filter(app =>
+      normalizeSearch([
+        app.name,
+        app.slug,
+        app.publisher,
+        app.genre,
+        app.description,
+        app.category_name
+      ].join(" ")).includes(query)
+    );
+  };
+
+  const renderGroupedSearch = (target, list) => {
+    if (!target) return;
+    target.innerHTML = "";
+
+    if (!list.length) {
+      target.innerHTML = "<p style='grid-column:1/-1;text-align:center;color:var(--muted);margin:50px'>No releases found.</p>";
+      return;
+    }
+
+    const groups = [
+      ["apps", "📱 App Mods"],
+      ["games", "🎮 Game Mods"],
+      ["tutorials", "🔧 Modding Tutorials"]
+    ];
+
+    let shownGroups = 0;
+    for (const [category, title] of groups) {
+      const items = list
+        .filter(app => String(app.category || "") === category)
+        .sort((a,b) =>
+          searchScore(b, state.query) - searchScore(a, state.query) ||
+          String(a.name || "").localeCompare(String(b.name || ""))
+        );
+      if (!items.length) continue;
+
+      const heading = document.createElement("div");
+      heading.style.cssText = "grid-column:1/-1;margin:20px 0 2px;text-align:center;color:var(--neon);font-size:24px;font-weight:800;";
+      heading.textContent = title;
+      target.appendChild(heading);
+
+      const wrap = document.createElement("div");
+      wrap.style.cssText = "grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;";
+      items.forEach(app => wrap.appendChild(card(app, category === "tutorials")));
+      target.appendChild(wrap);
+      shownGroups++;
+    }
+
+    if (!shownGroups) {
+      list.forEach(app => target.appendChild(card(app, app.category === "tutorials")));
+    }
+  };
+
   const homeRender = () => {
     const grid = $("appsContainer");
     if (!grid) return;
 
     if (state.query) {
-      const query = String(state.query || "")
-        .toLowerCase()
-        .replace(/\s+/g, " ")
-        .trim();
+      const query = normalizeSearch(state.query);
+      const list = searchMatches(query);
+      state.query = query;
 
-      const list = state.apps.filter(app => {
-        const fields = [
-          app.name,
-          app.slug,
-          app.publisher,
-          app.genre,
-          app.category,
-          app.category_name,
-          app.version,
-          app.modTitle,
-          app.description,
-          app.tutorialBody,
-          app.youtube,
-          ...(Array.isArray(app.features) ? app.features : [])
-        ];
+      renderGroupedSearch(grid, list);
 
-        return fields
-          .filter(value => value !== null && value !== undefined)
-          .join(" ")
-          .toLowerCase()
-          .includes(query);
-      });
-
-      renderSearchResults(grid, list);
-
-      // Search mode has no active category; category buttons return when the search is cleared.
       document.querySelectorAll(".filter-btn").forEach(item => item.classList.remove("active"));
 
       const trendingSection = $("trendingSection");
@@ -157,7 +218,11 @@
       input.dataset.liveCatalogBound = "1";
       input.addEventListener("input", () => {
         state.query = input.value.trim();
-        if (!state.query) state.category = "apps";
+        if (!state.query) {
+          state.category = "apps";
+          const filters = $("filtersSection");
+          if (filters) filters.style.display = "flex";
+        }
         homeRender();
       });
     }
@@ -200,6 +265,7 @@
           if (filters) filters.style.display = "flex";
           showPage("homePage");
           homeRender();
+          window.scrollTo({ top: 0, behavior: "smooth" });
         } else if (item.dataset.category) {
           categoryRender(item.dataset.category);
         } else if (item.classList.contains("blog")) {
