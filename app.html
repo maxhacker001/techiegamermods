@@ -171,7 +171,7 @@
 
   <!-- RECOMMENDED -->
   <div class="recommended-section">
-    <h3 style="color:var(--neon); text-align:center; margin:40px 0 20px;">🔥 Recommended For You</h3>
+    <h3 style="color:var(--neon); text-align:center; margin:40px 0 20px;">🔥 Related Apps</h3>
     <div class="grid" id="recommendedGrid">
       <!-- Filled by JS -->
     </div>
@@ -232,6 +232,7 @@
     }
 
     let app = apps.find(a => a.id === appId);
+    let relatedApps = [];
     if (!app) {
       fail("Mod not found", "That app or game is not in the current catalog.");
       return;
@@ -253,6 +254,7 @@
             window.TGMApi.imageUrl(shot.media_url)
           );
           const liveTutorial = (live.tutorials || []).find(t => t.video_url);
+          relatedApps = Array.isArray(live.related_apps) ? live.related_apps : [];
 
           app = {
             id: liveApp.slug || liveApp.id || appId,
@@ -385,18 +387,60 @@
       ? "<span>✓ Tutorial metadata</span><span>✓ Updated when source is verified</span>"
       : "<span>ℹ Verification status shown when available</span><span>ℹ Modified package</span><span>ℹ Inspect before installing</span>";
 
-    // Recommended apps
+    // Related apps are managed from the Admin CMS. Legacy records fall back
+    // to same-category/same-genre recommendations until relations are set.
     const recommendedGrid = document.getElementById("recommendedGrid");
-    const recommendedApps = apps.filter(a => a.id !== appId && a.category !== "tutorials").slice(0, 4);
-    recommendedApps.forEach(rec => {
+    if (!relatedApps.length) {
+      relatedApps = apps
+        .filter(a =>
+          a.id !== appId &&
+          a.category === app.category &&
+          (a.genre === app.genre || !app.genre)
+        )
+        .slice(0, 4)
+        .map(a => ({
+          id: a.id,
+          slug: a.id,
+          name: a.name,
+          version: a.version,
+          size: a.size,
+          image: a.image
+        }));
+    }
+
+    relatedApps.slice(0, 4).forEach(rec => {
       const card = document.createElement('div');
       card.className = 'card';
-      card.innerHTML = `
-        <img src="${rec.image}" style="width:70px;height:70px;border-radius:14px;margin-bottom:10px;" onerror="this.src='images/logo.png'">
-        <h3>${rec.name}</h3>
-        <p>${rec.version} • ${rec.size}</p>
-        <a href="app.html?id=${rec.id}">View Mod</a>
-      `;
+
+      const image = document.createElement('img');
+      image.src = rec.image || 'images/logo.png';
+      image.style.width = '70px';
+      image.style.height = '70px';
+      image.style.borderRadius = '14px';
+      image.style.marginBottom = '10px';
+      image.onerror = () => { image.src = 'images/logo.png'; };
+      card.appendChild(image);
+
+      const h3 = document.createElement('h3');
+      h3.textContent = rec.name || 'Related app';
+      card.appendChild(h3);
+
+      const p = document.createElement('p');
+      const versionText = rec.version && rec.version !== '—' ? rec.version : 'Release';
+      let sizeText = '';
+      if (rec.size && rec.size !== '—') {
+        sizeText = ' • ' + (typeof rec.size === 'number'
+          ? (window.TGMApi ? window.TGMApi.formatBytes(rec.size) : String(rec.size))
+          : rec.size);
+      }
+      p.textContent = versionText + sizeText;
+      card.appendChild(p);
+
+      const a = document.createElement('a');
+      a.href = 'app.html?id=' + encodeURIComponent(rec.slug || rec.id);
+      a.textContent = 'View Mod';
+      card.appendChild(a);
+
       recommendedGrid.appendChild(card);
     });
 
