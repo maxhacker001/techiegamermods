@@ -75,30 +75,9 @@
       return;
     }
 
-    const categoryOrder = ["apps", "games", "tutorials"];
-    const labels = {
-      apps: "📱 App Mods",
-      games: "🎮 Game Mods",
-      tutorials: "🔧 Modding Tutorials"
-    };
-    let renderedAny = false;
-
-    categoryOrder.forEach(category => {
-      const items = list.filter(app => app.category === category);
-      if (!items.length) return;
-      renderedAny = true;
-
-      const heading = document.createElement("h2");
-      heading.textContent = labels[category];
-      heading.style.cssText = "grid-column:1/-1;color:var(--neon);text-align:left;margin:28px 0 4px;font-size:20px;";
-      target.appendChild(heading);
-
-      items.forEach(app => target.appendChild(card(app, category === "tutorials")));
+    list.forEach(app => {
+      target.appendChild(card(app, app.category === "tutorials"));
     });
-
-    if (!renderedAny) {
-      list.forEach(app => target.appendChild(card(app, app.category === "tutorials")));
-    }
   };
 
   const homeRender = () => {
@@ -106,61 +85,32 @@
     if (!grid) return;
 
     if (state.query) {
-      const normalizeSearch = (value) => String(value || "")
+      const query = String(state.query || "")
         .toLowerCase()
-        .replace(/[^a-z0-9]+/g, " ")
         .replace(/\s+/g, " ")
         .trim();
 
-      const query = normalizeSearch(state.query);
+      const list = state.apps.filter(app => {
+        const fields = [
+          app.name,
+          app.slug,
+          app.publisher,
+          app.genre,
+          app.category,
+          app.category_name,
+          app.version,
+          app.modTitle,
+          app.description,
+          app.tutorialBody,
+          app.youtube,
+          ...(Array.isArray(app.features) ? app.features : [])
+        ];
 
-      const exactMatches = state.apps.filter(app => {
-        const name = normalizeSearch(app.name);
-        const slug = normalizeSearch(app.slug);
-        return name === query || slug === query;
-      });
-
-      let list;
-      if (exactMatches.length) {
-        list = exactMatches;
-      } else {
-        const titleMatches = state.apps.filter(app => {
-          const name = normalizeSearch(app.name);
-          const slug = normalizeSearch(app.slug);
-          return name.includes(query) || slug.includes(query);
-        });
-
-        const metadataMatches = state.apps.filter(app =>
-          [
-            app.name,
-            app.slug,
-            app.publisher,
-            app.genre,
-            app.description,
-            app.category_name
-          ].join(" ").toLowerCase().includes(query)
-        );
-
-        list = titleMatches.length ? titleMatches : metadataMatches;
-      }
-
-      list = [...list].sort((a, b) => {
-        const score = (app) => {
-          const name = normalizeSearch(app.name);
-          const slug = normalizeSearch(app.slug);
-          let value = 0;
-          if (name === query) value += 1000;
-          if (slug === query) value += 900;
-          if (name.startsWith(query)) value += 500;
-          if (slug.startsWith(query)) value += 400;
-          if (name.includes(query)) value += 200;
-          if (slug.includes(query)) value += 150;
-          return value;
-        };
-
-        return score(b) - score(a) ||
-          String(a.category || "").localeCompare(String(b.category || "")) ||
-          String(a.name || "").localeCompare(String(b.name || ""));
+        return fields
+          .filter(value => value !== null && value !== undefined)
+          .join(" ")
+          .toLowerCase()
+          .includes(query);
       });
 
       renderSearchResults(grid, list);
@@ -168,9 +118,8 @@
       const trendingSection = $("trendingSection");
       if (trendingSection) trendingSection.style.display = "none";
 
-      document.querySelectorAll(".filter-btn").forEach(item => item.classList.remove("active"));
       const filters = $("filtersSection");
-      if (filters) filters.style.display = "flex";
+      if (filters) filters.style.display = "none";
       return;
     }
 
@@ -205,6 +154,7 @@
       input.dataset.liveCatalogBound = "1";
       input.addEventListener("input", () => {
         state.query = input.value.trim();
+        if (!state.query) state.category = "apps";
         homeRender();
       });
     }
@@ -214,6 +164,7 @@
       searchBtn.dataset.liveCatalogBound = "1";
       searchBtn.addEventListener("click", () => {
         state.query = input ? input.value.trim() : "";
+        if (!state.query) state.category = "apps";
         homeRender();
       });
     }
@@ -242,6 +193,8 @@
           state.category = "apps";
           state.query = "";
           if (input) input.value = "";
+          const filters = $("filtersSection");
+          if (filters) filters.style.display = "flex";
           showPage("homePage");
           homeRender();
         } else if (item.dataset.category) {
