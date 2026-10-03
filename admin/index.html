@@ -138,7 +138,7 @@
       <label>Main MOD Info</label><input id="modSummary" placeholder="Premium Unlocked / Unlimited Coins">
       <small class="muted">This is the exact value shown in the main <b>MOD Info</b> row on the public page.</small>
       <label>Detailed MOD Features</label><textarea id="modFeatures" rows="7" placeholder="Unlimited Coins&#10;All Players Unlocked&#10;No Ads&#10;Stadium Upgraded&#10;Infinite Energy"></textarea>
-      <small class="muted">These lines are shown as bullets in the detailed <b>MOD Info</b> section. Edit them directly here — no JSON/code is involved.</small>
+      <small class="muted">These lines are shown as bullets in the detailed <b>MOD Info</b> section. Existing public feature lists are loaded here automatically when the live version has only a short summary. Edit them directly here.</small>
       <input id="modInfo" type="hidden">
       <label>Android minimum</label><input id="androidMin" placeholder="8.0+">
       <label>Architecture</label><input id="architecture" placeholder="arm64-v8a">
@@ -300,6 +300,7 @@
   </div>
 </main>
 
+<script src="../js/data.js"></script>
 <script>
 const $ = (id) => document.getElementById(id);
 
@@ -733,17 +734,41 @@ $('newApp').onclick = () => {
   $('createResult').textContent='';
 };
 
+function getLegacyCatalogAppForSelected() {
+  const selected = appCache.get($('selectedAppId').value.trim());
+  if (!selected || !Array.isArray(window.apps)) return null;
+  const normalize = value => String(value || '').trim().toLowerCase();
+  return window.apps.find(legacy =>
+    normalize(legacy.id) === normalize(selected.slug) ||
+    normalize(legacy.id) === normalize(selected.id) ||
+    (
+      normalize(legacy.name) === normalize(selected.name) &&
+      normalize(legacy.category) === normalize(selected.category_slug)
+    )
+  ) || null;
+}
+
 function setModInfoFields(value) {
-  const lines = String(value || '')
+  const liveLines = String(value || '')
     .replace(/\r/g, '')
     .split('\n')
     .map(s => s.trim())
     .filter(Boolean);
-  $('modSummary').value = lines.shift() || '';
-  $('modFeatures').value = lines.join('\n');
-  $('modInfo').value = [ $('modSummary').value.trim(), $('modFeatures').value.trim() ]
-    .filter(Boolean)
-    .join('\n');
+
+  const legacy = getLegacyCatalogAppForSelected();
+  const legacyFeatures = legacy && Array.isArray(legacy.features)
+    ? legacy.features.map(s => String(s || '').trim()).filter(Boolean)
+    : [];
+
+  // Older migrated versions may contain only the one-line summary. Load the
+  // original site's detailed features into the same editable Admin form so
+  // nothing shown publicly is hidden from the CMS editor.
+  const summary = liveLines.shift() || (legacy && legacy.modTitle) || '';
+  const detailed = liveLines.length > 0 ? liveLines : legacyFeatures;
+
+  $('modSummary').value = summary;
+  $('modFeatures').value = detailed.join('\n');
+  $('modInfo').value = [summary, ...detailed].filter(Boolean).join('\n');
 }
 
 function getCombinedModInfo() {
