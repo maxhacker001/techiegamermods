@@ -307,9 +307,23 @@
                 const row = document.createElement("div");
                 row.style.cssText = "display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid rgba(0,255,156,.12);";
 
+                const labelWrap = document.createElement("div");
+                labelWrap.style.display = "flex";
+                labelWrap.style.flexDirection = "column";
+                labelWrap.style.gap = "3px";
+
                 const label = document.createElement("span");
                 label.textContent = asset.label || asset.original_name || "Extra download";
-                row.appendChild(label);
+                labelWrap.appendChild(label);
+
+                const meta = document.createElement("span");
+                meta.textContent =
+                  String(asset.asset_type || "asset").toUpperCase() + " • " +
+                  window.TGMApi.formatBytes(asset.bytes);
+                meta.style.cssText = "font-size:13px;color:var(--muted);";
+                labelWrap.appendChild(meta);
+
+                row.appendChild(labelWrap);
 
                 const button = document.createElement("button");
                 button.className = "download-btn";
