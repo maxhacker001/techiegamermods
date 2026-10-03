@@ -95,6 +95,16 @@ npx wrangler d1 execute techie-gamer-mods --remote --file=../backend/seed_legacy
 
 The restore is idempotent: existing slugs/versions are left alone, including the current InShot release. After it finishes, refresh the Admin Catalog and the legacy entries will be available to select; you only need to upload the real files for the releases you want to publish.
 
+## Related apps migration
+
+The Admin CMS can now manage the **Related Apps** shown on each public app/download page. Apply the migration once to an existing D1 database:
+
+```bash
+npx wrangler d1 execute techie-gamer-mods --remote --file=../backend/migrations/0002_related_apps.sql
+```
+
+In the Admin CMS, select an app and put the other app slugs in **Related apps**, separated by commas. The public page then shows those apps in the Related Apps section.
+
 ## Release workflow
 
 Use the Admin in this order:
