@@ -72,69 +72,54 @@
 
     let list;
     if (state.query) {
-      const normalizeSearch = (value) =>
-        String(value || "")
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, " ")
-          .replace(/\s+/g, " ")
-          .trim();
-
-      const query = normalizeSearch(state.query);
-      const exactMatches = state.apps.filter(app => {
-        const name = normalizeSearch(app.name);
-        const slug = normalizeSearch(app.slug);
-        return name === query || slug === query;
+      const query = state.query.toLowerCase().replace(/\s+/g, " ").trim();
+      const nameMatches = state.apps.filter(app => {
+        const haystack = [app.name, app.slug].join(" ").toLowerCase();
+        return haystack.includes(query);
       });
 
-      // Exact title/slug searches are intentionally exclusive. Searching
-      // "Lucky Patcher" must return the Lucky Patcher entry only, even when
-      // another record mentions those words in its description.
-      if (exactMatches.length) {
-        list = exactMatches;
-      } else {
-        const nameMatches = state.apps.filter(app => {
-          const name = normalizeSearch(app.name);
-          const slug = normalizeSearch(app.slug);
-          return name.includes(query) || slug.includes(query);
-        });
+      // Prefer actual title/slug matches. This prevents a search for
+      // "lucky patcher" from returning unrelated apps merely because the
+      // phrase appears somewhere in their description, while still allowing
+      // a full-catalog search when no title matches exist.
+      const searchPool = nameMatches.length ? nameMatches : state.apps.filter(app =>
+        [app.name, app.slug, app.publisher, app.genre, app.description, app.category_name]
+          .join(" ")
+          .toLowerCase()
+          .includes(query)
+      );
 
-        // Keep the normal full-catalog search when there is no direct
-        // title/slug match. This searches the editable catalog metadata,
-        // but never replaces an exact title match with fuzzy results.
-        const searchPool = nameMatches.length ? nameMatches : state.apps.filter(app =>
-          [
-            app.name,
-            app.slug,
-            app.publisher,
-            app.genre,
-            app.description,
-            app.category_name
-          ].join(" ").toLowerCase().includes(query)
-        );
-
-        list = [...searchPool].sort((a, b) => {
-          const score = (app) => {
-            const name = normalizeSearch(app.name);
-            const slug = normalizeSearch(app.slug);
-            let value = 0;
-            if (name === query) value += 1000;
-            if (slug === query) value += 900;
-            if (name.startsWith(query)) value += 500;
-            if (slug.startsWith(query)) value += 400;
-            if (name.includes(query)) value += 200;
-            if (slug.includes(query)) value += 150;
-            return value;
-          };
-          return score(b) - score(a) ||
-            String(a.name || "").localeCompare(String(b.name || ""));
-        });
-      }
+      list = [...searchPool].sort((a, b) => {
+        const score = (app) => {
+          const name = String(app.name || "").toLowerCase();
+          const slug = String(app.slug || "").toLowerCase();
+          let value = 0;
+          if (name === query) value += 1000;
+          if (slug === query) value += 900;
+          if (name.startsWith(query)) value += 500;
+          if (slug.startsWith(query)) value += 400;
+          if (name.includes(query)) value += 200;
+          if (slug.includes(query)) value += 150;
+          return value;
+        };
+        return score(b) - score(a) || String(a.name || "").localeCompare(String(b.name || ""));
+      });
     } else {
       list = state.apps.filter(app => app.category === state.category);
     }
 
     render(grid, list, !state.query && state.category === "tutorials");
-    renderTrending();
+
+    // Searching should show only search results. Trending is a home-only section.
+    const trendingSection = $("trendingSection");
+    if (trendingSection) {
+      if (state.query) {
+        trendingSection.style.display = "none";
+      } else {
+        renderTrending();
+      }
+    }
+
     const filters = $("filtersSection");
     if (filters) filters.style.display = "flex";
   };
