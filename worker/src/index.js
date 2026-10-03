@@ -813,6 +813,53 @@ async function adminListFilesForVersion(request, versionId, env) {
   return json({ version, files: result.results || [] }, 200, env);
 }
 
+async function adminListScreenshots(request, appId, env) {
+  if (!requireAdmin(request, env)) return json({ error: "Unauthorized" }, 401, env);
+  const app = await env.DB.prepare("SELECT id,slug,name FROM apps WHERE id=? LIMIT 1").bind(appId).first();
+  if (!app) return json({ error: "App not found" }, 404, env);
+  const result = await env.DB.prepare("SELECT id,storage_key,alt_text,sort_order,created_at FROM screenshots WHERE app_id=? ORDER BY sort_order ASC,id ASC").bind(appId).all();
+  return json({ app, screenshots: result.results || [] }, 200, env);
+}
+
+async function adminDeleteIcon(request, appId, env) {
+  if (!requireAdmin(request, env)) return json({ error: "Unauthorized" }, 401, env);
+  if (!env.DB || !env.BUCKET) return json({ error: "Storage/database binding is not configured" }, 500, env);
+  const app = await env.DB.prepare("SELECT id FROM apps WHERE id=? LIMIT 1").bind(appId).first();
+  if (!app) return json({ error: "App not found" }, 404, env);
+  const rows = await env.DB.prepare("SELECT details_json FROM admin_audit_log WHERE entity_type='app_icon' AND entity_id=? ORDER BY datetime(created_at) DESC").bind(appId).all();
+  const keys = [];
+  for (const row of rows.results || []) {
+    try { const details = JSON.parse(row.details_json || "{}"); if (details.storage_key) keys.push(details.storage_key); } catch (_) {}
+  }
+  for (const key of [...new Set(keys)]) { try { await env.BUCKET.delete(key); } catch (_) {} }
+  await env.DB.prepare("UPDATE apps SET icon_url=NULL,updated_at=CURRENT_TIMESTAMP WHERE id=?").bind(appId).run();
+  await env.DB.prepare("DELETE FROM admin_audit_log WHERE entity_type='app_icon' AND entity_id=?").bind(appId).run();
+  await env.DB.prepare("INSERT INTO admin_audit_log(actor,action,entity_type,entity_id,details_json) VALUES('admin','delete','app_icon',?,?)").bind(appId, JSON.stringify({ deleted_keys: [...new Set(keys)].length })).run();
+  return json({ app_id: appId, icon_url: null, deleted: true }, 200, env);
+}
+
+async function adminDeleteFile(request, fileId, env) {
+  if (!requireAdmin(request, env)) return json({ error: "Unauthorized" }, 401, env);
+  if (!env.DB || !env.BUCKET) return json({ error: "Storage/database binding is not configured" }, 500, env);
+  const file = await env.DB.prepare("SELECT id,version_id,storage_key,original_name,published FROM files WHERE id=? LIMIT 1").bind(fileId).first();
+  if (!file) return json({ error: "File not found" }, 404, env);
+  try { await env.BUCKET.delete(file.storage_key); } catch (_) {}
+  await env.DB.prepare("DELETE FROM files WHERE id=?").bind(fileId).run();
+  await env.DB.prepare("INSERT INTO admin_audit_log(actor,action,entity_type,entity_id,details_json) VALUES('admin','delete','file',?,?)").bind(fileId, JSON.stringify({ version_id: file.version_id, original_name: file.original_name, published: file.published })).run();
+  return json({ id: fileId, deleted: true }, 200, env);
+}
+
+async function adminDeleteVersionAsset(request, assetId, env) {
+  if (!requireAdmin(request, env)) return json({ error: "Unauthorized" }, 401, env);
+  if (!env.DB || !env.BUCKET) return json({ error: "Storage/database binding is not configured" }, 500, env);
+  const asset = await env.DB.prepare("SELECT id,version_id,storage_key,label,original_name,published FROM release_assets WHERE id=? LIMIT 1").bind(assetId).first();
+  if (!asset) return json({ error: "Extra file not found" }, 404, env);
+  try { await env.BUCKET.delete(asset.storage_key); } catch (_) {}
+  await env.DB.prepare("DELETE FROM release_assets WHERE id=?").bind(assetId).run();
+  await env.DB.prepare("INSERT INTO admin_audit_log(actor,action,entity_type,entity_id,details_json) VALUES('admin','delete','release_asset',?,?)").bind(assetId, JSON.stringify({ version_id: asset.version_id, label: asset.label, original_name: asset.original_name, published: asset.published })).run();
+  return json({ id: assetId, deleted: true }, 200, env);
+}
+
 async function adminUploadIcon(request, appId, env) {
   if (!requireAdmin(request, env)) return json({ error: "Unauthorized" }, 401, env);
   if (!env.BUCKET || !env.DB) return json({ error: "Storage/database binding is not configured" }, 500, env);
@@ -1454,9 +1501,19 @@ export default {
         return adminEditApp(request, appId, env);
       }
 
+      if (path.startsWith("/api/admin/apps/") && path.endsWith("/icon") && request.method === "DELETE") {
+        const appId = decodeURIComponent(path.slice("/api/admin/apps/".length, -"/icon".length));
+        return adminDeleteIcon(request, appId, env);
+      }
+
       if (path.startsWith("/api/admin/apps/") && path.endsWith("/icon") && request.method === "POST") {
         const appId = decodeURIComponent(path.slice("/api/admin/apps/".length, -"/icon".length));
         return adminUploadIcon(request, appId, env);
+      }
+
+      if (path.startsWith("/api/admin/apps/") && path.endsWith("/screenshots") && request.method === "GET") {
+        const appId = decodeURIComponent(path.slice("/api/admin/apps/".length, -"/screenshots".length));
+        return adminListScreenshots(request, appId, env);
       }
 
       if (path.startsWith("/api/admin/apps/") && path.endsWith("/screenshots") && request.method === "POST") {
@@ -1507,6 +1564,11 @@ export default {
         return adminUploadVersionAsset(request, versionId, env);
       }
 
+      if (path.startsWith("/api/admin/versions/") && path.endsWith("/assets") && request.method === "DELETE") {
+        const assetId = decodeURIComponent(path.slice("/api/admin/versions/".length, -"/assets".length));
+        return adminDeleteVersionAsset(request, assetId, env);
+      }
+
       if (path.startsWith("/api/admin/versions/") && path.endsWith("/status") && request.method === "PATCH") {
         const versionId = decodeURIComponent(path.slice("/api/admin/versions/".length, -"/status".length));
         return adminSetVersionStatus(request, versionId, env);
@@ -1533,6 +1595,11 @@ export default {
       if (path.startsWith("/api/admin/uploads/") && request.method === "DELETE") {
         const sessionId = decodeURIComponent(path.slice("/api/admin/uploads/".length));
         return adminAbortMultipart(request, sessionId, env);
+      }
+
+      if (path.startsWith("/api/admin/files/") && request.method === "DELETE") {
+        const fileId = decodeURIComponent(path.slice("/api/admin/files/".length));
+        return adminDeleteFile(request, fileId, env);
       }
 
       if (path.startsWith("/api/admin/files/") && path.endsWith("/verify") && request.method === "PATCH") {
