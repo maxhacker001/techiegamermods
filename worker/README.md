@@ -29,9 +29,15 @@ All admin endpoints require:
 `Authorization: Bearer <ADMIN_TOKEN>`
 
 - `GET /api/admin/stats`
+- `GET /api/admin/apps` (search/filter the catalog)
 - `POST /api/admin/apps`
+- `PATCH /api/admin/apps/:app_id/status`
+- `GET /api/admin/apps/:app_id/versions`
 - `POST /api/admin/versions`
+- `PATCH /api/admin/versions/:version_id/status`
 - `POST /api/admin/files` (multipart form with `file`, `version_id`, `file_type`)
+- `PATCH /api/admin/files/:file_id/verify`
+- `PATCH /api/admin/files/:file_id/publish`
 
 ## Production notes
 
