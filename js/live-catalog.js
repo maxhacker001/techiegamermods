@@ -70,14 +70,43 @@
     const grid = $("appsContainer");
     if (!grid) return;
 
-    let list = state.query
-      ? state.apps.filter(app =>
-          [app.name, app.publisher, app.genre, app.description]
-            .join(" ")
-            .toLowerCase()
-            .includes(state.query.toLowerCase())
-        )
-      : state.apps.filter(app => app.category === state.category);
+    let list;
+    if (state.query) {
+      const query = state.query.toLowerCase().replace(/\s+/g, " ").trim();
+      const nameMatches = state.apps.filter(app => {
+        const haystack = [app.name, app.slug].join(" ").toLowerCase();
+        return haystack.includes(query);
+      });
+
+      // Prefer actual title/slug matches. This prevents a search for
+      // "lucky patcher" from returning unrelated apps merely because the
+      // phrase appears somewhere in their description, while still allowing
+      // a full-catalog search when no title matches exist.
+      const searchPool = nameMatches.length ? nameMatches : state.apps.filter(app =>
+        [app.name, app.slug, app.publisher, app.genre, app.description, app.category_name]
+          .join(" ")
+          .toLowerCase()
+          .includes(query)
+      );
+
+      list = [...searchPool].sort((a, b) => {
+        const score = (app) => {
+          const name = String(app.name || "").toLowerCase();
+          const slug = String(app.slug || "").toLowerCase();
+          let value = 0;
+          if (name === query) value += 1000;
+          if (slug === query) value += 900;
+          if (name.startsWith(query)) value += 500;
+          if (slug.startsWith(query)) value += 400;
+          if (name.includes(query)) value += 200;
+          if (slug.includes(query)) value += 150;
+          return value;
+        };
+        return score(b) - score(a) || String(a.name || "").localeCompare(String(b.name || ""));
+      });
+    } else {
+      list = state.apps.filter(app => app.category === state.category);
+    }
 
     render(grid, list, !state.query && state.category === "tutorials");
     renderTrending();
