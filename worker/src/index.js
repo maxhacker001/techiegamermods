@@ -256,7 +256,7 @@ async function adminListApps(request, env) {
   const status = url.searchParams.get("status") || "all";
   const search = (url.searchParams.get("search") || "").trim().toLowerCase();
   const limit = Math.min(Math.max(Number(url.searchParams.get("limit") || 50), 1), 200);
-  let sql = "SELECT a.id,a.slug,a.name,a.publisher,a.genre,a.package_name,a.icon_url,a.play_store_url,a.status,a.created_at,a.updated_at,c.slug AS category_slug,c.name AS category_name,(SELECT COUNT(*) FROM versions v WHERE v.app_id=a.id) AS version_count,(SELECT COUNT(*) FROM files f JOIN versions v2 ON v2.id=f.version_id WHERE v2.app_id=a.id) AS file_count FROM apps a JOIN categories c ON c.id=a.category_id WHERE 1=1";
+  let sql = "SELECT a.id,a.slug,a.name,a.publisher,a.genre,a.package_name,a.description_html,a.icon_url,a.play_store_url,a.status,a.created_at,a.updated_at,c.slug AS category_slug,c.name AS category_name,(SELECT COUNT(*) FROM versions v WHERE v.app_id=a.id) AS version_count,(SELECT COUNT(*) FROM files f JOIN versions v2 ON v2.id=f.version_id WHERE v2.app_id=a.id) AS file_count FROM apps a JOIN categories c ON c.id=a.category_id WHERE 1=1";
   const bindings = [];
   if (status !== "all") { sql += " AND a.status=?"; bindings.push(status); }
   if (search) { sql += " AND (lower(a.name) LIKE ? OR lower(COALESCE(a.publisher,'')) LIKE ? OR lower(COALESCE(a.package_name,'')) LIKE ? OR lower(a.slug) LIKE ?)"; const p="%"+search+"%"; bindings.push(p,p,p,p); }
