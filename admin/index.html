@@ -393,18 +393,36 @@ async function loadApps() {
     });
     document.querySelectorAll('.app-status').forEach(sel => {
       sel.onchange = async () => {
+        const previous = sel.dataset.previousStatus || sel.value;
+        const requested = sel.value;
+        sel.disabled = true;
         try {
-          await request('/api/admin/apps/' + encodeURIComponent(sel.dataset.id) + '/status', {
+          const result = await request('/api/admin/apps/' + encodeURIComponent(sel.dataset.id) + '/status', {
             method:'PATCH',
-            body:JSON.stringify({status:sel.value})
+            body:JSON.stringify({status:requested})
           });
+
+          sel.dataset.previousStatus = requested;
+          $('appsResult').textContent = JSON.stringify(result, null, 2);
           await loadStats();
           await loadApps();
         } catch(e) {
-          $('appsResult').textContent = 'Error: ' + e.message;
-          await loadApps();
+          // The backend may reject publishing when the required release
+          // prerequisites are not met. Do not reload the table here: that
+          // made the dropdown appear to "glitch" back to draft without
+          // showing the actual reason.
+          sel.value = previous;
+          $('appsResult').textContent =
+            'Cannot change app status to "' + requested + '".\n\n' +
+            e.message +
+            (requested === 'published'
+              ? '\n\nFor a normal app release, publish at least one version first, and make sure that version has a published file.'
+              : '');
+        } finally {
+          sel.disabled = false;
         }
       };
+      sel.dataset.previousStatus = sel.value;
     });
   } catch(e) {
     $('appsResult').textContent = 'Error: ' + e.message;
