@@ -14,126 +14,7 @@
 <body>
 
 
-<script>
-document.addEventListener("DOMContentLoaded", async () => {
-  const params = new URLSearchParams(window.location.search);
-  const id = params.get("id");
 
-  // Never leave the page in an endless Loading state when no app was selected.
-  if (!id) {
-    document.getElementById("downloadTitle").textContent = "Download page";
-    document.getElementById("downloadDate").textContent = "No app selected";
-    document.getElementById("redBannerText").textContent = "Please choose an app first";
-    document.getElementById("modVersions").innerHTML =
-      '<div class="download-box"><p style="margin:0;color:var(--muted)">Open an app from the catalog and use its Download button to reach the correct release.</p></div>';
-    document.getElementById("originalVersions").innerHTML = "";
-    document.getElementById("notesAppName").textContent = "the selected app";
-    return;
-  }
-
-  if (!window.TGMApi) return;
-
-  try {
-    const live = await window.TGMApi.getApp(id);
-    if (!live || !live.app) return;
-
-    const app = live.app;
-    const versions = live.versions || [];
-    const files = live.files || [];
-    const tutorials = live.tutorials || [];
-
-    document.title = (app.name || "Download") + " | Techie Gamer Mods";
-    document.getElementById("appIconDownload").src = window.TGMApi.imageUrl(app.icon_url);
-    document.getElementById("downloadTitle").textContent =
-      "Download: " + app.name + (versions[0] ? " v" + versions[0].version_name : "");
-    document.getElementById("downloadDate").textContent = app.updated_at || "Release date unavailable";
-    document.getElementById("redBannerText").textContent = app.name + " - Available Releases";
-    document.getElementById("notesAppName").textContent = app.name;
-
-    const modVersions = document.getElementById("modVersions");
-    modVersions.innerHTML = "";
-
-    versions.forEach(version => {
-      const versionFiles = files.filter(file => file.version_id === version.id);
-      const box = document.createElement("div");
-      box.className = "download-box";
-
-      const heading = document.createElement("p");
-      heading.style.margin = "0 0 10px";
-      heading.style.color = "var(--neon)";
-      heading.style.fontWeight = "800";
-      heading.textContent = "v" + version.version_name + (version.mod_info ? " — " + version.mod_info : "");
-      box.appendChild(heading);
-
-      if (!versionFiles.length) {
-        const note = document.createElement("p");
-        note.textContent = "No published file is available for this version yet.";
-        box.appendChild(note);
-      } else {
-        versionFiles.forEach(file => {
-          const button = document.createElement("button");
-          button.className = "download-btn";
-          button.textContent = "⬇ DOWNLOAD " + String(file.file_type || "FILE").toUpperCase();
-          button.addEventListener("click", () => {
-            window.location.href = window.TGMApi.base + "/download/" + encodeURIComponent(file.id);
-          });
-          box.appendChild(button);
-
-          const info = document.createElement("p");
-          info.textContent = String(file.original_name || "Download") + " • " + window.TGMApi.formatBytes(file.bytes);
-          if (file.sha256) {
-            info.title = "SHA-256: " + file.sha256;
-          }
-          box.appendChild(info);
-        });
-      }
-
-      modVersions.appendChild(box);
-    });
-
-    if (!versions.length) {
-      modVersions.innerHTML =
-        '<div class="download-box"><p style="margin:0;color:var(--muted)">No published release is available yet.</p></div>';
-    }
-
-    const originalVersions = document.getElementById("originalVersions");
-    originalVersions.innerHTML = "";
-    if (app.play_store_url) {
-      const box = document.createElement("div");
-      box.className = "download-box original";
-      const button = document.createElement("button");
-      button.className = "download-btn";
-      button.textContent = "↗ OPEN OFFICIAL STORE";
-      button.addEventListener("click", () => window.open(app.play_store_url, "_blank", "noopener"));
-      const info = document.createElement("p");
-      info.textContent = "Official Google Play listing";
-      box.appendChild(button);
-      box.appendChild(info);
-      originalVersions.appendChild(box);
-    }
-
-    const tutorialLink = tutorials.find(t => t.video_url);
-    if (tutorialLink) {
-      const social = document.querySelector(".social-section");
-      if (social && !social.querySelector(".live-tutorial-link")) {
-        const a = document.createElement("a");
-        a.className = "live-tutorial-link";
-        a.href = tutorialLink.video_url;
-        a.target = "_blank";
-        a.rel = "noopener";
-        a.textContent = "📺 Tutorial";
-        a.style.color = "var(--neon)";
-        a.style.display = "inline-block";
-        a.style.marginTop = "10px";
-        social.appendChild(a);
-      }
-    }
-  } catch (error) {
-    // The legacy catalog remains available when the API is offline or not deployed.
-    console.warn("Live catalog unavailable; using legacy catalog:", error);
-  }
-});
-</script>
 
 <!-- MATRIX RAIN -->
 <canvas id="matrix-canvas"></canvas>
@@ -207,7 +88,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     <p>You are now ready to download <span id="notesAppName">Loading...</span> for free. Here are some notes:</p>
     <ul style="padding-left:20px; margin:15px 0;">
       <li>Please read our MOD Info and installation instructions carefully for the game & app to work properly</li>
-      <li>Downloading via 3rd party software like IDM, ADM (Direct link) is currently blocked for abuse reasons.</li>
+      <li>Published files are served directly from Techie Gamer Mods storage.</li>
     </ul>
   </div>
 
@@ -269,89 +150,218 @@ document.addEventListener("DOMContentLoaded", async () => {
 <script src="js/data.js"></script>
 
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("DOMContentLoaded", async () => {
     const params = new URLSearchParams(window.location.search);
     const appId = params.get("id");
-    if (!appId) return;
 
+    if (!appId) {
+      document.getElementById("downloadTitle").textContent = "Download page";
+      document.getElementById("downloadDate").textContent = "No app selected";
+      document.getElementById("redBannerText").textContent = "Please choose an app first";
+      document.getElementById("modVersions").innerHTML =
+        '<div class="download-box"><p style="margin:0;color:var(--muted)">Open an app from the catalog and use its Download button to reach the correct release.</p></div>';
+      document.getElementById("originalVersions").innerHTML = "";
+      document.getElementById("notesAppName").textContent = "the selected app";
+      return;
+    }
+
+    // Live release path: published Worker/R2 files get real internal download buttons.
+    if (window.TGMApi) {
+      try {
+        const live = await window.TGMApi.getApp(appId);
+        if (live && live.app) {
+          const app = live.app;
+          const versions = live.versions || [];
+          const files = live.files || [];
+          const tutorials = live.tutorials || [];
+
+          document.title = (app.name || "Download") + " | Techie Gamer Mods";
+          document.getElementById("appIconDownload").src = window.TGMApi.imageUrl(app.icon_url);
+          document.getElementById("downloadTitle").textContent =
+            "Download: " + app.name + (versions[0] ? " v" + versions[0].version_name : "");
+          document.getElementById("downloadDate").textContent =
+            app.updated_at || "Release date unavailable";
+          document.getElementById("redBannerText").textContent =
+            app.name + " - Available Releases";
+          document.getElementById("notesAppName").textContent = app.name;
+
+          const modVersions = document.getElementById("modVersions");
+          modVersions.innerHTML = "";
+
+          versions.forEach(version => {
+            const versionFiles = files.filter(file => file.version_id === version.id);
+            const box = document.createElement("div");
+            box.className = "download-box";
+
+            const heading = document.createElement("p");
+            heading.style.margin = "0 0 10px";
+            heading.style.color = "var(--neon)";
+            heading.style.fontWeight = "800";
+            heading.textContent = "v" + version.version_name +
+              (version.mod_info ? " — " + version.mod_info : "");
+            box.appendChild(heading);
+
+            if (!versionFiles.length) {
+              const note = document.createElement("p");
+              note.textContent = "No published file is available for this version yet.";
+              box.appendChild(note);
+            } else {
+              versionFiles.forEach(file => {
+                const button = document.createElement("button");
+                button.className = "download-btn";
+                const type = String(file.file_type || "file").toLowerCase();
+                button.textContent =
+                  type === "apk" ? "⬇ DOWNLOAD MOD APK" :
+                  type === "xapk" ? "⬇ DOWNLOAD XAPK" :
+                  (type === "obb" || type === "patch" || type === "data")
+                    ? "⬇ DOWNLOAD OBB/PATCH"
+                    : "⬇ DOWNLOAD " + type.toUpperCase();
+
+                button.addEventListener("click", () => {
+                  window.location.href =
+                    window.TGMApi.base + "/download/" + encodeURIComponent(file.id);
+                });
+                box.appendChild(button);
+
+                const info = document.createElement("p");
+                info.textContent =
+                  String(file.original_name || "Download") + " • " +
+                  window.TGMApi.formatBytes(file.bytes);
+                if (file.sha256) info.title = "SHA-256: " + file.sha256;
+                box.appendChild(info);
+              });
+            }
+
+            modVersions.appendChild(box);
+          });
+
+          if (!versions.length) {
+            modVersions.innerHTML =
+              '<div class="download-box"><p style="margin:0;color:var(--muted)">No published release is available yet.</p></div>';
+          }
+
+          const originalVersions = document.getElementById("originalVersions");
+          originalVersions.innerHTML = "";
+          if (app.play_store_url) {
+            const box = document.createElement("div");
+            box.className = "download-box original";
+            const button = document.createElement("button");
+            button.className = "download-btn";
+            button.textContent = "↗ OPEN OFFICIAL STORE";
+            button.addEventListener("click", () =>
+              window.open(app.play_store_url, "_blank", "noopener")
+            );
+            box.appendChild(button);
+
+            const info = document.createElement("p");
+            info.textContent = "Official Google Play listing";
+            box.appendChild(info);
+            originalVersions.appendChild(box);
+          }
+
+          const tutorialLink = tutorials.find(t => t.video_url);
+          if (tutorialLink) {
+            const social = document.querySelector(".social-section");
+            if (social && !social.querySelector(".live-tutorial-link")) {
+              const a = document.createElement("a");
+              a.className = "live-tutorial-link";
+              a.href = tutorialLink.video_url;
+              a.target = "_blank";
+              a.rel = "noopener";
+              a.textContent = "📺 Tutorial";
+              a.style.color = "var(--neon)";
+              a.style.display = "inline-block";
+              a.style.marginTop = "10px";
+              social.appendChild(a);
+            }
+          }
+          return;
+        }
+      } catch (error) {
+        console.warn("Live release unavailable; using legacy catalog:", error);
+      }
+    }
+
+    // Legacy catalog path: preserve the original two mod-download slots.
+    if (typeof apps === "undefined") return;
     const app = apps.find(a => a.id === appId);
     if (!app) return;
 
     const isGame = app.category === "games";
 
-    // App icon left of title (like app.html)
     document.getElementById("appIconDownload").src = app.image;
-
-    // Title
-    document.getElementById("downloadTitle").textContent = "Download: " + app.name + " v" + app.version + " MOD APK (" + (app.modTitle || "Premium Unlocked") + ")";
-    document.getElementById("downloadDate").textContent = app.updated || "Release date unavailable";
-    document.getElementById("redBannerText").textContent = app.name + " - All Mod";
+    document.getElementById("downloadTitle").textContent =
+      "Download: " + app.name + " v" + app.version + " MOD APK (" +
+      (app.modTitle || "Premium Unlocked") + ")";
+    document.getElementById("downloadDate").textContent =
+      app.updated || "Release date unavailable";
+    document.getElementById("redBannerText").textContent =
+      app.name + " - All Mod";
     document.getElementById("notesAppName").textContent = app.name;
-// Download buttons: treat missing/demo placeholders as unavailable instead of redirecting users.
-const modVersions = document.getElementById("modVersions");
-const secondButtonText = isGame ? "⬇ DOWNLOAD OBB/PATCH" : "⬇ DOWNLOAD XAPK";
 
-function isUsableUrl(value) {
-  if (!value || value === "#") return false;
-  try {
-    const url = new URL(value, window.location.href);
-    return (url.protocol === "http:" || url.protocol === "https:")
-      && !/(example\.com|YOUR_|yournumber|yourchannel|yourinsta)/i.test(value);
-  } catch (_) {
-    return false;
-  }
-}
+    const modVersions = document.getElementById("modVersions");
+    const secondButtonText = isGame ? "⬇ DOWNLOAD OBB/PATCH" : "⬇ DOWNLOAD XAPK";
 
-function createDownloadBox(url, label) {
-  const box = document.createElement("div");
-  box.className = "download-box";
+    function isUsableUrl(value) {
+      if (!value || value === "#") return false;
+      try {
+        const url = new URL(value, window.location.href);
+        return (url.protocol === "http:" || url.protocol === "https:") &&
+          !/(example\.com|YOUR_|yournumber|yourchannel|yourinsta)/i.test(value);
+      } catch (_) {
+        return false;
+      }
+    }
 
-  const button = document.createElement("button");
-  button.className = "download-btn";
+    function createDownloadBox(url, label) {
+      const box = document.createElement("div");
+      box.className = "download-box";
 
-  if (isUsableUrl(url)) {
-    button.textContent = label;
-    button.addEventListener("click", () => {
-      window.location.href = url;
-    });
-  } else {
-    button.textContent = "Link unavailable";
-    button.disabled = true;
-    button.classList.add("disabled");
-    button.title = "This release does not have a live download URL yet.";
-  }
+      const button = document.createElement("button");
+      button.className = "download-btn";
 
-  const info = document.createElement("p");
-  info.textContent = "v" + app.version + " - " + (app.modTitle || "Premium Unlocked");
+      if (isUsableUrl(url)) {
+        button.textContent = label;
+        button.addEventListener("click", () => {
+          window.location.href = url;
+        });
+      } else {
+        button.textContent = "Link unavailable";
+        button.disabled = true;
+        button.classList.add("disabled");
+        button.title = "This release does not have a live download URL yet.";
+      }
 
-  const size = document.createElement("span");
-  size.style.float = "right";
-  size.textContent = app.size || "—";
-  info.appendChild(size);
+      const info = document.createElement("p");
+      info.textContent = "v" + app.version + " - " +
+        (app.modTitle || "Premium Unlocked");
 
-  box.appendChild(button);
-  box.appendChild(info);
-  return box;
-}
+      const size = document.createElement("span");
+      size.style.float = "right";
+      size.textContent = app.size || "—";
+      info.appendChild(size);
 
-modVersions.innerHTML = "";
-modVersions.appendChild(createDownloadBox(app.download_apk, "⬇ DOWNLOAD MOD APK"));
-modVersions.appendChild(
-  createDownloadBox(
-    app.download_extra || app.download_apk,
-    secondButtonText
-  )
-);
+      box.appendChild(button);
+      box.appendChild(info);
+      return box;
+    }
 
-// Original version — open the official store only when a real URL exists.
-const originalVersions = document.getElementById("originalVersions");
-originalVersions.innerHTML = "";
-originalVersions.appendChild(
-  createDownloadBox(
-    app.playstore,
-    "↗ OPEN OFFICIAL STORE"
-  )
-);
+    modVersions.innerHTML = "";
+    modVersions.appendChild(
+      createDownloadBox(app.download_apk, "⬇ DOWNLOAD MOD APK")
+    );
+    modVersions.appendChild(
+      createDownloadBox(
+        app.download_extra || app.download_apk,
+        secondButtonText
+      )
+    );
+
+    const originalVersions = document.getElementById("originalVersions");
+    originalVersions.innerHTML = "";
+    originalVersions.appendChild(
+      createDownloadBox(app.playstore, "↗ OPEN OFFICIAL STORE")
+    );
   });
 </script>
 
