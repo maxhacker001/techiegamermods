@@ -108,6 +108,14 @@
       <span class="info-label">🏗 Architecture</span>
       <span class="info-value" id="appArchitecture">Loading...</span>
     </div>
+    <div class="info-row" id="minSdkRow">
+      <span class="info-label">🧩 Minimum SDK</span>
+      <span class="info-value" id="appMinSdk">Loading...</span>
+    </div>
+    <div class="info-row" id="targetSdkRow">
+      <span class="info-label">🎯 Target SDK</span>
+      <span class="info-value" id="appTargetSdk">Loading...</span>
+    </div>
     <div class="info-row" id="changelogRow">
       <span class="info-label">📝 Changelog</span>
       <span class="info-value" id="appChangelog">Loading...</span>
@@ -167,6 +175,11 @@
   <button class="download-btn" id="downloadBtn">
     ⬇ DOWNLOAD APK
   </button>
+
+  <div id="releaseAssetsSection" style="display:none; margin:24px 0 12px;">
+    <h3 id="releaseAssetsTitle" style="color:var(--neon); text-align:center; margin:0 0 14px;">🧩 CONFIG / EXTRA DOWNLOADS</h3>
+    <div id="releaseAssetsList" style="display:flex;flex-direction:column;gap:10px;"></div>
+  </div>
 
   <!-- SOCIAL ICONS -->
   <div class="social-section" style="text-align:center; margin:40px 0;">
@@ -245,6 +258,7 @@
       document.getElementById("screenshotsGrid").innerHTML = "";
       document.getElementById("youtubeBtn").style.display = "none";
       document.getElementById("downloadBtn").style.display = "none";
+      document.getElementById("releaseAssetsSection").style.display = "none";
       document.getElementById("recommendedGrid").innerHTML = "";
     };
 
@@ -264,7 +278,7 @@
       app = {
         id: appId, name: appId, category: "tutorials", version: "—",
         size: "—", image: "images/logo.png", features: [], screenshots: [],
-        description: "", youtube: "", modTitle: "Video Tutorial"
+        description: "", youtube: "", modTitle: "Video Tutorial", releaseAssets: []
       };
     }
 
@@ -301,6 +315,7 @@
           const versions = live.versions || [];
           const latest = versions[0];
           const files = live.files || [];
+          const assets = live.assets || [];
           const latestFile = latest ? files.find(file => file.version_id === latest.id) : null;
           const liveShots = (live.screenshots || []).map(shot =>
             window.TGMApi.imageUrl(shot.media_url)
@@ -350,7 +365,10 @@
             modTitle: liveSummary || legacySummary || "Release information",
             androidMin: latest?.android_min || legacy.androidMin || "",
             architecture: latest?.architecture || legacy.architecture || "",
+            minSdk: latest?.min_sdk || legacy.minSdk || "",
+            targetSdk: latest?.target_sdk || legacy.targetSdk || "",
             changelog: latest?.changelog || legacy.changelog || "",
+            releaseAssets: assets,
             updated: liveApp.updated_at || legacy.updated || "",
             publisher: liveApp.publisher || legacy.publisher || "",
             genre: liveApp.genre || legacy.genre || "",
@@ -439,6 +457,8 @@
     const extraRows = [
       ["androidMinRow", "appAndroidMin", isTutorial ? "" : app.androidMin],
       ["architectureRow", "appArchitecture", isTutorial ? "" : app.architecture],
+      ["minSdkRow", "appMinSdk", isTutorial ? "" : app.minSdk],
+      ["targetSdkRow", "appTargetSdk", isTutorial ? "" : app.targetSdk],
       ["changelogRow", "appChangelog", isTutorial ? "" : app.changelog]
     ];
     extraRows.forEach(([rowId, valueId, value]) => {
@@ -616,6 +636,44 @@
 
       recommendedGrid.appendChild(card);
     });
+
+    // Optional release config / extra downloads.
+    const assetsSection = document.getElementById("releaseAssetsSection");
+    const assetsList = document.getElementById("releaseAssetsList");
+    if (assetsSection && assetsList) {
+      assetsList.innerHTML = "";
+      const visibleAssets = isTutorial ? [] : (app.releaseAssets || []);
+      if (visibleAssets.length) {
+        assetsSection.style.display = "block";
+        const hasConfig = visibleAssets.some(asset => String(asset.asset_type || "").toLowerCase() === "config");
+        document.getElementById("releaseAssetsTitle").textContent =
+          hasConfig ? "🧩 CONFIG / EXTRA DOWNLOADS" : "📦 EXTRA DOWNLOADS";
+
+        visibleAssets.forEach(asset => {
+          const row = document.createElement("div");
+          row.style.cssText = "display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border:1px solid rgba(0,255,156,.22);border-radius:12px;background:rgba(0,255,156,.04);";
+
+          const label = document.createElement("span");
+          label.textContent = asset.label || asset.original_name || "Extra download";
+          label.style.fontWeight = "700";
+          label.style.color = "var(--text)";
+          row.appendChild(label);
+
+          const button = document.createElement("button");
+          button.className = "download-btn";
+          button.style.margin = "0";
+          button.textContent = "⬇ " + (asset.label || "DOWNLOAD");
+          button.addEventListener("click", () => {
+            window.location.href = window.TGMApi.base + "/download-asset/" + encodeURIComponent(asset.id);
+          });
+          row.appendChild(button);
+
+          assetsList.appendChild(row);
+        });
+      } else {
+        assetsSection.style.display = "none";
+      }
+    }
 
     // Download button
     const downloadBtn = document.getElementById("downloadBtn");
