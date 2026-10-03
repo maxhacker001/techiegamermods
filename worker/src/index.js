@@ -114,6 +114,91 @@ async function listApps(request, env) {
   return json({ apps: results }, 200, env);
 }
 
+async function getRelatedApps(appId, env) {
+  // Relationships are optional so older databases can continue serving the catalog
+  // until the related-apps migration has been applied.
+  try {
+    const result = await env.DB.prepare(`
+      SELECT
+        a.id,
+        a.slug,
+        a.name,
+        a.publisher,
+        a.genre,
+        a.icon_url,
+        a.status,
+        (
+          SELECT vv.version_name
+          FROM versions vv
+          WHERE vv.app_id=a.id AND vv.status='published'
+          ORDER BY datetime(vv.updated_at) DESC
+          LIMIT 1
+        ) AS version,
+        (
+          SELECT vv.size_bytes
+          FROM versions vv
+          WHERE vv.app_id=a.id AND vv.status='published'
+          ORDER BY datetime(vv.updated_at) DESC
+          LIMIT 1
+        ) AS size_bytes
+      FROM app_relations r
+      JOIN apps a ON a.id = r.related_app_id
+      WHERE r.app_id=? AND a.status='published'
+      ORDER BY r.sort_order ASC, datetime(a.updated_at) DESC, a.name ASC
+      LIMIT 12
+    `).bind(appId).all();
+
+    return (result.results || []).map(row => ({
+      ...row,
+      version: row.version || "—",
+      size_bytes: Number(row.size_bytes || 0),
+      image: row.icon_url || null
+    }));
+  } catch (_) {
+    return [];
+  }
+}
+
+async function saveRelatedApps(appId, relatedInput, env) {
+  try {
+    const raw = Array.isArray(relatedInput)
+      ? relatedInput
+      : String(relatedInput || "").split(/[\n,]+/);
+
+    const slugs = [...new Set(
+      raw.map(value => String(value || "").trim().toLowerCase()).filter(Boolean)
+    )].slice(0, 12);
+
+    await env.DB.prepare("DELETE FROM app_relations WHERE app_id=?").bind(appId).run();
+
+    if (!slugs.length) return { saved: [], unknown: [] };
+
+    const placeholders = slugs.map(() => "?").join(",");
+    const found = await env.DB.prepare(
+      "SELECT id,slug FROM apps WHERE lower(slug) IN (" + placeholders + ")"
+    ).bind(...slugs).all();
+
+    const bySlug = new Map((found.results || []).map(row => [String(row.slug).toLowerCase(), row]));
+    const unknown = [];
+    for (const slug of slugs) {
+      const target = bySlug.get(slug);
+      if (!target) {
+        unknown.push(slug);
+        continue;
+      }
+      if (target.id === appId) continue;
+
+      await env.DB.prepare(
+        "INSERT OR IGNORE INTO app_relations(app_id,related_app_id,sort_order) VALUES(?,?,?)"
+      ).bind(appId, target.id, slugs.indexOf(slug)).run();
+    }
+
+    return { saved: slugs.filter(slug => bySlug.has(slug)), unknown };
+  } catch (error) {
+    return { saved: [], unknown: [], error: String(error) };
+  }
+}
+
 async function getApp(slug, env) {
   const app = await env.DB.prepare(`
     SELECT
@@ -159,9 +244,12 @@ async function getApp(slug, env) {
     ORDER BY datetime(updated_at) DESC
   `).bind(app.id).all();
 
+  const related_apps = await getRelatedApps(app.id, env);
+
   return json({
     app,
     versions: versions.results || [],
+    related_apps,
     screenshots: (screenshots.results || []).map((row) => ({
       id: row.id,
       alt_text: row.alt_text,
@@ -256,7 +344,7 @@ async function adminListApps(request, env) {
   const status = url.searchParams.get("status") || "all";
   const search = (url.searchParams.get("search") || "").trim().toLowerCase();
   const limit = Math.min(Math.max(Number(url.searchParams.get("limit") || 50), 1), 200);
-  let sql = "SELECT a.id,a.slug,a.name,a.publisher,a.genre,a.package_name,a.description_html,a.icon_url,a.play_store_url,a.status,a.created_at,a.updated_at,c.slug AS category_slug,c.name AS category_name,(SELECT COUNT(*) FROM versions v WHERE v.app_id=a.id) AS version_count,(SELECT COUNT(*) FROM files f JOIN versions v2 ON v2.id=f.version_id WHERE v2.app_id=a.id) AS file_count FROM apps a JOIN categories c ON c.id=a.category_id WHERE 1=1";
+  let sql = "SELECT a.id,a.slug,a.name,a.publisher,a.genre,a.package_name,a.description_html,a.icon_url,a.play_store_url,a.status,a.created_at,a.updated_at,c.slug AS category_slug,c.name AS category_name,(SELECT COUNT(*) FROM versions v WHERE v.app_id=a.id) AS version_count,(SELECT COUNT(*) FROM files f JOIN versions v2 ON v2.id=f.version_id WHERE v2.app_id=a.id) AS file_count,COALESCE((SELECT group_concat(a2.slug, ',') FROM app_relations ar JOIN apps a2 ON a2.id=ar.related_app_id WHERE ar.app_id=a.id), '') AS related_slugs FROM apps a JOIN categories c ON c.id=a.category_id WHERE 1=1";
   const bindings = [];
   if (status !== "all") { sql += " AND a.status=?"; bindings.push(status); }
   if (search) { sql += " AND (lower(a.name) LIKE ? OR lower(COALESCE(a.publisher,'')) LIKE ? OR lower(COALESCE(a.package_name,'')) LIKE ? OR lower(a.slug) LIKE ?)"; const p="%"+search+"%"; bindings.push(p,p,p,p); }
@@ -387,7 +475,9 @@ async function adminCreateApp(request, env) {
     VALUES (?, 'create', 'app', ?, ?)
   `).bind("admin", id, JSON.stringify({ name: body.name, slug })).run();
 
-  return json({ id, slug }, 201, env);
+  const relationResult = await saveRelatedApps(id, body.related_slugs, env);
+
+  return json({ id, slug, related: relationResult }, 201, env);
 }
 
 
@@ -430,7 +520,12 @@ async function adminEditApp(request, appId, env) {
     "INSERT INTO admin_audit_log(actor,action,entity_type,entity_id,details_json) VALUES('admin','edit','app',?,?)"
   ).bind(appId, JSON.stringify({ name: body.name, slug })).run();
 
-  return json({ id: appId, slug }, 200, env);
+  const relationResult = await saveRelatedApps(appId, body.related_slugs, env);
+  await env.DB.prepare(
+    "INSERT INTO admin_audit_log(actor,action,entity_type,entity_id,details_json) VALUES('admin','related_apps','app',?,?)"
+  ).bind(appId, JSON.stringify(relationResult)).run();
+
+  return json({ id: appId, slug, related: relationResult }, 200, env);
 }
 
 async function adminCreateVersion(request, env) {
