@@ -14,7 +14,7 @@ function corsHeaders(env) {
   const origin = env.WEB_ORIGIN || "*";
   return {
     "access-control-allow-origin": origin,
-    "access-control-allow-methods": "GET,POST,PATCH,OPTIONS",
+    "access-control-allow-methods": "GET,POST,PATCH,PUT,DELETE,OPTIONS",
     "access-control-allow-headers": "Content-Type, Authorization",
     "access-control-max-age": "86400",
     "vary": "Origin"
