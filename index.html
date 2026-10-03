@@ -44,6 +44,7 @@
 
 <!-- OVERLAY -->
 <div id="overlay"></div>
+<div class="custom-scrollbar" aria-hidden="true"><div class="scroll-thumb" id="scrollThumb"></div></div>
 
 <!-- MAIN CONTENT CONTAINER -->
 <div id="mainContent">
@@ -61,7 +62,7 @@
 
     <div class="hero">
       <h1>Premium App Mods</h1>
-      <p>Apps • Games • Tutorials</p>
+      <p>Apps • Games • Tutorials • Updates</p>
 
       <div class="search-box">
         <input id="searchInput" placeholder="Search app mod..." autocomplete="off">
@@ -241,7 +242,6 @@
 </script>
 
 <script src="js/data.js"></script>
-<script src="js/main.js"></script>
 <script src="js/security.js"></script>
 <script src="js/pwa.js"></script>
 
@@ -306,9 +306,21 @@
     }
 
     // CLEAN SEARCH — HIDE TRENDING + FILTERS
+    let activeCategory = 'apps';
+
     function doSearch() {
       const q = searchInput.value.toLowerCase().trim();
-      const filtered = q ? apps.filter(app => app.name.toLowerCase().includes(q)) : apps;
+      let filtered = apps;
+
+      if (q) {
+        filtered = apps.filter(app =>
+          app.name.toLowerCase().includes(q) ||
+          String(app.publisher || '').toLowerCase().includes(q) ||
+          String(app.genre || '').toLowerCase().includes(q)
+        );
+      } else {
+        filtered = apps.filter(app => app.category === activeCategory);
+      }
 
       if (q) {
         document.getElementById('trendingSection').style.display = 'none';
@@ -320,6 +332,19 @@
 
       renderGrid(appsContainer, filtered);
     }
+
+    // Category filter buttons
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        activeCategory = btn.dataset.category || 'apps';
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        searchInput.value = '';
+        document.getElementById('trendingSection').style.display = 'block';
+        document.getElementById('filtersSection').style.display = 'flex';
+        doSearch();
+      });
+    });
 
     // Initial render
     doSearch();
@@ -348,6 +373,9 @@
       faqPage.style.display = 'none';
       sidebarItems.forEach(item => item.classList.remove('active'));
       document.querySelector('.sidebar-item.home').classList.add('active');
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector('.filter-btn[data-category="apps"]').classList.add('active');
+      activeCategory = 'apps';
       searchInput.value = '';
       doSearch();
     }
