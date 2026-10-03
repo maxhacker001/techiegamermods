@@ -641,6 +641,167 @@ async function uploadFile(request, env) {
   return json({ id: fileId, storage_key: key, bytes: file.size, sha256 }, 201, env);
 }
 
+
+async function adminStartMultipart(request, env) {
+  if (!requireAdmin(request, env)) return json({ error: "Unauthorized" }, 401, env);
+  if (!env.BUCKET || !env.DB) return json({ error: "Storage/database binding is not configured" }, 500, env);
+
+  const body = await parseJson(request);
+  const versionId = String(body?.version_id || "");
+  const fileName = String(body?.file_name || "").trim();
+  const fileType = String(body?.file_type || "other");
+  const bytes = Number(body?.bytes || 0);
+  const mimeType = String(body?.mime_type || "application/octet-stream");
+
+  if (!versionId || !fileName || !Number.isFinite(bytes) || bytes <= 0) {
+    return json({ error: "version_id, file_name, and positive bytes are required" }, 400, env);
+  }
+
+  const allowed = new Set(["apk", "xapk", "apks", "obb", "data", "patch", "zip", "other"]);
+  if (!allowed.has(fileType)) return json({ error: "Unsupported file_type" }, 400, env);
+
+  const version = await env.DB.prepare(
+    "SELECT id FROM versions WHERE id=? LIMIT 1"
+  ).bind(versionId).first();
+  if (!version) return json({ error: "Version not found" }, 404, env);
+
+  const safeName = fileName.replace(/[^a-zA-Z0-9._-]+/g, "_").slice(0, 150);
+  const key = "files/" + versionId + "/" + crypto.randomUUID() + "-" + safeName;
+
+  const multipart = await env.BUCKET.createMultipartUpload(key, {
+    httpMetadata: {
+      contentType: mimeType,
+      contentDisposition: `attachment; filename="${safeName.replace(/"/g, "")}"`
+    }
+  });
+
+  const sessionId = crypto.randomUUID();
+
+  await env.DB.prepare(
+    "INSERT INTO multipart_uploads(id,upload_id,version_id,storage_key,original_name,file_type,mime_type,bytes,created_at) VALUES(?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP)"
+  ).bind(
+    sessionId,
+    multipart.uploadId,
+    versionId,
+    key,
+    fileName,
+    fileType,
+    mimeType,
+    bytes
+  ).run();
+
+  return json({
+    session_id: sessionId,
+    upload_id: multipart.uploadId,
+    storage_key: key,
+    part_size: 8 * 1024 * 1024
+  }, 201, env);
+}
+
+async function adminUploadMultipartPart(request, sessionId, env) {
+  if (!requireAdmin(request, env)) return json({ error: "Unauthorized" }, 401, env);
+  if (!env.BUCKET || !env.DB) return json({ error: "Storage/database binding is not configured" }, 500, env);
+
+  const partNumber = Number(new URL(request.url).searchParams.get("part"));
+  if (!Number.isInteger(partNumber) || partNumber < 1 || partNumber > 10000) {
+    return json({ error: "part must be an integer from 1 to 10000" }, 400, env);
+  }
+
+  const upload = await env.DB.prepare(
+    "SELECT upload_id, storage_key FROM multipart_uploads WHERE id=? LIMIT 1"
+  ).bind(sessionId).first();
+
+  if (!upload) return json({ error: "Upload session not found" }, 404, env);
+
+  const multipart = env.BUCKET.resumeMultipartUpload(upload.storage_key, upload.upload_id);
+  const uploaded = await multipart.uploadPart(partNumber, request.body);
+  const size = Number(request.headers.get("content-length") || 0);
+
+  await env.DB.prepare(
+    "INSERT OR REPLACE INTO multipart_parts(upload_session_id,part_number,etag,bytes) VALUES(?,?,?,?)"
+  ).bind(sessionId, partNumber, uploaded.etag, size).run();
+
+  return json({ session_id: sessionId, part: partNumber, etag: uploaded.etag, bytes: size }, 200, env);
+}
+
+async function adminCompleteMultipart(request, sessionId, env) {
+  if (!requireAdmin(request, env)) return json({ error: "Unauthorized" }, 401, env);
+  if (!env.BUCKET || !env.DB) return json({ error: "Storage/database binding is not configured" }, 500, env);
+
+  const body = await parseJson(request);
+  const upload = await env.DB.prepare(
+    "SELECT id,upload_id,version_id,storage_key,original_name,file_type,mime_type,bytes FROM multipart_uploads WHERE id=? LIMIT 1"
+  ).bind(sessionId).first();
+  if (!upload) return json({ error: "Upload session not found" }, 404, env);
+
+  const stored = await env.DB.prepare(
+    "SELECT part_number,etag FROM multipart_parts WHERE upload_session_id=? ORDER BY part_number ASC"
+  ).bind(sessionId).all();
+
+  const parts = (body?.parts || []).map((part) => ({
+    partNumber: Number(part.partNumber ?? part.part_number),
+    etag: String(part.etag || "")
+  })).filter((part) => Number.isInteger(part.partNumber) && part.partNumber > 0 && part.etag);
+
+  if (!parts.length) return json({ error: "No multipart parts supplied" }, 400, env);
+
+  const validStored = new Map((stored.results || []).map((p) => [p.part_number, p.etag]));
+  if (parts.some((part) => validStored.get(part.partNumber) !== part.etag)) {
+    return json({ error: "Multipart part verification failed" }, 409, env);
+  }
+
+  const multipart = env.BUCKET.resumeMultipartUpload(upload.storage_key, upload.upload_id);
+  await multipart.complete(parts);
+
+  const fileId = crypto.randomUUID();
+  const clientSha256 = String(body?.sha256 || "").trim().toLowerCase();
+  const sha256 = /^[0-9a-f]{64}$/.test(clientSha256) ? clientSha256 : null;
+
+  await env.DB.prepare(
+    "INSERT INTO files(id,version_id,file_type,storage_key,original_name,mime_type,bytes,sha256,scan_status,published) VALUES(?,?,?,?,?,?,?,?,'pending',0)"
+  ).bind(
+    fileId,
+    upload.version_id,
+    upload.file_type,
+    upload.storage_key,
+    upload.original_name,
+    upload.mime_type,
+    upload.bytes,
+    sha256
+  ).run();
+
+  await env.DB.prepare(
+    "UPDATE versions SET size_bytes=?,updated_at=CURRENT_TIMESTAMP WHERE id=?"
+  ).bind(upload.bytes, upload.version_id).run();
+
+  await env.DB.prepare("DELETE FROM multipart_parts WHERE upload_session_id=?").bind(sessionId).run();
+  await env.DB.prepare("DELETE FROM multipart_uploads WHERE id=?").bind(sessionId).run();
+
+  return json({
+    id: fileId,
+    version_id: upload.version_id,
+    storage_key: upload.storage_key,
+    bytes: upload.bytes,
+    sha256
+  }, 201, env);
+}
+
+async function adminAbortMultipart(request, sessionId, env) {
+  if (!requireAdmin(request, env)) return json({ error: "Unauthorized" }, 401, env);
+  if (!env.BUCKET || !env.DB) return json({ error: "Storage/database binding is not configured" }, 500, env);
+
+  const upload = await env.DB.prepare(
+    "SELECT upload_id,storage_key FROM multipart_uploads WHERE id=? LIMIT 1"
+  ).bind(sessionId).first();
+  if (!upload) return json({ error: "Upload session not found" }, 404, env);
+
+  await env.BUCKET.resumeMultipartUpload(upload.storage_key, upload.upload_id).abort();
+  await env.DB.prepare("DELETE FROM multipart_parts WHERE upload_session_id=?").bind(sessionId).run();
+  await env.DB.prepare("DELETE FROM multipart_uploads WHERE id=?").bind(sessionId).run();
+
+  return json({ aborted: true }, 200, env);
+}
+
 async function serveFile(fileId, request, env) {
   if (!env.DB || !env.BUCKET) {
     return new Response("Download service is not configured", { status: 503 });
@@ -774,6 +935,25 @@ export default {
 
       if (path === "/api/admin/files" && request.method === "POST") {
         return uploadFile(request, env);
+      }
+
+      if (path === "/api/admin/uploads/start" && request.method === "POST") {
+        return adminStartMultipart(request, env);
+      }
+
+      if (path.startsWith("/api/admin/uploads/") && path.endsWith("/part") && request.method === "PUT") {
+        const sessionId = decodeURIComponent(path.slice("/api/admin/uploads/".length, -"/part".length));
+        return adminUploadMultipartPart(request, sessionId, env);
+      }
+
+      if (path.startsWith("/api/admin/uploads/") && path.endsWith("/complete") && request.method === "POST") {
+        const sessionId = decodeURIComponent(path.slice("/api/admin/uploads/".length, -"/complete".length));
+        return adminCompleteMultipart(request, sessionId, env);
+      }
+
+      if (path.startsWith("/api/admin/uploads/") && request.method === "DELETE") {
+        const sessionId = decodeURIComponent(path.slice("/api/admin/uploads/".length));
+        return adminAbortMultipart(request, sessionId, env);
       }
 
       if (path.startsWith("/api/admin/files/") && path.endsWith("/verify") && request.method === "PATCH") {
