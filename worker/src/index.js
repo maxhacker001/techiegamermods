@@ -117,115 +117,114 @@ async function listApps(request, env) {
 async function getRelatedApps(appId, env) {
   const shape = (rows) => (rows || []).map(row => ({
     ...row,
-    version: row.version || "—",
+    version: row.version || '—',
     size_bytes: Number(row.size_bytes || 0),
     image: row.icon_url || null
   }));
 
+  const normalizeTokens = (value) => String(value || '')
+    .toLowerCase()
+    .replace(/<[^>]*>/g, ' ')
+    .split(/[^a-z0-9]+/)
+    .filter(token => token.length >= 3);
+
+  const stopWords = new Set([
+    'the','and','for','with','from','this','that','app','apps','game','games',
+    'mod','mods','apk','premium','free','online','android','official','latest',
+    'version','pro','new','mobile','video','tool','tools','guide','tutorial'
+  ]);
+
+  const topicGroups = [
+    ['shoot','shooter','shooting','gun','guns','weapon','weapons','war','combat','battle','fps','action','battle-royale'],
+    ['music','audio','song','songs','podcast','podcasts','player','streaming'],
+    ['video','editing','editor','movie','movies','reel','reels','shorts'],
+    ['photo','photography','image','images','filter','filters','design','graphic'],
+    ['social','chat','messaging','communication','community'],
+    ['browser','browsing','web','internet'],
+    ['education','learning','school','study','course'],
+    ['finance','money','bank','payment','wallet'],
+    ['fitness','workout','health','training'],
+    ['racing','car','cars','driving','motorsport'],
+    ['football','soccer','sports','basketball','cricket','tennis'],
+    ['modding','patching','patch','reverse','apktool','mt','manager','smali','dex']
+  ].map(group => new Set(group));
+
+  const scoreTopicGroups = (sourceText, targetText) => {
+    const source = new Set(normalizeTokens(sourceText));
+    const target = new Set(normalizeTokens(targetText));
+    let score = 0;
+    for (const group of topicGroups) {
+      const sourceHit = [...group].some(token => source.has(token));
+      if (!sourceHit) continue;
+      if ([...group].some(token => target.has(token))) score += 8;
+    }
+    return score;
+  };
+
   try {
-    const explicit = await env.DB.prepare(`
-      SELECT
-        a.id,
-        a.slug,
-        a.name,
-        a.publisher,
-        a.genre,
-        a.icon_url,
-        a.status,
-        (
-          SELECT vv.version_name
-          FROM versions vv
-          WHERE vv.app_id=a.id AND vv.status='published'
-          ORDER BY datetime(vv.updated_at) DESC
-          LIMIT 1
-        ) AS version,
-        (
-          SELECT vv.size_bytes
-          FROM versions vv
-          WHERE vv.app_id=a.id AND vv.status='published'
-          ORDER BY datetime(vv.updated_at) DESC
-          LIMIT 1
-        ) AS size_bytes
-      FROM app_relations r
-      JOIN apps a ON a.id = r.related_app_id
-      WHERE r.app_id=? AND a.status='published'
-      ORDER BY r.sort_order ASC, datetime(a.updated_at) DESC, a.name ASC
-      LIMIT 12
-    `).bind(appId).all();
-
-    if ((explicit.results || []).length) return shape(explicit.results);
-
-    // No explicit links: recommend from the live database using category and
-    // genre similarity. This keeps newly added apps related automatically.
     const current = await env.DB.prepare(
-      "SELECT category_id, genre FROM apps WHERE id=? LIMIT 1"
+      'SELECT a.id,a.name,a.genre,a.description_html,a.category_id,c.slug AS category_slug,c.name AS category_name,' +
+      "COALESCE((SELECT group_concat(t.tag,' ') FROM app_tags t WHERE t.app_id=a.id),'') AS tags " +
+      'FROM apps a JOIN categories c ON c.id=a.category_id WHERE a.id=? LIMIT 1'
     ).bind(appId).first();
     if (!current) return [];
 
-    const candidates = await env.DB.prepare(`
-      SELECT
-        a.id,
-        a.slug,
-        a.name,
-        a.publisher,
-        a.genre,
-        a.icon_url,
-        a.status,
-        (
-          SELECT vv.version_name
-          FROM versions vv
-          WHERE vv.app_id=a.id AND vv.status='published'
-          ORDER BY datetime(vv.updated_at) DESC
-          LIMIT 1
-        ) AS version,
-        (
-          SELECT vv.size_bytes
-          FROM versions vv
-          WHERE vv.app_id=a.id AND vv.status='published'
-          ORDER BY datetime(vv.updated_at) DESC
-          LIMIT 1
-        ) AS size_bytes
-      FROM apps a
-      WHERE a.id<>?
-        AND a.status='published'
-        AND a.category_id=?
-      ORDER BY datetime(a.updated_at) DESC, a.name ASC
-      LIMIT 100
-    `).bind(appId, current.category_id).all();
+    const explicit = await env.DB.prepare(
+      'SELECT a.id,a.slug,a.name,a.publisher,a.genre,a.icon_url,a.status,c.slug AS category_slug,' +
+      '(SELECT vv.version_name FROM versions vv WHERE vv.app_id=a.id AND vv.status=\'published\' ORDER BY datetime(vv.updated_at) DESC LIMIT 1) AS version,' +
+      '(SELECT vv.size_bytes FROM versions vv WHERE vv.app_id=a.id AND vv.status=\'published\' ORDER BY datetime(vv.updated_at) DESC LIMIT 1) AS size_bytes ' +
+      'FROM app_relations r JOIN apps a ON a.id=r.related_app_id JOIN categories c ON c.id=a.category_id ' +
+      'WHERE r.app_id=? AND a.status=\'published\' ORDER BY r.sort_order ASC,datetime(a.updated_at) DESC,a.name ASC LIMIT 12'
+    ).bind(appId).all();
+    const explicitRows = explicit.results || [];
+    const explicitIds = new Set(explicitRows.map(row => row.id));
 
-    const sourceTokens = new Set(
-      String(current.genre || "")
-        .toLowerCase()
-        .split(/[^a-z0-9]+/)
-        .filter(token => token.length >= 4)
-    );
+    const candidates = await env.DB.prepare(
+      'SELECT a.id,a.slug,a.name,a.publisher,a.genre,a.description_html,a.icon_url,a.status,' +
+      'c.slug AS category_slug,c.name AS category_name,' +
+      "COALESCE((SELECT group_concat(t.tag,' ') FROM app_tags t WHERE t.app_id=a.id),'') AS tags," +
+      '(SELECT vv.version_name FROM versions vv WHERE vv.app_id=a.id AND vv.status=\'published\' ORDER BY datetime(vv.updated_at) DESC LIMIT 1) AS version,' +
+      '(SELECT vv.size_bytes FROM versions vv WHERE vv.app_id=a.id AND vv.status=\'published\' ORDER BY datetime(vv.updated_at) DESC LIMIT 1) AS size_bytes ' +
+      'FROM apps a JOIN categories c ON c.id=a.category_id ' +
+      'WHERE a.id<>? AND a.status=\'published\' ' +
+      'ORDER BY datetime(a.updated_at) DESC,a.name ASC LIMIT 200'
+    ).bind(appId).all();
+
+    const sourceText = [current.name,current.genre,current.description_html,current.category_name,current.tags].join(' ');
+    const sourceTokens = new Set(normalizeTokens(sourceText).filter(token => !stopWords.has(token)));
 
     const ranked = (candidates.results || []).map(row => {
-      const targetTokens = String(row.genre || "")
-        .toLowerCase()
-        .split(/[^a-z0-9]+/)
-        .filter(token => token.length >= 4);
-
-      let score = 0;
-      for (const token of targetTokens) {
-        if (sourceTokens.has(token)) score += 3;
-      }
-
-      const sourceGenre = String(current.genre || "").toLowerCase();
-      const targetGenre = String(row.genre || "").toLowerCase();
-      for (const keyword of ["video","photo","music","graphic","communication","social","entertainment","game"]) {
-        if (sourceGenre.includes(keyword) && targetGenre.includes(keyword)) score += 4;
-      }
-
+      const targetText = [row.name,row.genre,row.description_html,row.category_name,row.tags].join(' ');
+      const targetTokens = new Set(normalizeTokens(targetText).filter(token => !stopWords.has(token)));
+      let score = explicitIds.has(row.id) ? 100 : 0;
+      if (row.category_slug === current.category_slug) score += 5;
+      for (const token of targetTokens) if (sourceTokens.has(token)) score += 4;
+      score += scoreTopicGroups(sourceText,targetText);
+      const sourceName = String(current.name || '').toLowerCase();
+      const targetName = String(row.name || '').toLowerCase();
+      if (sourceName && targetName.includes(sourceName)) score += 15;
+      if (targetName && sourceName.includes(targetName)) score += 10;
       return { row, score };
-    }).sort((a,b) => b.score - a.score || String(a.row.name).localeCompare(String(b.row.name)));
+    });
 
-    return shape(ranked.slice(0, 12).map(item => item.row));
+    const semanticRows = ranked
+      .sort((a,b) => b.score - a.score || String(a.row.name).localeCompare(String(b.row.name)))
+      .filter(item => item.score > 0)
+      .map(item => item.row);
+
+    const merged = [...explicitRows];
+    const seen = new Set(explicitRows.map(row => row.id));
+    for (const row of semanticRows) {
+      if (seen.has(row.id)) continue;
+      merged.push(row);
+      seen.add(row.id);
+      if (merged.length >= 12) break;
+    }
+    return shape(merged.slice(0,12));
   } catch (_) {
     return [];
   }
 }
-
 async function saveRelatedApps(appId, relatedInput, env) {
   try {
     const raw = Array.isArray(relatedInput)
