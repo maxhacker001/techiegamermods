@@ -387,8 +387,8 @@ function applyAdminContentMode(app) {
   });
   const tutorialPanel = $('tutorialPanel');
   const tutorialStudio = $('tutorialStudio');
-  if (tutorialPanel) tutorialPanel.style.display = '';
-  if (tutorialStudio) tutorialStudio.style.display = '';
+  if (tutorialPanel) tutorialPanel.style.display = isTutorial ? '' : (app ? 'none' : '');
+  if (tutorialStudio) tutorialStudio.style.display = isTutorial ? '' : (app ? 'none' : '');
 
   if (isTutorial && tutorialPanel) {
     $('tutorialDescription').value = app.description_html || '';
