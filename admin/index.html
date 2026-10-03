@@ -1033,15 +1033,19 @@ async function loadTutorials(appId) {
     const data=await request('/api/admin/apps/'+encodeURIComponent(appId)+'/tutorials');
     if((data.tutorials||[]).length){
       const t=data.tutorials[0];
-      const current=$('tutorialEditId').value;
-      if(!current){
-        $('tutorialEditId').value=t.id;
-        $('tutorialAppId').value=appId;
-        $('tutorialTitle').value=t.title||'';
-        $('tutorialVideo').value=t.video_url||'';
-        $('tutorialBody').value=t.body||'';
-        $('tutorialStatus').value=t.status||'draft';
-      }
+      $('tutorialEditId').value=t.id;
+      $('tutorialAppId').value=appId;
+      $('tutorialTitle').value=t.title||'';
+      $('tutorialVideo').value=t.video_url||'';
+      $('tutorialBody').value=t.body||'';
+      $('tutorialStatus').value=t.status||'draft';
+    } else {
+      $('tutorialEditId').value='';
+      $('tutorialAppId').value=appId;
+      $('tutorialTitle').value='';
+      $('tutorialVideo').value='';
+      $('tutorialBody').value='';
+      $('tutorialStatus').value='draft';
     }
     $('tutorialResult').textContent=JSON.stringify(data,null,2);
   }catch(e){$('tutorialResult').textContent='Error: '+e.message;}
