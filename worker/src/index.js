@@ -157,7 +157,7 @@ async function getRelatedApps(appId, env) {
   };
 
   try {
-    const current = await env.DB.prepare(\`
+    const current = await env.DB.prepare(`
       SELECT
         a.id, a.category_id, a.name, a.genre, a.description_html,
         COALESCE((
@@ -171,7 +171,7 @@ async function getRelatedApps(appId, env) {
       FROM apps a
       WHERE a.id=? AND a.status='published'
       LIMIT 1
-    \`).bind(appId).first();
+    `).bind(appId).first();
 
     if (!current) return [];
 
@@ -193,7 +193,7 @@ async function getRelatedApps(appId, env) {
     const sourceThemes = themeTermsFor(currentText);
     const sourceGenre = String(current.genre || "").toLowerCase().trim();
 
-    const explicit = await env.DB.prepare(\`
+    const explicit = await env.DB.prepare(`
       SELECT
         a.id,
         a.slug,
@@ -222,14 +222,14 @@ async function getRelatedApps(appId, env) {
       WHERE r.app_id=? AND a.status='published'
       ORDER BY r.sort_order ASC, datetime(a.updated_at) DESC, a.name ASC
       LIMIT 12
-    \`).bind(appId).all();
+    `).bind(appId).all();
 
     const explicitRows = explicit.results || [];
     const explicitRank = new Map(
       explicitRows.map((row, index) => [row.id, 2000 - index])
     );
 
-    const candidates = await env.DB.prepare(\`
+    const candidates = await env.DB.prepare(`
       SELECT
         a.id,
         a.slug,
@@ -267,7 +267,7 @@ async function getRelatedApps(appId, env) {
         AND a.category_id=?
       ORDER BY datetime(a.updated_at) DESC, a.name ASC
       LIMIT 200
-    \`).bind(appId, current.category_id).all();
+    `).bind(appId, current.category_id).all();
 
     const ranked = (candidates.results || []).map(row => {
       const candidateText = [
