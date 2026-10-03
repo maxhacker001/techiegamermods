@@ -790,12 +790,25 @@ async function uploadFile(request, env) {
   ).bind(versionId).first();
   if (!version) return json({ error: "Version not found" }, 404, env);
 
+  const existing = await env.DB.prepare(
+    "SELECT id,storage_key,original_name,bytes,sha256,published FROM files WHERE version_id=? AND sha256=? LIMIT 1"
+  ).bind(versionId, sha256).first();
+
+  if (existing) {
+    await env.BUCKET.delete(key);
+    return json({
+      error: "This exact file is already uploaded for this version.",
+      duplicate: true,
+      existing_file: existing
+    }, 409, env);
+  }
+
   await env.DB.prepare(`
     INSERT INTO files (
       id, version_id, file_type, storage_key, original_name,
       mime_type, bytes, sha256, scan_status, published
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending', 0)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'clean', 1)
   `).bind(
     fileId,
     versionId,
@@ -816,7 +829,16 @@ async function uploadFile(request, env) {
     ).bind(file.size, versionId).run();
   }
 
-  return json({ id: fileId, storage_key: key, bytes: file.size, sha256 }, 201, env);
+  // Upload is the release action: make this version and its app live without
+  // a separate verification/publish workflow.
+  await env.DB.prepare(
+    "UPDATE versions SET status='published', updated_at=CURRENT_TIMESTAMP WHERE id=?"
+  ).bind(versionId).run();
+  await env.DB.prepare(
+    "UPDATE apps SET status='published', updated_at=CURRENT_TIMESTAMP WHERE id=(SELECT app_id FROM versions WHERE id=?)"
+  ).bind(versionId).run();
+
+  return json({ id: fileId, storage_key: key, bytes: file.size, sha256, published: 1 }, 201, env);
 }
 
 
@@ -975,8 +997,12 @@ async function adminCompleteMultipart(request, sessionId, env) {
   }
 
   await env.DB.prepare(
-    "UPDATE versions SET size_bytes=?,updated_at=CURRENT_TIMESTAMP WHERE id=?"
+    "UPDATE versions SET size_bytes=?,status='published',updated_at=CURRENT_TIMESTAMP WHERE id=?"
   ).bind(upload.bytes, upload.version_id).run();
+
+  await env.DB.prepare(
+    "UPDATE apps SET status='published',updated_at=CURRENT_TIMESTAMP WHERE id=(SELECT app_id FROM versions WHERE id=?)"
+  ).bind(upload.version_id).run();
 
   await env.DB.prepare("DELETE FROM multipart_parts WHERE upload_session_id=?").bind(sessionId).run();
   await env.DB.prepare("DELETE FROM multipart_uploads WHERE id=?").bind(sessionId).run();
