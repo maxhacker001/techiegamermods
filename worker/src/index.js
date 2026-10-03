@@ -694,6 +694,78 @@ async function adminListFilesForVersion(request, versionId, env) {
   return json({ version, files: result.results || [] }, 200, env);
 }
 
+async function adminUploadIcon(request, appId, env) {
+  if (!requireAdmin(request, env)) return json({ error: "Unauthorized" }, 401, env);
+  if (!env.BUCKET || !env.DB) return json({ error: "Storage/database binding is not configured" }, 500, env);
+
+  const app = await env.DB.prepare(
+    "SELECT id FROM apps WHERE id=? LIMIT 1"
+  ).bind(appId).first();
+  if (!app) return json({ error: "App not found" }, 404, env);
+
+  const form = await request.formData();
+  const file = form.get("file");
+  if (!(file instanceof File)) return json({ error: "file is required" }, 400, env);
+
+  const mime = file.type || "application/octet-stream";
+  if (!/^image\/(png|jpeg|webp)$/i.test(mime)) {
+    return json({ error: "Only PNG, JPEG, and WebP icons are accepted" }, 400, env);
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    return json({ error: "Icon must be 5 MB or smaller" }, 400, env);
+  }
+
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]+/g, "_").slice(0, 120);
+  const key = "icons/" + appId + "/" + crypto.randomUUID() + "-" + safeName;
+
+  await env.BUCKET.put(key, await file.arrayBuffer(), {
+    httpMetadata: {
+      contentType: mime,
+      cacheControl: "public, max-age=86400"
+    }
+  });
+
+  const mediaUrl = "/media/icons/" + appId;
+  await env.DB.prepare(
+    "UPDATE apps SET icon_url=?, updated_at=CURRENT_TIMESTAMP WHERE id=?"
+  ).bind(mediaUrl, appId).run();
+
+  await env.DB.prepare(
+    "INSERT INTO admin_audit_log(actor,action,entity_type,entity_id,details_json) VALUES('admin','upload','app_icon',?,?)"
+  ).bind(appId, JSON.stringify({ storage_key: key, original_name: file.name, mime_type: mime })).run();
+
+  return json({ app_id: appId, icon_url: mediaUrl, storage_key: key, bytes: file.size }, 201, env);
+}
+
+async function serveIcon(appId, env) {
+  if (!env.DB || !env.BUCKET) return new Response("Media service is not configured", { status: 503 });
+
+  const app = await env.DB.prepare(
+    "SELECT id, icon_url FROM apps WHERE id=? AND status='published' LIMIT 1"
+  ).bind(appId).first();
+  if (!app || app.icon_url !== "/media/icons/" + appId) {
+    return new Response("Icon not found", { status: 404 });
+  }
+
+  const row = await env.DB.prepare(
+    "SELECT details_json FROM admin_audit_log WHERE entity_type='app_icon' AND entity_id=? ORDER BY datetime(created_at) DESC LIMIT 1"
+  ).bind(appId).first();
+  if (!row) return new Response("Icon not found", { status: 404 });
+
+  let details = {};
+  try { details = JSON.parse(row.details_json || "{}"); } catch (_) {}
+  if (!details.storage_key) return new Response("Icon not found", { status: 404 });
+
+  const stored = await env.BUCKET.get(details.storage_key);
+  if (!stored) return new Response("Icon file not found", { status: 404 });
+
+  const headers = new Headers();
+  stored.writeHttpMetadata(headers);
+  headers.set("etag", stored.httpEtag);
+  headers.set("cache-control", "public, max-age=86400");
+  return new Response(stored.body, { headers });
+}
+
 async function adminUploadScreenshot(request, appId, env) {
   if (!requireAdmin(request, env)) return json({ error: "Unauthorized" }, 401, env);
   if (!env.BUCKET) return json({ error: "R2 bucket binding is not configured" }, 500, env);
@@ -1196,6 +1268,11 @@ export default {
         return adminEditApp(request, appId, env);
       }
 
+      if (path.startsWith("/api/admin/apps/") && path.endsWith("/icon") && request.method === "POST") {
+        const appId = decodeURIComponent(path.slice("/api/admin/apps/".length, -"/icon".length));
+        return adminUploadIcon(request, appId, env);
+      }
+
       if (path.startsWith("/api/admin/apps/") && path.endsWith("/screenshots") && request.method === "POST") {
         const appId = decodeURIComponent(path.slice("/api/admin/apps/".length, -"/screenshots".length));
         return adminUploadScreenshot(request, appId, env);
@@ -1275,6 +1352,10 @@ export default {
       if (path.startsWith("/api/admin/screenshots/") && request.method === "DELETE") {
         const screenshotId = decodeURIComponent(path.slice("/api/admin/screenshots/".length));
         return adminDeleteScreenshot(request, screenshotId, env);
+      }
+
+      if (path.startsWith("/media/icons/") && request.method === "GET") {
+        return serveIcon(path.slice("/media/icons/".length), env);
       }
 
       if (path.startsWith("/media/screenshots/") && request.method === "GET") {
