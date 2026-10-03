@@ -205,6 +205,9 @@
           <input id="studioVideo" type="url" placeholder="https://www.youtube.com/watch?v=...">
           <label for="studioIcon">Thumbnail / icon URL (optional)</label>
           <input id="studioIcon" type="url" placeholder="https://...">
+          <label for="studioIconFile">Or upload thumbnail / icon</label>
+          <input id="studioIconFile" type="file" accept="image/png,image/jpeg,image/webp">
+          <small class="muted">PNG, JPEG, or WebP; max 5 MB. Uploads to your existing R2 bucket.</small>
         </div>
         <div>
           <label for="studioDescription">Card and page description (HTML supported)</label>
@@ -925,6 +928,18 @@ $('createTutorialEntry').onclick = async () => {
     });
     createdAppId = app.id;
 
+    const iconFile = $('studioIconFile').files[0];
+    if (iconFile) {
+      const form = new FormData();
+      form.append('file', iconFile);
+      const iconResponse = await fetch(
+        apiBase() + '/api/admin/apps/' + encodeURIComponent(app.id) + '/icon',
+        { method: 'POST', headers: authHeaders(), body: form }
+      );
+      const iconData = await iconResponse.json();
+      if (!iconResponse.ok) throw new Error(iconData.error || ('Icon upload failed with HTTP ' + iconResponse.status));
+    }
+
     const version = await request('/api/admin/versions', {
       method: 'POST',
       body: JSON.stringify({
@@ -980,6 +995,7 @@ $('createTutorialEntry').onclick = async () => {
 
 $('clearTutorialEntry').onclick = () => {
   ['studioTitle','studioSlug','studioVideo','studioIcon','studioDescription','studioBody'].forEach(id => $(id).value = '');
+  $('studioIconFile').value = '';
   $('studioStatus').value = 'published';
   $('studioResult').textContent = 'Ready to create a tutorial.';
 };
