@@ -105,8 +105,10 @@
       <label>App icon file</label><input id="iconFile" type="file" accept="image/png,image/jpeg,image/webp">
       <div class="toolbar" style="margin-top:8px">
         <button id="uploadIcon" class="secondary">Upload app icon</button>
+        <button id="loadIcon" class="secondary">Load current icon</button>
+        <button id="deleteIcon" class="danger">Delete icon</button>
       </div>
-      <small class="muted">Select an existing app from Catalog first, then upload a PNG, JPEG, or WebP icon. The icon is saved to R2 and linked automatically.</small>
+      <div id="iconPreview" style="margin-top:12px"></div>
       <pre id="iconResult"></pre>
       <label>Description</label><textarea id="description" rows="6"></textarea>
       <label>Related apps</label>
@@ -164,6 +166,7 @@
       <div id="fileSize" class="muted" style="margin-top:8px">No file selected.</div>
       <div class="toolbar">
         <button id="upload">Upload</button>
+        <button id="loadFiles" class="secondary">Load current files</button>
       </div>
       <pre id="uploadResult"></pre>
     </section>
@@ -184,11 +187,12 @@
       <label>File</label><input id="assetFile" type="file">
       <div class="toolbar" style="margin-top:12px">
         <button id="uploadAsset">Upload extra file</button>
+        <button id="loadAssets" class="secondary">Load current assets</button>
       </div>
       <pre id="assetResult">No extra files loaded.</pre>
       <div style="overflow:auto;margin-top:12px">
         <table>
-          <thead><tr><th>Version</th><th>Label</th><th>Type</th><th>File</th><th>Size</th></tr></thead>
+          <thead><tr><th>Version</th><th>Label</th><th>Type</th><th>File</th><th>Size</th><th></th></tr></thead>
           <tbody id="assetRows"></tbody>
         </table>
       </div>
@@ -725,21 +729,41 @@ async function loadFiles(versionId) {
         '<td>' + formatBytes(file.bytes) + '</td>' +
         '<td>' + (file.published ? 'yes' : 'no') + '</td>' +
         '<td><code>' + escapeHtml(file.sha256 || '—') + '</code></td>' +
-        '<td><button class="secondary use-file" data-id="' + escapeAttr(file.id) + '">Use</button></td>';
+        '<td><button class="secondary use-file" data-id="' + escapeAttr(file.id) + '">Use</button> ' +
+        '<button class="danger delete-file" data-id="' + escapeAttr(file.id) + '">Delete</button></td>';
       rows.appendChild(tr);
     });
 
     document.querySelectorAll('.use-file').forEach(btn => {
       btn.onclick = () => {
-        $('filesResult').textContent = JSON.stringify(
-          (data.files || []).find(f => f.id === btn.dataset.id) || {},
-          null,
-          2
-        );
+        const file = (data.files || []).find(f => f.id === btn.dataset.id);
+        $('filesResult').textContent = file
+          ? ((file.original_name || 'File') + ' • ' + formatBytes(file.bytes) + ' • ' + String(file.file_type || '').toUpperCase())
+          : 'File not found.';
       };
     });
 
-    $('filesResult').textContent = JSON.stringify(data, null, 2);
+    document.querySelectorAll('.delete-file').forEach(btn => {
+      btn.onclick = async () => {
+        if (!confirm('Delete this release file permanently?')) return;
+        btn.disabled = true;
+        try {
+          await request('/api/admin/files/' + encodeURIComponent(btn.dataset.id), { method:'DELETE' });
+          $('filesResult').textContent = 'File deleted.';
+          await loadStats();
+          await loadApps();
+          await loadVersions();
+          await loadFiles(id);
+        } catch(e) {
+          btn.disabled = false;
+          $('filesResult').textContent = 'Error: ' + e.message;
+        }
+      };
+    });
+
+    $('filesResult').textContent = data.files?.length
+      ? data.files.map(file => (file.original_name || 'File') + ' • ' + formatBytes(file.bytes)).join('\n')
+      : 'No files loaded.';
   } catch(e) {
     $('filesResult').textContent = 'Error: ' + e.message;
   }
@@ -765,12 +789,31 @@ async function loadAppAssets(appId) {
         '<td>' + escapeHtml(asset.label || '—') + '</td>' +
         '<td>' + escapeHtml(String(asset.asset_type || 'config').toUpperCase()) + '</td>' +
         '<td>' + escapeHtml(asset.original_name || '—') + '</td>' +
-        '<td>' + formatBytes(asset.bytes) + '</td>';
+        '<td>' + formatBytes(asset.bytes) + '</td>' +
+        '<td><button class="danger delete-asset" data-id="' + escapeAttr(asset.id) + '" data-version-id="' + escapeAttr(asset.version_id) + '">Delete</button></td>';
       rows.appendChild(tr);
     });
 
+    document.querySelectorAll('.delete-asset').forEach(btn => {
+      btn.onclick = async () => {
+        if (!confirm('Delete this extra file permanently?')) return;
+        btn.disabled = true;
+        try {
+          await request('/api/admin/versions/' + encodeURIComponent(btn.dataset.versionId) + '/assets/' + encodeURIComponent(btn.dataset.id), { method:'DELETE' });
+          appAssetsCache.delete(id);
+          result.textContent = 'Extra file deleted.';
+          await loadAppAssets(id);
+          await loadVersions();
+          await loadStats();
+        } catch(e) {
+          btn.disabled = false;
+          result.textContent = 'Error: ' + e.message;
+        }
+      };
+    });
+
     result.textContent = assets.length
-      ? JSON.stringify(data, null, 2)
+      ? assets.map(asset => (asset.label || asset.original_name || 'Extra file') + ' • ' + formatBytes(asset.bytes)).join('\n')
       : 'No extra files saved for this app.';
   };
 
@@ -874,6 +917,43 @@ function getAppBody() {
   };
 }
 
+async function loadCurrentIcon() {
+  const appId = $('appEditId').value.trim() || $('selectedAppId').value.trim();
+  const preview = $('iconPreview');
+  if (!appId) { preview.innerHTML=''; $('iconResult').textContent='Select an app first.'; return; }
+  const app = appCache.get(appId);
+  if (!app?.icon_url) {
+    preview.innerHTML='<span class="muted">No icon is currently linked.</span>';
+    $('icon').value='';
+    $('iconResult').textContent='No icon is currently linked.';
+    return;
+  }
+  $('icon').value = app.icon_url || '';
+  preview.innerHTML='';
+  const img=document.createElement('img');
+  img.src = /^https?:\/\//i.test(app.icon_url) ? app.icon_url : apiBase() + (app.icon_url.startsWith('/') ? app.icon_url : '/' + app.icon_url);
+  img.alt = app.name || 'App icon';
+  img.style.cssText='width:96px;height:96px;object-fit:cover;border-radius:18px;border:1px solid var(--border);';
+  preview.appendChild(img);
+  $('iconResult').textContent='Current icon loaded.';
+}
+
+async function deleteCurrentIcon() {
+  const appId = $('appEditId').value.trim() || $('selectedAppId').value.trim();
+  if (!appId) { $('iconResult').textContent='Select an app first.'; return; }
+  if (!confirm('Delete the current app icon?')) return;
+  try {
+    await request('/api/admin/apps/' + encodeURIComponent(appId) + '/icon', {method:'DELETE'});
+    const app=appCache.get(appId);
+    if(app) app.icon_url='';
+    $('icon').value='';
+    $('iconPreview').innerHTML='';
+    $('iconResult').textContent='Icon deleted.';
+    await loadStats();
+    await loadApps();
+  } catch(e) { $('iconResult').textContent='Error: ' + e.message; }
+}
+
 async function loadAudit() {
   try {
     const data = await request('/api/admin/audit?limit=100');
@@ -911,6 +991,9 @@ $('createApp').onclick = async () => {
   } catch(e) { $('createResult').textContent='Error: '+e.message; }
 };
 
+$('loadIcon').onclick = loadCurrentIcon;
+$('deleteIcon').onclick = deleteCurrentIcon;
+
 $('uploadIcon').onclick = async () => {
   try {
     const appId = $('appEditId').value.trim();
@@ -928,10 +1011,11 @@ $('uploadIcon').onclick = async () => {
     if (!response.ok) throw new Error(data.error || ('HTTP ' + response.status));
 
     $('icon').value = data.icon_url || '';
-    $('iconResult').textContent = JSON.stringify(data, null, 2);
+    $('iconResult').textContent = 'Icon uploaded.';
     $('iconFile').value = '';
     await loadStats();
     await loadApps();
+    await loadCurrentIcon();
   } catch(e) {
     $('iconResult').textContent = 'Error: ' + e.message;
   }
@@ -951,6 +1035,7 @@ $('newApp').onclick = () => {
   ['appEditId','name','slug','publisher','genre','package','playstore','icon','description','relatedApps'].forEach(id => $(id).value='');
   $('iconFile').value='';
   $('iconResult').textContent='';
+  $('iconPreview').innerHTML='';
   $('category').value='apps';
   applyAdminContentMode({ category_slug: 'apps' });
   $('createApp').textContent='Create draft';
@@ -1217,9 +1302,7 @@ $('uploadAsset').onclick = async () => {
     $('assetFile').value = '';
     appAssetsCache.delete($('selectedAppId').value.trim());
     await loadAppAssets($('selectedAppId').value.trim());
-    if (!($('assetRows').children.length)) {
-      $('assetResult').textContent = JSON.stringify(data, null, 2);
-    }
+    $('assetResult').textContent = 'Extra file uploaded.';
     await loadStats();
   } catch(e) {
     $('assetResult').textContent = 'Error: ' + e.message;
@@ -1228,6 +1311,8 @@ $('uploadAsset').onclick = async () => {
 
 $('loadApps').onclick = loadApps;
 $('loadVersions').onclick = loadVersions;
+$('loadFiles').onclick = async () => { const id=$('fileVersionId').value.trim() || $('versionEditId').value.trim(); if(id) await loadFiles(id); };
+$('loadAssets').onclick = async () => { const id=$('selectedAppId').value.trim(); if(id) await loadAppAssets(id); };
 $('selectedAppId').addEventListener('change', async ()=>{
   const id=$('selectedAppId').value.trim();
   $('versionAppId').value=id;
