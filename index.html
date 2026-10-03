@@ -43,8 +43,7 @@
 </div>
 
 <!-- OVERLAY -->
-<div id="overlay"></div>
-<div class="custom-scrollbar" aria-hidden="true"><div class="scroll-thumb" id="scrollThumb"></div></div>
+<div id="overlay"></div> 
 
 <!-- MAIN CONTENT CONTAINER -->
 <div id="mainContent">
@@ -485,62 +484,7 @@
   });
 </script>
 
-<!-- FAST SCROLLBAR SCRIPT -->
-<script>
-  const thumb = document.getElementById('scrollThumb');
-  let isDragging = false;
-  let startY = 0;
-  let startScroll = 0;
 
-  function updateThumb() {
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    const docHeight = document.body.scrollHeight - window.innerHeight;
-    const scrollPercent = docHeight > 0 ? scrollTop / docHeight : 0;
-    const thumbHeight = Math.max(150, window.innerHeight * 0.15);
-    const thumbTop = scrollPercent * (window.innerHeight - thumbHeight);
-    thumb.style.height = thumbHeight + 'px';
-    thumb.style.top = Math.max(0, Math.min(thumbTop, window.innerHeight - thumbHeight)) + 'px';
-  }
-
-  updateThumb();
-  window.addEventListener('scroll', updateThumb);
-  window.addEventListener('resize', updateThumb);
-
-  thumb.addEventListener('mousedown', (e) => {
-    isDragging = true;
-    startY = e.clientY;
-    startScroll = window.pageYOffset;
-    e.preventDefault();
-  });
-
-  document.addEventListener('mousemove', (e) => {
-    if (!isDragging) return;
-    const deltaY = e.clientY - startY;
-    const multiplier = 5;
-    window.scrollTo(0, startScroll + deltaY * multiplier);
-    updateThumb();
-  });
-
-  document.addEventListener('mouseup', () => isDragging = false);
-
-  thumb.addEventListener('touchstart', (e) => {
-    isDragging = true;
-    startY = e.touches[0].clientY;
-    startScroll = window.pageYOffset;
-    e.preventDefault();
-  });
-
-  document.addEventListener('touchmove', (e) => {
-    if (!isDragging) return;
-    const deltaY = e.touches[0].clientY - startY;
-    const multiplier = 6;
-    window.scrollTo(0, startScroll + deltaY * multiplier);
-    updateThumb();
-    e.preventDefault();
-  });
-
-  document.addEventListener('touchend', () => isDragging = false);
-</script>
 
 <!-- MATRIX RAIN SCRIPT -->
 <script>
