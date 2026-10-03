@@ -318,9 +318,19 @@
           const liveFeatures = latest?.mod_info
             ? latest.mod_info.split(/[\n,;]+/).map(s => s.trim()).filter(Boolean)
             : [];
-          const allFeatures = liveFeatures.length
-            ? [...liveFeatures]
-            : [...(legacy.features || [])];
+          const legacyFeatures = Array.isArray(legacy.features) ? legacy.features : [];
+          const legacySummary = String(legacy.modTitle || "").trim();
+          const liveSummary = liveFeatures[0] || "";
+
+          // Preserve the original catalog presentation for existing releases.
+          // Legacy releases normally store the full MOD feature list in
+          // data.js while the migrated CMS version contains only the short
+          // headline. Use the CMS values when an administrator has actually
+          // supplied a detailed multiline value.
+          const liveHasDetailedFeatures = liveFeatures.length > 1;
+          const allFeatures = liveHasDetailedFeatures
+            ? liveFeatures
+            : legacyFeatures;
 
           app = {
             id: liveApp.slug || liveApp.id || appId,
@@ -333,9 +343,7 @@
             image: liveApp.icon_url
               ? window.TGMApi.imageUrl(liveApp.icon_url)
               : legacy.image,
-            modTitle: latest?.mod_info
-              ? latest.mod_info.split(/[\n,;]+/).map(s => s.trim()).filter(Boolean)[0] || "Release information"
-              : (legacy.modTitle || "Release information"),
+            modTitle: liveSummary || legacySummary || "Release information",
             androidMin: latest?.android_min || legacy.androidMin || "",
             architecture: latest?.architecture || legacy.architecture || "",
             changelog: latest?.changelog || legacy.changelog || "",
