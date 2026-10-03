@@ -590,7 +590,7 @@
           a.category === app.category &&
           (a.genre === app.genre || !app.genre)
         )
-        .slice(0, 4)
+        .slice(0, 12)
         .map(a => ({
           id: a.id,
           slug: a.id,
@@ -601,7 +601,8 @@
         }));
     }
 
-    relatedApps.slice(0, 8).forEach(rec => {
+    // Show the full ranked related set returned by the live API.
+    relatedApps.slice(0, 12).forEach(rec => {
       const card = document.createElement('div');
       card.className = 'card';
 
