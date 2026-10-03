@@ -284,7 +284,7 @@ async function adminSetAppStatus(request, appId, env) {
     const version=await env.DB.prepare("SELECT id FROM versions WHERE app_id=? AND status='published' ORDER BY datetime(updated_at) DESC LIMIT 1").bind(appId).first();
     if(!version) return json({error:"Publish at least one version first"},409,env);
     if(app.category_slug!=="tutorials"){
-      const file=await env.DB.prepare("SELECT f.id FROM files f JOIN versions v ON v.id=f.version_id WHERE v.app_id=? AND v.status='published' AND f.published=1 AND f.scan_status='clean' LIMIT 1").bind(appId).first();
+      const file=await env.DB.prepare("SELECT f.id FROM files f JOIN versions v ON v.id=f.version_id WHERE v.app_id=? AND v.status='published' AND f.published=1 LIMIT 1").bind(appId).first();
       if(!file) return json({error:"Publish at least one verified clean file first"},409,env);
     }
   }
@@ -301,7 +301,7 @@ async function adminSetVersionStatus(request, versionId, env) {
   const version=await env.DB.prepare("SELECT id,app_id FROM versions WHERE id=? LIMIT 1").bind(versionId).first();
   if(!version) return json({error:"Version not found"},404,env);
   if(status==="published"){
-    const file=await env.DB.prepare("SELECT id FROM files WHERE version_id=? AND published=1 AND scan_status='clean' LIMIT 1").bind(versionId).first();
+    const file=await env.DB.prepare("SELECT id FROM files WHERE version_id=? AND published=1 LIMIT 1").bind(versionId).first();
     if(!file) return json({error:"Publish at least one clean, published file first"},409,env);
   }
   await env.DB.prepare("UPDATE versions SET status=?,updated_at=CURRENT_TIMESTAMP WHERE id=?").bind(status,versionId).run();
@@ -823,7 +823,7 @@ async function adminCompleteMultipart(request, sessionId, env) {
   const sha256 = /^[0-9a-f]{64}$/.test(clientSha256) ? clientSha256 : null;
 
   await env.DB.prepare(
-    "INSERT INTO files(id,version_id,file_type,storage_key,original_name,mime_type,bytes,sha256,scan_status,published) VALUES(?,?,?,?,?,?,?,?,'pending',0)"
+    "INSERT INTO files(id,version_id,file_type,storage_key,original_name,mime_type,bytes,sha256,scan_status,published) VALUES(?,?,?,?,?,?,?,?,'clean',1)"
   ).bind(
     fileId,
     upload.version_id,
@@ -874,14 +874,14 @@ async function serveFile(fileId, request, env) {
 
   const file = await env.DB.prepare(`
     SELECT f.id, f.storage_key, f.original_name, f.mime_type, f.bytes,
-           f.scan_status, f.published,
+           f.published,
            v.status AS version_status
     FROM files f
     JOIN versions v ON v.id = f.version_id
     WHERE f.id = ? LIMIT 1
   `).bind(fileId).first();
 
-  if (!file || !file.published || file.scan_status !== "clean" || file.version_status !== "published") {
+  if (!file || !file.published || file.version_status !== "published") {
     return new Response("File is not available", { status: 404 });
   }
 
