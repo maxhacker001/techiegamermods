@@ -128,10 +128,17 @@
 
     <section class="panel" id="versionEditorPanel">
       <h2>📦 Version Editor</h2>
+      <div class="notice" style="margin:10px 0 14px">
+        <b>Public-page fields are editable here.</b> The MOD Info summary, detailed features,
+        Android minimum, architecture, changelog, version, and release file are saved to the live version record.
+      </div>
       <label>App ID</label><input id="versionAppId" placeholder="UUID from the app list">
       <label>Version</label><input id="versionName" placeholder="1.0.0">
-      <label>MOD information / features</label><textarea id="modInfo" rows="7" placeholder="Unlimited Coins&#10;All Players Unlocked&#10;No Ads&#10;Stadium Upgraded&#10;Infinite Energy"></textarea>
-      <small class="muted">First line is shown in the main MOD Info row. Each additional line is shown as a bullet under the MOD Info section on the public page. Use one feature per line.</small>
+      <label>Main MOD Info</label><input id="modSummary" placeholder="Premium Unlocked / Unlimited Coins">
+      <small class="muted">This is the exact value shown in the main <b>MOD Info</b> row on the public page.</small>
+      <label>Detailed MOD Features</label><textarea id="modFeatures" rows="7" placeholder="Unlimited Coins&#10;All Players Unlocked&#10;No Ads&#10;Stadium Upgraded&#10;Infinite Energy"></textarea>
+      <small class="muted">These lines are shown as bullets in the detailed <b>MOD Info</b> section. Edit them directly here — no JSON/code is involved.</small>
+      <input id="modInfo" type="hidden">
       <label>Android minimum</label><input id="androidMin" placeholder="8.0+">
       <label>Architecture</label><input id="architecture" placeholder="arm64-v8a">
       <label>Changelog</label><textarea id="changelog" rows="6"></textarea>
@@ -545,7 +552,7 @@ async function loadVersions() {
         $('versionEditId').value=v.id;
         $('versionAppId').value=v.app_id;
         $('versionName').value=v.version_name || '';
-        $('modInfo').value=v.mod_info || '';
+        setModInfoFields(v.mod_info || '');
         $('androidMin').value=v.android_min || '';
         $('architecture').value=v.architecture || '';
         $('changelog').value=v.changelog || '';
@@ -725,11 +732,36 @@ $('newApp').onclick = () => {
   $('createResult').textContent='';
 };
 
+function setModInfoFields(value) {
+  const lines = String(value || '')
+    .replace(/\r/g, '')
+    .split('\n')
+    .map(s => s.trim())
+    .filter(Boolean);
+  $('modSummary').value = lines.shift() || '';
+  $('modFeatures').value = lines.join('\n');
+  $('modInfo').value = [ $('modSummary').value.trim(), $('modFeatures').value.trim() ]
+    .filter(Boolean)
+    .join('\n');
+}
+
+function getCombinedModInfo() {
+  const summary = $('modSummary').value.trim();
+  const features = $('modFeatures').value
+    .split(/\r?\n/)
+    .map(s => s.trim())
+    .filter(Boolean);
+  const lines = summary ? [summary, ...features] : features;
+  const combined = lines.join('\n');
+  $('modInfo').value = combined;
+  return combined;
+}
+
 function getVersionBody() {
   return {
     app_id: $('versionAppId').value.trim(),
     version_name: $('versionName').value.trim(),
-    mod_info: $('modInfo').value.trim(),
+    mod_info: getCombinedModInfo(),
     android_min: $('androidMin').value.trim(),
     architecture: $('architecture').value.trim(),
     changelog: $('changelog').value.trim(),
@@ -763,7 +795,7 @@ $('saveVersion').onclick = async () => {
 };
 
 $('newVersion').onclick=()=> {
-  ['versionEditId','versionAppId','versionName','modInfo','androidMin','architecture','changelog'].forEach(id=>$(id).value='');
+  ['versionEditId','versionAppId','versionName','modSummary','modFeatures','modInfo','androidMin','architecture','changelog'].forEach(id=>$(id).value='');
   $('fileSize').dataset.bytes='0';
   $('versionResult').textContent='';
 };
