@@ -86,7 +86,20 @@
   const setup = async () => {
     try {
       const data = await window.TGMApi.listApps({ limit: 100 });
-      state.apps = (data.apps || []).map(window.TGMApi.normalizeListApp);
+      const legacyApps = (typeof apps !== "undefined" && Array.isArray(apps)) ? apps.slice() : [];
+      const liveApps = (data.apps || []).map(window.TGMApi.normalizeListApp);
+
+      // Keep the original catalog visible. Published live records replace their
+      // matching legacy entries, while apps that have not been migrated yet
+      // remain available for browsing until their release is uploaded/published.
+      const liveBySlug = new Map(liveApps.map(app => [app.slug || app.id, app]));
+      const merged = legacyApps.map(legacy => liveBySlug.get(legacy.id) || legacy);
+      const legacyIds = new Set(legacyApps.map(app => app.id));
+      liveApps.forEach(app => {
+        if (!legacyIds.has(app.slug || app.id)) merged.push(app);
+      });
+
+      state.apps = merged;
       if (!state.apps.length) return;
 
       homeRender();
