@@ -256,7 +256,28 @@
     // original local catalog so every legacy page keeps its existing layout.
     if (window.TGMApi) {
       try {
-        const live = await window.TGMApi.getApp(appId);
+        let live = null;
+        try {
+          live = await window.TGMApi.getApp(appId);
+        } catch (_) {
+          // Legacy tutorial IDs (for example "tut-lucky-patcher") can differ
+          // from the live CMS slug. Resolve those old links by exact name.
+          if (hasLegacyApp && app.name) {
+            const matches = await window.TGMApi.listApps({
+              category: "tutorials",
+              search: app.name,
+              limit: 20
+            });
+            const exact = (matches.apps || []).find(row =>
+              String(row.name || "").trim().toLowerCase() ===
+              String(app.name || "").trim().toLowerCase()
+            );
+            if (exact) {
+              live = await window.TGMApi.getApp(exact.slug || exact.id);
+            }
+          }
+        }
+
         if (live && live.app) {
           foundLiveApp = true;
           const legacy = app;
