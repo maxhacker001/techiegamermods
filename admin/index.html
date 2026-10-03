@@ -37,6 +37,9 @@
     pre{white-space:pre-wrap;word-break:break-word;background:#050a07;padding:12px;border-radius:10px;color:var(--muted);min-height:52px}
     .notice{padding:12px;border-radius:12px;background:rgba(255,209,102,.08);border:1px solid rgba(255,209,102,.22);color:#ffe9a7}
     .hidden{display:none}
+    button.loading{position:relative}
+    button.loading::after{content:"";display:inline-block;width:11px;height:11px;margin-left:8px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-1px}
+    @keyframes spin{to{transform:rotate(360deg)}}
   </style>
 </head>
 <body>
@@ -882,17 +885,36 @@ $('upload').onclick = async () => {
 
 $('loadApps').onclick = loadApps;
 $('loadVersions').onclick = loadVersions;
-$('selectedAppId').addEventListener('change',()=> {
+$('selectedAppId').addEventListener('change', async ()=>{
   const id=$('selectedAppId').value.trim();
   $('versionAppId').value=id;
   $('screenshotAppId').value=id;
   $('tutorialAppId').value=id;
   const app = appCache.get(id);
   if (app) applyAdminContentMode(app);
-  loadVersions();
-  loadTutorials(id);
+  await Promise.all([
+    loadVersions(),
+    loadTutorials(id)
+  ]);
 });
-$('refreshAll').onclick = async ()=>{await loadStats();await loadApps();await loadVersions();await loadAudit();};
+let refreshRunning = false;
+$('refreshAll').onclick = async ()=>{
+  if (refreshRunning) return;
+  refreshRunning = true;
+  const button = $('refreshAll');
+  button.disabled = true;
+  button.textContent = 'Refreshing…';
+  try {
+    await loadStats();
+    await loadApps();
+    await loadVersions();
+    await loadAudit();
+  } finally {
+    refreshRunning = false;
+    button.disabled = false;
+    button.textContent = 'Refresh';
+  }
+};
 
 $('uploadScreenshots').onclick = async () => {
   try {
