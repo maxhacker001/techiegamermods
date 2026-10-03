@@ -85,6 +85,16 @@ Small files can use the normal upload route.
 
 Large APK/XAPK/APKS/OBB files use the resumable R2 multipart pipeline. Cloudflare documents multipart uploads for large objects and recommends them when resumability and parallel uploads are useful. R2 supports multipart objects up to the documented multi-terabyte range, while individual Worker requests are much smaller, so the Admin splits large files into multiple parts. citeturn572647search0turn572647search3turn289475search0
 
+## Restore the legacy catalog once
+
+The original GitHub Pages catalog contains the app/game/tutorial entries that existed before the V2 CMS. To restore those entries into D1 without creating duplicates, run this once from the repository's `worker/` folder after the Worker is connected:
+
+```bash
+npx wrangler d1 execute techie-gamer-mods --remote --file=../backend/seed_legacy_catalog.sql
+```
+
+The restore is idempotent: existing slugs/versions are left alone, including the current InShot release. After it finishes, refresh the Admin Catalog and the legacy entries will be available to select; you only need to upload the real files for the releases you want to publish.
+
 ## Release workflow
 
 Use the Admin in this order:
