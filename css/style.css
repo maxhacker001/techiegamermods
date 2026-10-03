@@ -582,37 +582,6 @@ header .nav {
   box-shadow: 0 0 20px rgba(0,255,156,.8);
 }
 
-/* FINAL FAST CUSTOM SCROLLBAR - ULTRA FAST SPEED, FAT THUMB */
-.custom-scrollbar {
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 60px;
-  height: 100vh;
-  z-index: 900;
-  pointer-events: auto;
-  opacity: 1;
-}
-
-.scroll-thumb {
-  position: absolute;
-  right: 10px;
-  width: 40px;
-  background: var(--neon);
-  border-radius: 20px;
-  box-shadow: 0 0 50px rgba(0,255,156,1);
-  min-height: 150px;
-  cursor: grab;
-  transition: all 0.05s ease;
-}
-
-.scroll-thumb:active {
-  cursor: grabbing;
-  background: #00ffcc;
-  width: 50px;
-  box-shadow: 0 0 70px rgba(0,255,156,1);
-}
-
 /* BACK TO TOP BUTTON - FIXED Z-INDEX */
 #backToTop {
   position: fixed;
