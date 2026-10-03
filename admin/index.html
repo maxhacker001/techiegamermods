@@ -148,7 +148,7 @@
       </select>
       <label>File</label><input id="file" type="file">
       <div id="fileSize" class="muted" style="margin-top:8px">No file selected.</div>
-      <div class="notice" style="margin:12px 0">Uploaded files start as <b>pending</b> and are not downloadable. A real verification/review decision must be recorded before publication.</div>
+      <div class="notice" style="margin:12px 0">Files are stored in Techie Gamer's R2 storage and become downloadable automatically after the app and version are published. No manual file verification step is required.</div>
       <div class="toolbar">
         <button id="upload">Upload</button>
       </div>
@@ -181,22 +181,8 @@
     </section>
 
     <section class="panel">
-      <h2>Verify / publish file</h2>
-      <label>File ID</label><input id="fileId" placeholder="File UUID">
-      <label>Verification status</label>
-      <select id="scanStatus">
-        <option value="clean">clean</option>
-        <option value="flagged">flagged</option>
-        <option value="unknown">unknown</option>
-        <option value="failed">failed</option>
-        <option value="pending">pending</option>
-      </select>
-      <label>Review note</label><textarea id="verifyNote" rows="5"></textarea>
-      <div class="toolbar">
-        <button id="verify">Record verification</button>
-        <button id="publishFile" class="secondary">Publish file</button>
-      </div>
-      <pre id="verifyResult"></pre>
+      <h2>Publishing</h2>
+      <div class="notice">There is no separate file verification step. Uploading stores the file and marks it ready for download. Use the App and Version status controls to publish or unpublish the release.</div>
     </section>
 
     <section class="panel wide">
@@ -226,7 +212,7 @@
       <div class="toolbar"><button id="loadVersions" class="secondary">Load versions</button></div>
       <div style="overflow:auto;margin-top:12px">
         <table>
-          <thead><tr><th>Version</th><th>Status</th><th>Files</th><th>Clean published files</th><th>Version ID</th><th></th></tr></thead>
+          <thead><tr><th>Version</th><th>Status</th><th>Files</th><th>Published files</th><th>Version ID</th><th></th></tr></thead>
           <tbody id="versionRows"></tbody>
         </table>
       </div>
@@ -706,7 +692,7 @@ $('upload').onclick = async () => {
       'Upload complete. ' + formatBytes(completed.bytes) +
       (completed.sha256 ? '\nSHA-256: ' + completed.sha256 : '');
 
-    $('fileId').value = completed.id || '';
+
     sessionId = '';
     $('file').value = '';
     $('fileSize').textContent = 'No file selected.';
@@ -726,25 +712,6 @@ $('upload').onclick = async () => {
     }
     $('uploadResult').textContent = 'Error: ' + e.message;
   }
-};
-
-$('verify').onclick = async () => {
-  try {
-    const id=$('fileId').value.trim();
-    const body={scan_status:$('scanStatus').value,note:$('verifyNote').value.trim()};
-    const data=await request('/api/admin/files/'+encodeURIComponent(id)+'/verify',{method:'PATCH',body:JSON.stringify(body)});
-    $('verifyResult').textContent=JSON.stringify(data,null,2);
-    await loadStats(); await loadVersions();
-  } catch(e) { $('verifyResult').textContent='Error: '+e.message; }
-};
-
-$('publishFile').onclick = async () => {
-  try {
-    const id=$('fileId').value.trim();
-    const data=await request('/api/admin/files/'+encodeURIComponent(id)+'/publish',{method:'PATCH'});
-    $('verifyResult').textContent=JSON.stringify(data,null,2);
-    await loadStats(); await loadVersions();
-  } catch(e) { $('verifyResult').textContent='Error: '+e.message; }
 };
 
 $('loadApps').onclick = loadApps;
