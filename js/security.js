@@ -1,32 +1,12 @@
-document.addEventListener("contextmenu", e => e.preventDefault());
+/* Lightweight page hardening.
+ * Download/link behavior is owned by the page that renders the button.
+ * This file must never hijack arbitrary buttons on the site.
+ */
+document.addEventListener("contextmenu", (e) => e.preventDefault());
 
-document.addEventListener("keydown", e => {
-  if (
-    e.key === "F12" ||
-    (e.ctrlKey && e.shiftKey) ||
-    (e.ctrlKey && e.key.toLowerCase() === "u")
-  ) e.preventDefault();
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-  const btn = document.querySelector(".download-btn");
-  if (!btn) return;
-
-  let count = 3;
-
-  btn.onclick = () => {
-    btn.disabled = true;
-    btn.textContent = `Preparing download... ${count}`;
-
-    const timer = setInterval(() => {
-      count--;
-      btn.textContent = `Preparing download... ${count}`;
-
-      if (count === 0) {
-        clearInterval(timer);
-        btn.textContent = "✔ Verified — Downloading";
-        window.location.href = btn.dataset.link;
-      }
-    }, 1000);
-  };
+document.addEventListener("keydown", (e) => {
+  const key = e.key.toLowerCase();
+  if (e.key === "F12" || (e.ctrlKey && e.shiftKey && (key === "i" || key === "j")) || (e.ctrlKey && key === "u")) {
+    e.preventDefault();
+  }
 });
