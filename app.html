@@ -413,8 +413,12 @@
     // MOD Info bullet list
     const modFeaturesList = document.getElementById("modFeaturesList");
     modFeaturesList.innerHTML = "";
+    const tutorialPoints = String(app.tutorialBody || "")
+      .split(/\r?\n+/)
+      .map(s => s.trim())
+      .filter(Boolean);
     const featureSource = isTutorial
-      ? String(app.tutorialBody || "").split(/\r?\n+/).map(s => s.trim()).filter(Boolean)
+      ? (tutorialPoints.length >= 2 ? tutorialPoints : (app.features || []))
       : app.features;
     const featuresToShow = featureSource.length
       ? featureSource
