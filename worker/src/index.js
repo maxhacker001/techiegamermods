@@ -372,7 +372,14 @@ async function adminCreateApp(request, env) {
       body.status === "published" ? "published" : "draft"
     ).run();
   } catch (error) {
-    return json({ error: "Unable to create app", detail: String(error) }, 409, env);
+    const detail = String(error || "");
+    if (/UNIQUE constraint failed:\s*apps\.slug/i.test(detail)) {
+      return json({
+        error: "An app with this slug already exists.",
+        next: "Select the existing app from Catalog and use Save changes. Use New / Clear before creating a different app."
+      }, 409, env);
+    }
+    return json({ error: "Unable to create app", detail }, 409, env);
   }
 
   await env.DB.prepare(`
