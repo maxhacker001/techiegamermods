@@ -100,6 +100,18 @@
       <span class="info-label" id="labelPrimaryInfo">🔓 MOD Info</span>
       <span class="info-value" id="modInfo">Loading...</span>
     </div>
+    <div class="info-row" id="androidMinRow">
+      <span class="info-label">🤖 Android</span>
+      <span class="info-value" id="appAndroidMin">Loading...</span>
+    </div>
+    <div class="info-row" id="architectureRow">
+      <span class="info-label">🏗 Architecture</span>
+      <span class="info-value" id="appArchitecture">Loading...</span>
+    </div>
+    <div class="info-row" id="changelogRow">
+      <span class="info-label">📝 Changelog</span>
+      <span class="info-value" id="appChangelog">Loading...</span>
+    </div>
     <div class="info-row play-store" id="playStoreRow">
       <span class="info-label">📱 Get it On</span>
       <a href="#" id="playstoreLink" target="_blank">
@@ -324,6 +336,9 @@
             modTitle: latest?.mod_info
               ? latest.mod_info.split(/[\n,;]+/).map(s => s.trim()).filter(Boolean)[0] || "Release information"
               : (legacy.modTitle || "Release information"),
+            androidMin: latest?.android_min || legacy.androidMin || "",
+            architecture: latest?.architecture || legacy.architecture || "",
+            changelog: latest?.changelog || legacy.changelog || "",
             updated: liveApp.updated_at || legacy.updated || "",
             publisher: liveApp.publisher || legacy.publisher || "",
             genre: liveApp.genre || legacy.genre || "",
@@ -408,6 +423,21 @@
     document.getElementById("modInfo").textContent = isTutorial
       ? (tutorialInfoLines[0] || "Step-by-step video guide")
       : (app.modTitle || "Premium Unlocked");
+
+    const extraRows = [
+      ["androidMinRow", "appAndroidMin", isTutorial ? "" : app.androidMin],
+      ["architectureRow", "appArchitecture", isTutorial ? "" : app.architecture],
+      ["changelogRow", "appChangelog", isTutorial ? "" : app.changelog]
+    ];
+    extraRows.forEach(([rowId, valueId, value]) => {
+      const row = document.getElementById(rowId);
+      const target = document.getElementById(valueId);
+      const text = String(value || "").trim();
+      if (row && target) {
+        row.style.display = text ? "flex" : "none";
+        target.textContent = text || "—";
+      }
+    });
 
     document.getElementById("contentTypeMeta").textContent = isTutorial ? "🎬 Modding Tutorial" : "Premium Mod";
     document.getElementById("labelName").textContent = isTutorial ? "🎥 Video Title" : "🎬 App Name";
