@@ -123,10 +123,26 @@
   document.addEventListener("DOMContentLoaded", () => {
     const params = new URLSearchParams(window.location.search);
     const tutorialId = params.get("id");
-    if (!tutorialId) return;
+    const fail = (title, message) => {
+      document.getElementById("appName").textContent = title;
+      document.getElementById("appVersion").textContent = "";
+      document.getElementById("appVersion2").textContent = "";
+      document.getElementById("features").innerHTML =
+        "<li>" + message + "</li>";
+      document.getElementById("screenshotsGrid").innerHTML = "";
+      document.getElementById("youtubeBtn").style.display = "none";
+    };
+
+    if (!tutorialId) {
+      fail("No tutorial selected", "Open a tutorial from the catalog to view the guide.");
+      return;
+    }
 
     const tutorial = apps.find(a => a.id === tutorialId);
-    if (!tutorial) return;
+    if (!tutorial) {
+      fail("Tutorial not found", "That tutorial is not in the current catalog.");
+      return;
+    }
 
     document.getElementById("appImage").src = tutorial.image;
     document.getElementById("appName").textContent = tutorial.name;
