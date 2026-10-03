@@ -1040,8 +1040,28 @@ $('saveTutorial').onclick=async()=>{
       ? '/api/admin/tutorials/'+encodeURIComponent(editId)
       : '/api/admin/tutorials';
     const data=await request(endpoint,{method:editId?'PATCH':'POST',body:JSON.stringify(body)});
+
+    // Keep the catalog app title and long description synchronized using the
+    // existing Admin app-edit endpoint. No Worker/schema change is required.
+    await request('/api/admin/apps/'+encodeURIComponent(body.app_id)+'/edit',{
+      method:'PATCH',
+      body:JSON.stringify({
+        name: body.title,
+        slug: (appCache.get(body.app_id)?.slug || body.title),
+        category_slug: 'tutorials',
+        publisher: 'TECHIE GAMER MODS',
+        genre: 'YouTube Tutorial',
+        package_name: appCache.get(body.app_id)?.package_name || undefined,
+        play_store_url: appCache.get(body.app_id)?.play_store_url || undefined,
+        icon_url: appCache.get(body.app_id)?.icon_url || undefined,
+        description_html: body.description_html,
+        related_slugs: appCache.get(body.app_id)?.related_slugs || ''
+      })
+    });
+
     $('tutorialResult').textContent=JSON.stringify(data,null,2);
     $('tutorialEditId').value='';
+    await loadApps();
     await loadTutorials(body.app_id);
   }catch(e){$('tutorialResult').textContent='Error: '+e.message;}
 };
@@ -1064,7 +1084,7 @@ async function loadTutorials(appId) {
       $('tutorialVideo').value=t.video_url||'';
       $('tutorialBody').value=t.body||'';
       $('tutorialStatus').value=t.status||'draft';
-      $('tutorialDescription').value = data.app?.description_html || '';
+      $('tutorialDescription').value = (appCache.get(appId)?.description_html || '');
     } else {
       $('tutorialEditId').value='';
       $('tutorialAppId').value=appId;
