@@ -99,7 +99,13 @@
       <label>Google Play URL</label><input id="playstore">
       <label>Icon URL</label><input id="icon">
       <label>Description</label><textarea id="description" rows="6"></textarea>
-      <div class="toolbar" style="margin-top:12px"><button id="createApp">Create draft</button></div>
+      <input id="appEditId" type="hidden">
+      <div class="toolbar" style="margin-top:12px">
+        <button id="createApp">Create draft</button>
+        <button id="saveApp" class="secondary">Save changes</button>
+        <button id="newApp" class="secondary">New / Clear</button>
+      </div>
+      <small class="muted">Create an app once, then reuse this form whenever its name, icon, description, package, or store link changes.</small>
       <pre id="createResult"></pre>
     </section>
 
@@ -111,7 +117,13 @@
       <label>Android minimum</label><input id="androidMin" placeholder="8.0+">
       <label>Architecture</label><input id="architecture" placeholder="arm64-v8a">
       <label>Changelog</label><textarea id="changelog" rows="6"></textarea>
-      <div class="toolbar" style="margin-top:12px"><button id="createVersion">Create draft</button></div>
+      <input id="versionEditId" type="hidden">
+      <div class="toolbar" style="margin-top:12px">
+        <button id="createVersion">Create draft</button>
+        <button id="saveVersion" class="secondary">Save changes</button>
+        <button id="newVersion" class="secondary">New / Clear</button>
+      </div>
+      <small class="muted">For an update, edit the existing version instead of creating a duplicate.</small>
       <pre id="versionResult"></pre>
     </section>
 
@@ -130,11 +142,37 @@
         <option value="other">Other</option>
       </select>
       <label>File</label><input id="file" type="file">
+      <div id="fileSize" class="muted" style="margin-top:8px">No file selected.</div>
       <div class="notice" style="margin:12px 0">Uploaded files start as <b>pending</b> and are not downloadable. A real verification/review decision must be recorded before publication.</div>
       <div class="toolbar">
         <button id="upload">Upload</button>
       </div>
       <pre id="uploadResult"></pre>
+    </section>
+
+    <section class="panel">
+      <h2>Screenshots</h2>
+      <label>App ID</label><input id="screenshotAppId" placeholder="UUID from the catalog">
+      <label>Screenshot files</label><input id="screenshotFiles" type="file" accept="image/png,image/jpeg,image/webp,image/gif" multiple>
+      <label>Alt text prefix</label><input id="screenshotAlt" placeholder="App screenshot">
+      <div class="toolbar" style="margin-top:12px"><button id="uploadScreenshots">Upload screenshots</button></div>
+      <pre id="screenshotResult"></pre>
+    </section>
+
+    <section class="panel">
+      <h2>Tutorial</h2>
+      <input id="tutorialEditId" type="hidden">
+      <label>App ID</label><input id="tutorialAppId" placeholder="UUID from the catalog">
+      <label>Title</label><input id="tutorialTitle" placeholder="How to install the mod">
+      <label>YouTube / video URL</label><input id="tutorialVideo" placeholder="https://www.youtube.com/watch?v=...">
+      <label>Status</label>
+      <select id="tutorialStatus"><option value="draft">draft</option><option value="published">published</option><option value="archived">archived</option></select>
+      <label>Body / instructions</label><textarea id="tutorialBody" rows="6"></textarea>
+      <div class="toolbar" style="margin-top:12px">
+        <button id="saveTutorial">Save tutorial</button>
+        <button id="newTutorial" class="secondary">New / Clear</button>
+      </div>
+      <pre id="tutorialResult"></pre>
     </section>
 
     <section class="panel">
@@ -188,12 +226,23 @@
         </table>
       </div>
       <pre id="versionsResult">No versions loaded.</pre>
+      <h3 style="margin-top:22px">Files in selected version</h3>
+      <div style="overflow:auto">
+        <table>
+          <thead><tr><th>File</th><th>Type</th><th>Size</th><th>Verification</th><th>Published</th><th>SHA-256</th><th></th></tr></thead>
+          <tbody id="fileRows"></tbody>
+        </table>
+      </div>
+      <pre id="filesResult">No files loaded.</pre>
     </section>
   </div>
 </main>
 
 <script>
 const $ = (id) => document.getElementById(id);
+
+const appCache = new Map();
+const versionCache = new Map();
 
 function apiBase() {
   return $('api').value.trim().replace(/\/$/, '');
@@ -266,7 +315,9 @@ async function loadApps() {
     const data = await request('/api/admin/apps?' + params.toString());
     const rows = $('appRows');
     rows.innerHTML = '';
+    appCache.clear();
     (data.apps || []).forEach(app => {
+      appCache.set(app.id, app);
       const tr = document.createElement('tr');
       const status = document.createElement('span');
       status.className = 'badge ' + (app.status === 'published' ? 'ok' : '');
@@ -292,8 +343,23 @@ async function loadApps() {
     $('appsResult').textContent = JSON.stringify(data, null, 2);
     document.querySelectorAll('.select-app').forEach(btn => {
       btn.onclick = () => {
-        $('selectedAppId').value = btn.dataset.id;
-        $('versionAppId').value = btn.dataset.id;
+        const app = appCache.get(btn.dataset.id);
+        if (!app) return;
+        $('selectedAppId').value = app.id;
+        $('versionAppId').value = app.id;
+        $('screenshotAppId').value = app.id;
+        $('tutorialAppId').value = app.id;
+        $('appEditId').value = app.id;
+        $('name').value = app.name || '';
+        $('slug').value = app.slug || '';
+        $('category').value = app.category_slug || 'apps';
+        $('publisher').value = app.publisher || '';
+        $('genre').value = app.genre || '';
+        $('package').value = app.package_name || '';
+        $('playstore').value = app.play_store_url || '';
+        $('icon').value = app.icon_url || '';
+        $('description').value = app.description_html || '';
+        $('createApp').textContent = 'Create another draft';
         loadVersions();
       };
     });
@@ -324,7 +390,9 @@ async function loadVersions() {
     const data = await request('/api/admin/apps/' + encodeURIComponent(id) + '/versions');
     const rows = $('versionRows');
     rows.innerHTML = '';
+    versionCache.clear();
     (data.versions || []).forEach(v => {
+      versionCache.set(v.id, v);
       const tr=document.createElement('tr');
       tr.innerHTML =
         '<td>' + escapeHtml(v.version_name) + '</td>' +
@@ -343,7 +411,20 @@ async function loadVersions() {
     });
     $('versionsResult').textContent = JSON.stringify(data, null, 2);
     document.querySelectorAll('.select-version').forEach(btn => {
-      btn.onclick=()=> $('fileVersionId').value=btn.dataset.id;
+      btn.onclick=async()=>{
+        const v=versionCache.get(btn.dataset.id);
+        if(!v) return;
+        $('versionEditId').value=v.id;
+        $('versionAppId').value=v.app_id;
+        $('versionName').value=v.version_name || '';
+        $('modInfo').value=v.mod_info || '';
+        $('androidMin').value=v.android_min || '';
+        $('architecture').value=v.architecture || '';
+        $('changelog').value=v.changelog || '';
+        $('fileVersionId').value=v.id;
+        $('filesResult').textContent='Loading...';
+        await loadFiles(v.id);
+      };
     });
     document.querySelectorAll('.version-status').forEach(sel => {
       sel.onchange = async () => {
@@ -366,42 +447,107 @@ async function loadVersions() {
   }
 }
 
+function getAppBody() {
+  return {
+    name: $('name').value.trim(),
+    slug: $('slug').value.trim() || undefined,
+    category_slug: $('category').value,
+    publisher: $('publisher').value.trim() || undefined,
+    genre: $('genre').value.trim() || undefined,
+    package_name: $('package').value.trim() || undefined,
+    play_store_url: $('playstore').value.trim() || undefined,
+    icon_url: $('icon').value.trim() || undefined,
+    description_html: $('description').value.trim()
+  };
+}
+
 $('createApp').onclick = async () => {
   try {
-    const body = {
-      name: $('name').value.trim(),
-      slug: $('slug').value.trim() || undefined,
-      category_slug: $('category').value,
-      publisher: $('publisher').value.trim() || undefined,
-      genre: $('genre').value.trim() || undefined,
-      package_name: $('package').value.trim() || undefined,
-      play_store_url: $('playstore').value.trim() || undefined,
-      icon_url: $('icon').value.trim() || undefined,
-      description_html: $('description').value.trim()
-    };
-    const data=await request('/api/admin/apps',{method:'POST',body:JSON.stringify(body)});
+    const data=await request('/api/admin/apps',{method:'POST',body:JSON.stringify(getAppBody())});
+    $('createResult').textContent=JSON.stringify(data,null,2);
+    $('appEditId').value='';
+    await loadStats(); await loadApps();
+  } catch(e) { $('createResult').textContent='Error: '+e.message; }
+};
+
+$('saveApp').onclick = async () => {
+  try {
+    const id=$('appEditId').value.trim();
+    if(!id) throw new Error('Select an existing app first.');
+    const data=await request('/api/admin/apps/'+encodeURIComponent(id)+'/edit',{method:'PATCH',body:JSON.stringify(getAppBody())});
     $('createResult').textContent=JSON.stringify(data,null,2);
     await loadStats(); await loadApps();
   } catch(e) { $('createResult').textContent='Error: '+e.message; }
 };
 
+$('newApp').onclick = () => {
+  ['appEditId','name','slug','publisher','genre','package','playstore','icon','description'].forEach(id => $(id).value='');
+  $('category').value='apps';
+  $('createApp').textContent='Create draft';
+  $('createResult').textContent='';
+};
+
+function getVersionBody() {
+  return {
+    app_id: $('versionAppId').value.trim(),
+    version_name: $('versionName').value.trim(),
+    mod_info: $('modInfo').value.trim(),
+    android_min: $('androidMin').value.trim(),
+    architecture: $('architecture').value.trim(),
+    changelog: $('changelog').value.trim(),
+    size_bytes: Number($('fileSize').dataset.bytes || 0)
+  };
+}
+
 $('createVersion').onclick = async () => {
   try {
-    const body = {
-      app_id: $('versionAppId').value.trim(),
-      version_name: $('versionName').value.trim(),
-      mod_info: $('modInfo').value.trim(),
-      android_min: $('androidMin').value.trim(),
-      architecture: $('architecture').value.trim(),
-      changelog: $('changelog').value.trim()
-    };
+    const body=getVersionBody();
     const data=await request('/api/admin/versions',{method:'POST',body:JSON.stringify(body)});
     $('versionResult').textContent=JSON.stringify(data,null,2);
     $('selectedAppId').value=body.app_id;
     $('fileVersionId').value=data.id || '';
+    $('versionEditId').value='';
     await loadStats(); await loadVersions();
   } catch(e) { $('versionResult').textContent='Error: '+e.message; }
 };
+
+$('saveVersion').onclick = async () => {
+  try {
+    const id=$('versionEditId').value.trim();
+    if(!id) throw new Error('Select an existing version first.');
+    const body=getVersionBody();
+    delete body.app_id;
+    const data=await request('/api/admin/versions/'+encodeURIComponent(id)+'/edit',{method:'PATCH',body:JSON.stringify(body)});
+    $('versionResult').textContent=JSON.stringify(data,null,2);
+    $('fileVersionId').value=id;
+    await loadStats(); await loadVersions(); await loadFiles(id);
+  } catch(e) { $('versionResult').textContent='Error: '+e.message; }
+};
+
+$('newVersion').onclick=()=> {
+  ['versionEditId','versionAppId','versionName','modInfo','androidMin','architecture','changelog'].forEach(id=>$(id).value='');
+  $('fileSize').dataset.bytes='0';
+  $('versionResult').textContent='';
+};
+
+$('file').addEventListener('change', () => {
+  const file=$('file').files[0];
+  if(!file){
+    $('fileSize').textContent='No file selected.';
+    $('fileSize').dataset.bytes='0';
+    return;
+  }
+  $('fileSize').dataset.bytes=String(file.size);
+  $('fileSize').textContent='Selected: '+file.name+' — '+formatBytes(file.size);
+});
+
+function formatBytes(bytes) {
+  const n=Number(bytes||0);
+  if(!n) return '0 B';
+  const units=['B','KB','MB','GB','TB'];
+  const i=Math.min(Math.floor(Math.log(n)/Math.log(1024)),units.length-1);
+  return (n/Math.pow(1024,i)).toFixed(i ? 2 : 0)+' '+units[i];
+}
 
 $('upload').onclick = async () => {
   try {
@@ -442,7 +588,90 @@ $('publishFile').onclick = async () => {
 
 $('loadApps').onclick = loadApps;
 $('loadVersions').onclick = loadVersions;
+$('selectedAppId').addEventListener('change',()=> {
+  const id=$('selectedAppId').value.trim();
+  $('versionAppId').value=id;
+  $('screenshotAppId').value=id;
+  $('tutorialAppId').value=id;
+  loadVersions();
+  loadTutorials(id);
+});
 $('refreshAll').onclick = async ()=>{await loadStats();await loadApps();await loadVersions();};
+
+$('uploadScreenshots').onclick = async () => {
+  try {
+    const appId=$('screenshotAppId').value.trim();
+    const files=[...$('screenshotFiles').files];
+    if(!appId || !files.length) throw new Error('Select an app and at least one image.');
+    const prefix=$('screenshotAlt').value.trim() || 'App screenshot';
+    const results=[];
+    for(let i=0;i<files.length;i++){
+      const form=new FormData();
+      form.append('file',files[i]);
+      form.append('alt_text',prefix+' '+(i+1));
+      form.append('sort_order',String(i));
+      const r=await fetch(apiBase()+'/api/admin/apps/'+encodeURIComponent(appId)+'/screenshots',{
+        method:'POST',
+        headers:authHeaders(),
+        body:form
+      });
+      const data=await r.json();
+      if(!r.ok) throw new Error(data.error || ('HTTP '+r.status));
+      results.push(data);
+    }
+    $('screenshotResult').textContent=JSON.stringify(results,null,2);
+    $('screenshotFiles').value='';
+  } catch(e) { $('screenshotResult').textContent='Error: '+e.message; }
+};
+
+$('saveTutorial').onclick=async()=>{
+  try{
+    const editId=$('tutorialEditId').value.trim();
+    const body={
+      app_id:$('tutorialAppId').value.trim(),
+      title:$('tutorialTitle').value.trim(),
+      video_url:$('tutorialVideo').value.trim() || undefined,
+      body:$('tutorialBody').value.trim(),
+      status:$('tutorialStatus').value
+    };
+    if(!body.app_id || !body.title) throw new Error('App ID and title are required.');
+    const endpoint=editId
+      ? '/api/admin/tutorials/'+encodeURIComponent(editId)
+      : '/api/admin/tutorials';
+    const data=await request(endpoint,{method:editId?'PATCH':'POST',body:JSON.stringify(body)});
+    $('tutorialResult').textContent=JSON.stringify(data,null,2);
+    $('tutorialEditId').value='';
+    await loadTutorials(body.app_id);
+  }catch(e){$('tutorialResult').textContent='Error: '+e.message;}
+};
+
+$('newTutorial').onclick=()=>{
+  ['tutorialEditId','tutorialAppId','tutorialTitle','tutorialVideo','tutorialBody'].forEach(id=>$(id).value='');
+  $('tutorialStatus').value='draft';
+  $('tutorialResult').textContent='';
+};
+
+async function loadTutorials(appId) {
+  if(!appId) return;
+  try{
+    const data=await request('/api/admin/apps/'+encodeURIComponent(appId)+'/tutorials');
+    if((data.tutorials||[]).length){
+      const t=data.tutorials[0];
+      const current=$('tutorialEditId').value;
+      if(!current){
+        $('tutorialEditId').value=t.id;
+        $('tutorialAppId').value=appId;
+        $('tutorialTitle').value=t.title||'';
+        $('tutorialVideo').value=t.video_url||'';
+        $('tutorialBody').value=t.body||'';
+        $('tutorialStatus').value=t.status||'draft';
+      }
+    }
+    $('tutorialResult').textContent=JSON.stringify(data,null,2);
+  }catch(e){$('tutorialResult').textContent='Error: '+e.message;}
+}
+
+$('screenshotAppId').addEventListener('change',()=>loadTutorials($('screenshotAppId').value.trim()));
 
 function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));
