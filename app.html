@@ -347,6 +347,22 @@
 
     const isTutorial = app.category === "tutorials";
 
+    const htmlToPlainLines = (value) => {
+      const holder = document.createElement("div");
+      holder.innerHTML = String(value || "")
+        .replace(/<br\s*\/?>/gi, "\n")
+        .replace(/<\/p>/gi, "\n")
+        .replace(/<\/li>/gi, "\n");
+      return String(holder.textContent || holder.innerText || "")
+        .split(/\r?\n+/)
+        .map(s => s.replace(/\s+/g, " ").trim())
+        .filter(Boolean);
+    };
+
+    const tutorialInfoLines = isTutorial
+      ? htmlToPlainLines(app.tutorialBody || "")
+      : [];
+
     // Dynamic search metadata for app-specific pages.
     const plainDescription = String(app.description || "")
       .replace(/<[^>]*>/g, " ")
@@ -389,7 +405,9 @@
     document.getElementById("appGenre").textContent = isTutorial ? (app.genre || "Modding Tutorial") : (app.genre || "Tools");
     document.getElementById("appSizeTable").textContent = isTutorial ? "Watch online" : (app.size || "—");
     document.getElementById("appVersionTable").textContent = isTutorial ? (app.version && app.version !== "—" ? app.version : "Online") : app.version;
-    document.getElementById("modInfo").textContent = isTutorial ? "Step-by-step video guide" : (app.modTitle || "Premium Unlocked");
+    document.getElementById("modInfo").textContent = isTutorial
+      ? (tutorialInfoLines[0] || "Step-by-step video guide")
+      : (app.modTitle || "Premium Unlocked");
 
     document.getElementById("contentTypeMeta").textContent = isTutorial ? "🎬 Modding Tutorial" : "Premium Mod";
     document.getElementById("labelName").textContent = isTutorial ? "🎥 Video Title" : "🎬 App Name";
@@ -427,17 +445,16 @@
     // Long description
     document.getElementById("descriptionSection").innerHTML = app.description || "No description has been published for this release yet.";
 
-    const stripHtml = (value) => String(value || "")
-      .replace(/<br\s*\/?>/gi, "\n")
-      .replace(/<\/p>/gi, "\n")
-      .replace(/<\/li>/gi, "\n")
-      .replace(/<[^>]*>/g, "")
-      .replace(/&nbsp;/gi, " ")
-      .replace(/&amp;/gi, "&")
-      .replace(/&lt;/gi, "<")
-      .replace(/&gt;/gi, ">")
-      .replace(/\s+$/gm, "")
-      .trim();
+    const stripHtml = (value) => {
+      const holder = document.createElement("div");
+      holder.innerHTML = String(value || "")
+        .replace(/<br\s*\/?>/gi, "\n")
+        .replace(/<\/p>/gi, "\n")
+        .replace(/<\/li>/gi, "\n");
+      return String(holder.textContent || holder.innerText || "")
+        .replace(/\s+$/gm, "")
+        .trim();
+    };
 
     // Some older tutorial records stored the same HTML write-up in both
     // description and tutorial-body. Do not render that content twice.
@@ -459,14 +476,9 @@
     // VIDEO INFO / MOD INFO bullet list
     const modFeaturesList = document.getElementById("modFeaturesList");
     modFeaturesList.innerHTML = "";
-    const tutorialPoints = duplicateTutorialBody
-      ? []
-      : stripHtml(app.tutorialBody || "")
-          .split(/\r?\n+/)
-          .map(s => s.trim())
-          .filter(Boolean);
+    const tutorialPoints = tutorialInfoLines;
     const featureSource = isTutorial
-      ? (tutorialPoints.length >= 2 ? tutorialPoints : (app.features || []))
+      ? (tutorialPoints.length ? tutorialPoints : (app.features || []))
       : app.features;
     const featuresToShow = featureSource.length
       ? featureSource
