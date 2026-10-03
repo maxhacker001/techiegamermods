@@ -87,14 +87,40 @@ Large APK/XAPK/APKS/OBB files use the resumable R2 multipart pipeline. Cloudflar
 
 ## Restore the legacy catalog once
 
-The original GitHub Pages catalog contains the app/game/tutorial entries that existed before the V2 CMS. To restore those entries into D1 without creating duplicates, run this once from the repository's `worker/` folder after the Worker is connected:
+The V2 restore is now a single migration that repopulates the original app/game/tutorial catalog, preserves existing rows by slug/version, publishes the catalog entries, and seeds database-backed Related Apps.
 
-```bash
-npx wrangler d1 execute techie-gamer-mods --remote --file=../backend/seed_legacy_catalog.sql
+From the repository's `worker/` folder, run this once against the production D1:
+
+```
+npx wrangler d1 execute techie-gamer-mods --remote --file=../backend/migrations/0003_restore_published_catalog.sql
 ```
 
-The restore is idempotent: existing slugs/versions are left alone, including the current InShot release. After it finishes, refresh the Admin Catalog and the legacy entries will be available to select; you only need to upload the real files for the releases you want to publish.
+The migration is additive/idempotent for the legacy slugs and versions. It does not upload or replace your actual APK files. The existing `inshot-mod` row is reused when that slug already exists, so you do not need to create another InShot record.
 
+## Admin app images
+
+The Admin CMS supports both an **Icon URL** and a direct **App icon file** upload. Select an existing app from Catalog, choose the icon file, and press **Upload app icon**. The uploaded icon is stored in R2 and linked to the app automatically.
+
+Screenshots are uploaded directly from the Screenshots panel.
+
+## Related apps
+
+Related Apps are stored in D1. The restore migration seeds sensible same-category/similar-genre relationships; saving an app's **Related apps** field overrides those links for that app.
+
+## Release workflow
+
+For a normal APK release:
+
+1. Select the existing app.
+2. Click **Use** on the existing version.
+3. Choose the APK.
+4. Press **Upload**.
+
+The upload stores the APK in R2, publishes the file and version, and publishes the app automatically. The public page exposes one **DOWNLOAD MOD APK** action plus the official Google Play action.
+
+The public page does not render extra Z/XAPK/OBB/PATCH download buttons.
+
+Screenshots and tutorials remain separate content uploads.
 ## Related apps migration
 
 The Admin CMS can now manage the **Related Apps** shown on each public app/download page. Apply the migration once to an existing D1 database:
