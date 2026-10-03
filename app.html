@@ -290,10 +290,34 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.addEventListener("DOMContentLoaded", () => {
     const params = new URLSearchParams(window.location.search);
     const appId = params.get("id");
-    if (!appId) return;
+    const fail = (title, message) => {
+      document.getElementById("modTitle").textContent = title;
+      document.getElementById("updatedText").textContent = "";
+      document.getElementById("appNameTable").textContent = "—";
+      document.getElementById("appPublisher").textContent = "—";
+      document.getElementById("appGenre").textContent = "—";
+      document.getElementById("appSizeTable").textContent = "—";
+      document.getElementById("appVersionTable").textContent = "—";
+      document.getElementById("modInfo").textContent = "—";
+      document.getElementById("descriptionSection").innerHTML = "<p>" + message + "</p>";
+      document.getElementById("warningBox").style.display = "none";
+      document.getElementById("guideBox").style.display = "none";
+      document.getElementById("screenshotsGrid").innerHTML = "";
+      document.getElementById("youtubeBtn").style.display = "none";
+      document.getElementById("downloadBtn").style.display = "none";
+      document.getElementById("recommendedGrid").innerHTML = "";
+    };
+
+    if (!appId) {
+      fail("No app selected", "Open an app from the Techie Gamer Mods catalog to view its details.");
+      return;
+    }
 
     const app = apps.find(a => a.id === appId);
-    if (!app) return;
+    if (!app) {
+      fail("Mod not found", "That app or game is not in the current catalog.");
+      return;
+    }
 
     const isTutorial = app.category === "tutorials";
 
