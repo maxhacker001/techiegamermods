@@ -108,9 +108,21 @@
         [app.id, app]
       ]));
       const liveByKey = new Map(liveApps.map(app => [key(app), app]));
-      const merged = legacyApps.map(legacy =>
-        liveById.get(legacy.id) || liveByKey.get(key(legacy)) || legacy
-      );
+
+      // The legacy catalog contains some older repeated tutorial blocks.
+      // Collapse legacy entries by the same category + name before merging
+      // with the live CMS so a tutorial can never appear twice on the home
+      // page simply because the old static data contains duplicate records.
+      const legacySeen = new Set();
+      const merged = [];
+      legacyApps.forEach(legacy => {
+        const live = liveById.get(legacy.id) || liveByKey.get(key(legacy));
+        const entry = live || legacy;
+        const entryKey = key(entry);
+        if (legacySeen.has(entryKey)) return;
+        legacySeen.add(entryKey);
+        merged.push(entry);
+      });
 
       const usedKeys = new Set(merged.map(key));
       liveApps.forEach(app => {
