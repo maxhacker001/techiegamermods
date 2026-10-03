@@ -81,10 +81,12 @@
       games: "🎮 Game Mods",
       tutorials: "🔧 Modding Tutorials"
     };
+    let renderedAny = false;
 
     categoryOrder.forEach(category => {
       const items = list.filter(app => app.category === category);
       if (!items.length) return;
+      renderedAny = true;
 
       const heading = document.createElement("h2");
       heading.textContent = labels[category];
@@ -93,6 +95,10 @@
 
       items.forEach(app => target.appendChild(card(app, category === "tutorials")));
     });
+
+    if (!renderedAny) {
+      list.forEach(app => target.appendChild(card(app, app.category === "tutorials")));
+    }
   };
 
   const homeRender = () => {
@@ -103,7 +109,7 @@
       const normalizeSearch = (value) => String(value || "")
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, " ")
-        .replace(/s+/g, " ")
+        .replace(/\s+/g, " ")
         .trim();
 
       const query = normalizeSearch(state.query);
@@ -181,7 +187,6 @@
       item.classList.toggle("active", item.dataset.category === state.category)
     );
   };
-
   const categoryRender = (category) => {
     state.category = category;
     const title = $("categoryTitle");
@@ -200,6 +205,15 @@
       input.dataset.liveCatalogBound = "1";
       input.addEventListener("input", () => {
         state.query = input.value.trim();
+        homeRender();
+      });
+    }
+
+    const searchBtn = $("searchBtn");
+    if (searchBtn && !searchBtn.dataset.liveCatalogBound) {
+      searchBtn.dataset.liveCatalogBound = "1";
+      searchBtn.addEventListener("click", () => {
+        state.query = input ? input.value.trim() : "";
         homeRender();
       });
     }
