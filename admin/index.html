@@ -67,7 +67,7 @@
       <button id="save">Save session</button>
       <button id="test" class="secondary">Test API</button>
     </div>
-    <p id="conn" class="muted"></p>
+    <p id="conn" class="muted">Live Worker detected. Enter your Admin token, save the session, then test.</p>
     <div class="notice" style="margin-top:12px">
       <b>Why you may see HTTP 404:</b> this admin panel is a client for the Cloudflare Worker API.
       GitHub Pages serves the admin page, but it does not provide the <code>/api/...</code> endpoints.
@@ -252,7 +252,6 @@
       </div>
       <pre id="auditResult">No audit history loaded.</pre>
     </section>
-    </section>
   </div>
 </main>
 
@@ -261,6 +260,8 @@ const $ = (id) => document.getElementById(id);
 
 const appCache = new Map();
 const versionCache = new Map();
+
+const DEFAULT_API_BASE = "https://techie-gamer-mods-api.talktomartinz.workers.dev";
 
 function apiBase() {
   return $('api').value.trim().replace(/\/$/, '');
@@ -316,7 +317,7 @@ function saveSession() {
 }
 
 function restoreSession() {
-  $('api').value = sessionStorage.getItem('tgm_api_base') || '';
+  $('api').value = sessionStorage.getItem('tgm_api_base') || DEFAULT_API_BASE;
   $('token').value = sessionStorage.getItem('tgm_admin_token') || '';
 }
 
