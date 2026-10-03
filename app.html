@@ -240,7 +240,7 @@
 
     // Title
     document.getElementById("modTitle").textContent = app.name + " v" + app.version + " MOD APK (" + (app.modTitle || "Premium Unlocked") + ")";
-    document.getElementById("updatedText").textContent = (app.updated || "December 26, 2025") + " (1 second ago)";
+    document.getElementById("updatedText").textContent = app.updated || "Release date unavailable";
 
     // Table
     document.getElementById("appNameTable").textContent = app.name;
@@ -251,14 +251,29 @@
     document.getElementById("modInfo").textContent = app.modTitle || "Premium Unlocked";
 
     // Play Store
-    document.getElementById("playstoreLink").href = app.playstore || "https://play.google.com";
+    function isUsableUrl(value) {
+      if (!value || value === "#") return false;
+      try {
+        const u = new URL(value, window.location.href);
+        return (u.protocol === "http:" || u.protocol === "https:") &&
+          !/(example\.com|YOUR_|yournumber|yourchannel|yourinsta)/i.test(value);
+      } catch (_) { return false; }
+    }
+
+    const playstoreLink = document.getElementById("playstoreLink");
+    if (isUsableUrl(app.playstore)) {
+      playstoreLink.href = app.playstore;
+      playstoreLink.style.display = "inline-block";
+    } else {
+      playstoreLink.style.display = "none";
+    }
 
     // Warning / Guide
     document.getElementById("warningBox").style.display = isTutorial ? "none" : "block";
     document.getElementById("guideBox").style.display = isTutorial ? "block" : "none";
 
     // Long description
-    document.getElementById("descriptionSection").innerHTML = app.description || "Premium mod with all features unlocked. Clean, safe, and verified.";
+    document.getElementById("descriptionSection").innerHTML = app.description || "No description has been published for this release yet.";
 
     // MOD Info bullet list
     const modFeaturesList = document.getElementById("modFeaturesList");
@@ -339,7 +354,7 @@
     // YouTube button
     const youtubeBtn = document.getElementById("youtubeBtn");
     const originalYoutubeText = "📺 Watch Tutorial on YouTube";
-    youtubeBtn.style.display = app.youtube ? "block" : "none";
+    youtubeBtn.style.display = isUsableUrl(app.youtube) ? "block" : "none";
 
     function resetYouTubeButton() {
       youtubeBtn.textContent = originalYoutubeText;
@@ -347,7 +362,7 @@
 
     resetYouTubeButton();
 
-    if (app.youtube) {
+    if (isUsableUrl(app.youtube)) {
       youtubeBtn.addEventListener("click", (e) => {
         e.preventDefault();
         youtubeBtn.textContent = "Redirecting to video... 3";
