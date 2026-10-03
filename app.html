@@ -55,7 +55,7 @@
     <div>
       <h1 id="modTitle">Loading...</h1>
       <p id="updatedText" style="color:var(--muted); margin:5px 0;">Loading...</p>
-      <div class="meta">Premium Mod</div>
+      <div class="meta" id="contentTypeMeta">Premium Mod</div>
     </div>
   </div>
 
@@ -77,30 +77,30 @@
   <!-- INFO TABLE -->
   <div class="info-table">
     <div class="info-row">
-      <span class="info-label">🎬 App Name</span>
+      <span class="info-label" id="labelName">🎬 App Name</span>
       <span class="info-value" id="appNameTable">Loading...</span>
     </div>
     <div class="info-row">
-      <span class="info-label">👤 Publisher</span>
+      <span class="info-label" id="labelPublisher">👤 Publisher</span>
       <span class="info-value" id="appPublisher">Loading...</span>
     </div>
     <div class="info-row">
-      <span class="info-label">📂 Genre</span>
+      <span class="info-label" id="labelGenre">📂 Genre</span>
       <span class="info-value" id="appGenre">Loading...</span>
     </div>
     <div class="info-row">
-      <span class="info-label">💾 Size</span>
+      <span class="info-label" id="labelSize">💾 Size</span>
       <span class="info-value" id="appSizeTable">Loading...</span>
     </div>
     <div class="info-row">
-      <span class="info-label">🔥 Latest Version</span>
+      <span class="info-label" id="labelVersion">🔥 Latest Version</span>
       <span class="info-value" id="appVersionTable">Loading...</span>
     </div>
     <div class="info-row">
-      <span class="info-label">🔓 MOD Info</span>
+      <span class="info-label" id="labelPrimaryInfo">🔓 MOD Info</span>
       <span class="info-value" id="modInfo">Loading...</span>
     </div>
-    <div class="info-row play-store">
+    <div class="info-row play-store" id="playStoreRow">
       <span class="info-label">📱 Get it On</span>
       <a href="#" id="playstoreLink" target="_blank">
         <span style="display:inline-block;padding:10px 14px;border:1px solid rgba(0,255,156,.35);border-radius:10px;color:var(--neon);font-weight:700;">Google Play</span>
@@ -111,7 +111,7 @@
   <!-- MOD INFO BULLET LIST -->
   <div class="mod-info-table">
     <div class="mod-info-header">
-      <span class="info-label">🔓 MOD Info</span>
+      <span class="info-label" id="featureSectionLabel">🔓 MOD Info</span>
     </div>
     <div class="mod-info-content">
       <ul id="modFeaturesList">
@@ -126,7 +126,7 @@
   </div>
 
   <!-- SCREENSHOTS -->
-  <div class="screenshots-section">
+  <div class="screenshots-section" id="screenshotsSection">
     <h3 style="color:var(--neon); text-align:center; margin:30px 0 15px;">📸 Screenshots</h3>
     <div class="grid" id="screenshotsGrid">
       <!-- Filled by JS -->
@@ -141,10 +141,13 @@
     <span>✓ Daily Scans</span>
   </div>
 
-  <!-- YOUTUBE BUTTON -->
-  <div style="text-align:center; margin:40px 0;">
+  <!-- VIDEO ACTIONS -->
+  <div style="text-align:center; margin:40px 0;" id="videoActions">
     <button class="download-btn" id="youtubeBtn">
-      📺 Watch Tutorial on YouTube
+      ▶ Watch Video
+    </button>
+    <button class="download-btn" id="youtubeChannelBtn" style="display:none; margin-top:12px;">
+      🔔 View YouTube Channel / Subscribe
     </button>
   </div>
 
@@ -174,7 +177,7 @@
 
   <!-- RECOMMENDED -->
   <div class="recommended-section">
-    <h3 style="color:var(--neon); text-align:center; margin:40px 0 20px;">🔥 Apps Related to This</h3>
+    <h3 style="color:var(--neon); text-align:center; margin:40px 0 20px;" id="recommendedTitle">🔥 Apps Related to This</h3>
     <div class="grid" id="recommendedGrid">
       <!-- Filled by JS -->
     </div>
@@ -327,7 +330,9 @@
       .trim()
       .slice(0, 155);
 
-    document.title = `${app.name} v${app.version} | Techie Gamer Mods`;
+    document.title = isTutorial
+      ? app.name + " | Techie Gamer Mods"
+      : app.name + " v" + app.version + " | Techie Gamer Mods";
 
     let descriptionMeta = document.querySelector('meta[name="description"]');
     if (!descriptionMeta) {
@@ -356,11 +361,22 @@
 
     // Table
     document.getElementById("appNameTable").textContent = app.name;
-    document.getElementById("appPublisher").textContent = isTutorial ? "TECHIE GAMER MODS" : (app.publisher || "TECHIE GAMER MODS");
-    document.getElementById("appGenre").textContent = isTutorial ? "YouTube Modding Tutorial" : (app.genre || "Tools");
+    document.getElementById("appPublisher").textContent = isTutorial ? (app.publisher || "TECHIE GAMER MODS") : (app.publisher || "TECHIE GAMER MODS");
+    document.getElementById("appGenre").textContent = isTutorial ? (app.genre || "Modding Tutorial") : (app.genre || "Tools");
     document.getElementById("appSizeTable").textContent = isTutorial ? "Watch online" : (app.size || "—");
-    document.getElementById("appVersionTable").textContent = app.version;
-    document.getElementById("modInfo").textContent = isTutorial ? "Step-by-step video" : (app.modTitle || "Premium Unlocked");
+    document.getElementById("appVersionTable").textContent = isTutorial ? (app.version && app.version !== "—" ? app.version : "Online") : app.version;
+    document.getElementById("modInfo").textContent = isTutorial ? "Step-by-step video guide" : (app.modTitle || "Premium Unlocked");
+
+    document.getElementById("contentTypeMeta").textContent = isTutorial ? "🎬 Modding Tutorial" : "Premium Mod";
+    document.getElementById("labelName").textContent = isTutorial ? "🎥 Video Title" : "🎬 App Name";
+    document.getElementById("labelPublisher").textContent = isTutorial ? "👤 Creator" : "👤 Publisher";
+    document.getElementById("labelGenre").textContent = isTutorial ? "📂 Topic" : "📂 Genre";
+    document.getElementById("labelSize").textContent = isTutorial ? "⏱ Duration" : "💾 Size";
+    document.getElementById("labelVersion").textContent = isTutorial ? "📅 Published" : "🔥 Latest Version";
+    document.getElementById("labelPrimaryInfo").textContent = isTutorial ? "💡 Video Info" : "🔓 MOD Info";
+    document.getElementById("featureSectionLabel").textContent = isTutorial ? "💡 Video Info" : "🔓 MOD Info";
+    document.getElementById("playStoreRow").style.display = isTutorial ? "none" : "flex";
+    document.getElementById("screenshotsSection").style.display = isTutorial ? "none" : "block";
 
     // Play Store
     function isUsableUrl(value) {
@@ -385,19 +401,25 @@
     document.getElementById("guideBox").style.display = isTutorial ? "block" : "none";
 
     // Long description
-    document.getElementById("descriptionSection").innerHTML = app.description || app.tutorialBody || "No description has been published for this release yet.";
-    if (isTutorial && app.tutorialBody && app.description && !app.description.includes(app.tutorialBody)) {
-      const tutorialNotes = document.createElement("div");
-      tutorialNotes.className = "tutorial-notes";
-      tutorialNotes.style.cssText = "margin-top:18px;padding:18px;border:1px solid rgba(0,255,156,.25);border-radius:14px;background:rgba(0,255,156,.05);line-height:1.7;white-space:pre-wrap";
-      tutorialNotes.textContent = app.tutorialBody;
-      document.getElementById("descriptionSection").appendChild(tutorialNotes);
+    document.getElementById("descriptionSection").innerHTML = app.description || "No description has been published for this release yet.";
+    if (isTutorial && app.tutorialBody) {
+      const tutorialBody = document.createElement("div");
+      tutorialBody.className = "tutorial-body";
+      tutorialBody.style.cssText = "margin-top:18px;padding:18px;border:1px solid rgba(0,255,156,.22);border-radius:14px;background:rgba(0,255,156,.04);line-height:1.75;white-space:pre-wrap;";
+      tutorialBody.textContent = app.tutorialBody;
+      document.getElementById("descriptionSection").appendChild(tutorialBody);
     }
 
     // MOD Info bullet list
     const modFeaturesList = document.getElementById("modFeaturesList");
     modFeaturesList.innerHTML = "";
-    app.features.forEach(feature => {
+    const featureSource = isTutorial
+      ? String(app.tutorialBody || "").split(/\r?\n+/).map(s => s.trim()).filter(Boolean)
+      : app.features;
+    const featuresToShow = featureSource.length
+      ? featureSource
+      : (isTutorial ? ["Complete step-by-step video guide"] : ["Release information"]);
+    featuresToShow.forEach(feature => {
       const li = document.createElement('li');
       li.textContent = feature;
       modFeaturesList.appendChild(li);
@@ -432,6 +454,9 @@
     // Related apps are managed from the Admin CMS. Legacy records fall back
     // to same-category/same-genre recommendations until relations are set.
     const recommendedGrid = document.getElementById("recommendedGrid");
+    document.getElementById("recommendedTitle").textContent = isTutorial
+      ? "🎬 Videos Related to This"
+      : "🔥 Apps Related to This";
     if (!relatedApps.length) {
       relatedApps = apps
         .filter(a =>
@@ -480,7 +505,7 @@
 
       const a = document.createElement('a');
       a.href = 'app.html?id=' + encodeURIComponent(rec.slug || rec.id);
-      a.textContent = 'View Mod';
+      a.textContent = isTutorial ? 'Watch Tutorial' : 'View Mod';
       card.appendChild(a);
 
       recommendedGrid.appendChild(card);
@@ -512,34 +537,32 @@
       downloadBtn.textContent = originalDownloadText;
     });
 
-    // YouTube button
+    // Tutorial video actions
     const youtubeBtn = document.getElementById("youtubeBtn");
-    const originalYoutubeText = "📺 Watch Tutorial on YouTube";
-    youtubeBtn.style.display = isUsableUrl(app.youtube) ? "block" : "none";
+    const youtubeChannelBtn = document.getElementById("youtubeChannelBtn");
+    const videoActions = document.getElementById("videoActions");
+    const youtubeChannel = window.TGM_CONTACT_LINKS?.youtubeChannel || "";
 
-    function resetYouTubeButton() {
-      youtubeBtn.textContent = originalYoutubeText;
-    }
+    if (isTutorial) {
+      videoActions.style.display = "block";
+      youtubeBtn.textContent = "▶ Watch Video";
+      youtubeBtn.style.display = isUsableUrl(app.youtube) ? "block" : "none";
 
-    resetYouTubeButton();
+      youtubeChannelBtn.style.display = isUsableUrl(youtubeChannel) ? "block" : "none";
+      if (isUsableUrl(youtubeChannel)) {
+        youtubeChannelBtn.onclick = (e) => {
+          e.preventDefault();
+          window.open(youtubeChannel + (youtubeChannel.includes("?") ? "&" : "?") + "sub_confirmation=1", "_blank");
+        };
+      }
 
-    if (isUsableUrl(app.youtube)) {
-      youtubeBtn.addEventListener("click", (e) => {
+      youtubeBtn.onclick = (e) => {
         e.preventDefault();
-        youtubeBtn.textContent = "Redirecting to video... 3";
-        let count = 2;
-        const interval = setInterval(() => {
-          youtubeBtn.textContent = `Redirecting to video... ${count}`;
-          count--;
-          if (count < 0) {
-            clearInterval(interval);
-            window.open(app.youtube, "_blank");
-          }
-        }, 1000);
-      });
+        if (isUsableUrl(app.youtube)) window.open(app.youtube, "_blank");
+      };
+    } else {
+      videoActions.style.display = "none";
     }
-
-    window.addEventListener("pageshow", resetYouTubeButton);
 
     // LIGHTBOX
     const lightbox = document.createElement('div');
