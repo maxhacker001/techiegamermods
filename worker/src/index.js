@@ -806,7 +806,7 @@ async function adminUploadScreenshot(request, appId, env) {
 async function adminListTutorials(request, appId, env) {
   if (!requireAdmin(request, env)) return json({ error: "Unauthorized" }, 401, env);
 
-  const app = await env.DB.prepare("SELECT id,name,description_html FROM apps WHERE id=? LIMIT 1").bind(appId).first();
+  const app = await env.DB.prepare("SELECT id,name FROM apps WHERE id=? LIMIT 1").bind(appId).first();
   if (!app) return json({ error: "App not found" }, 404, env);
 
   const result = await env.DB.prepare(
@@ -863,18 +863,6 @@ async function adminEditTutorial(request, tutorialId, env) {
     ["draft","published","archived"].includes(body.status) ? body.status : "draft",
     tutorialId
   ).run();
-
-  // The public tutorial page uses the parent catalog app for its title and
-  // long write-up. Keep those fields synchronized when a tutorial is edited.
-  if (body.app_id) {
-    await env.DB.prepare(
-      "UPDATE apps SET name=?, description_html=?, updated_at=CURRENT_TIMESTAMP WHERE id=?"
-    ).bind(
-      String(body.title).trim(),
-      String(body.description_html || ""),
-      body.app_id
-    ).run();
-  }
 
   return json({ id: tutorialId }, 200, env);
 }
