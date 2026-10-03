@@ -402,21 +402,45 @@
 
     // Long description
     document.getElementById("descriptionSection").innerHTML = app.description || "No description has been published for this release yet.";
-    if (isTutorial && app.tutorialBody) {
+
+    const stripHtml = (value) => String(value || "")
+      .replace(/<br\s*\/?>/gi, "\n")
+      .replace(/<\/p>/gi, "\n")
+      .replace(/<\/li>/gi, "\n")
+      .replace(/<[^>]*>/g, "")
+      .replace(/&nbsp;/gi, " ")
+      .replace(/&amp;/gi, "&")
+      .replace(/&lt;/gi, "<")
+      .replace(/&gt;/gi, ">")
+      .replace(/\s+$/gm, "")
+      .trim();
+
+    // Some older tutorial records stored the same HTML write-up in both
+    // description and tutorial-body. Do not render that content twice.
+    const cleanDescription = stripHtml(app.description || "").replace(/\s+/g, " ").toLowerCase();
+    const cleanTutorialBody = stripHtml(app.tutorialBody || "").replace(/\s+/g, " ").toLowerCase();
+    const duplicateTutorialBody = isTutorial && cleanTutorialBody && cleanDescription &&
+      (cleanTutorialBody === cleanDescription ||
+       cleanTutorialBody.includes(cleanDescription) ||
+       cleanDescription.includes(cleanTutorialBody));
+
+    if (isTutorial && app.tutorialBody && !duplicateTutorialBody) {
       const tutorialBody = document.createElement("div");
       tutorialBody.className = "tutorial-body";
       tutorialBody.style.cssText = "margin-top:18px;padding:18px;border:1px solid rgba(0,255,156,.22);border-radius:14px;background:rgba(0,255,156,.04);line-height:1.75;white-space:pre-wrap;";
-      tutorialBody.textContent = app.tutorialBody;
+      tutorialBody.textContent = stripHtml(app.tutorialBody);
       document.getElementById("descriptionSection").appendChild(tutorialBody);
     }
 
-    // MOD Info bullet list
+    // VIDEO INFO / MOD INFO bullet list
     const modFeaturesList = document.getElementById("modFeaturesList");
     modFeaturesList.innerHTML = "";
-    const tutorialPoints = String(app.tutorialBody || "")
-      .split(/\r?\n+/)
-      .map(s => s.trim())
-      .filter(Boolean);
+    const tutorialPoints = duplicateTutorialBody
+      ? []
+      : stripHtml(app.tutorialBody || "")
+          .split(/\r?\n+/)
+          .map(s => s.trim())
+          .filter(Boolean);
     const featureSource = isTutorial
       ? (tutorialPoints.length >= 2 ? tutorialPoints : (app.features || []))
       : app.features;
