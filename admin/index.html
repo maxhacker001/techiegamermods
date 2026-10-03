@@ -239,6 +239,19 @@
         </table>
       </div>
       <pre id="filesResult">No files loaded.</pre>
+    <section class="panel wide" style="margin-top:16px">
+      <h2>Audit history</h2>
+      <div class="toolbar" style="margin-bottom:12px">
+        <button id="loadAudit" class="secondary">Load recent changes</button>
+      </div>
+      <div style="overflow:auto">
+        <table>
+          <thead><tr><th>Time</th><th>Action</th><th>Entity</th><th>ID</th><th>Details</th></tr></thead>
+          <tbody id="auditRows"></tbody>
+        </table>
+      </div>
+      <pre id="auditResult">No audit history loaded.</pre>
+    </section>
     </section>
   </div>
 </main>
@@ -487,6 +500,28 @@ function getAppBody() {
   };
 }
 
+async function loadAudit() {
+  try {
+    const data = await request('/api/admin/audit?limit=100');
+    const rows = $('auditRows');
+    rows.innerHTML = '';
+    (data.events || []).forEach(event => {
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td>' + escapeHtml(event.created_at) + '</td>' +
+        '<td>' + escapeHtml(event.action) + '</td>' +
+        '<td>' + escapeHtml(event.entity_type) + '</td>' +
+        '<td><code>' + escapeHtml(event.entity_id || '—') + '</code></td>' +
+        '<td><code>' + escapeHtml(event.details_json || '{}') + '</code></td>';
+      rows.appendChild(tr);
+    });
+    $('auditResult').textContent = JSON.stringify(data, null, 2);
+  } catch(e) {
+    $('auditResult').textContent = 'Error: ' + e.message;
+  }
+}
+
+
 $('createApp').onclick = async () => {
   try {
     const data=await request('/api/admin/apps',{method:'POST',body:JSON.stringify(getAppBody())});
@@ -711,7 +746,7 @@ $('selectedAppId').addEventListener('change',()=> {
   loadVersions();
   loadTutorials(id);
 });
-$('refreshAll').onclick = async ()=>{await loadStats();await loadApps();await loadVersions();};
+$('refreshAll').onclick = async ()=>{await loadStats();await loadApps();await loadVersions();await loadAudit();};
 
 $('uploadScreenshots').onclick = async () => {
   try {
