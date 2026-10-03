@@ -31,13 +31,21 @@ All admin endpoints require:
 - `GET /api/admin/stats`
 - `GET /api/admin/apps` (search/filter the catalog)
 - `POST /api/admin/apps`
+- `PATCH /api/admin/apps/:app_id/edit`
 - `PATCH /api/admin/apps/:app_id/status`
 - `GET /api/admin/apps/:app_id/versions`
 - `POST /api/admin/versions`
+- `PATCH /api/admin/versions/:version_id/edit`
 - `PATCH /api/admin/versions/:version_id/status`
+- `GET /api/admin/versions/:version_id/files`
 - `POST /api/admin/files` (multipart form with `file`, `version_id`, `file_type`)
 - `PATCH /api/admin/files/:file_id/verify`
 - `PATCH /api/admin/files/:file_id/publish`
+- `POST /api/admin/apps/:app_id/screenshots`
+- `GET /api/admin/apps/:app_id/tutorials`
+- `POST /api/admin/tutorials`
+- `PATCH /api/admin/tutorials/:tutorial_id`
+- `GET /media/screenshots/:screenshot_id`
 
 ## Production notes
 
