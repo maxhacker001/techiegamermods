@@ -600,6 +600,12 @@ async function loadVersions(autoSelectLatest=false) {
   if (!id) return;
   try {
     const data = await request('/api/admin/apps/' + encodeURIComponent(id) + '/versions');
+
+    // Ignore an older, slower response if the admin has already selected
+    // a different app. This prevents files/configs from app A appearing
+    // inside app B's editor.
+    if ($('selectedAppId').value.trim() !== id) return;
+
     const rows = $('versionRows');
     rows.innerHTML = '';
     versionCache.clear();
@@ -738,9 +744,18 @@ async function loadFiles(versionId) {
 async function loadVersionAssets(versionId) {
   const id = String(versionId || '').trim();
   if (!id) return;
+
+  const rows = $('assetRows');
+  if (rows) rows.innerHTML = '';
+  $('assetResult').textContent = 'Loading extra files...';
+
   try {
     const data = await request('/api/admin/versions/' + encodeURIComponent(id) + '/assets');
-    const rows = $('assetRows');
+
+    // Do not allow a stale request to repaint another app's config list.
+    // The version field is cleared immediately when a new app is selected.
+    if ($('assetVersionId').value.trim() !== id) return;
+
     rows.innerHTML = '';
     (data.assets || []).forEach(asset => {
       const tr = document.createElement('tr');
@@ -753,7 +768,9 @@ async function loadVersionAssets(versionId) {
     });
     $('assetResult').textContent = JSON.stringify(data, null, 2);
   } catch(e) {
-    $('assetResult').textContent = 'Error: ' + e.message;
+    if ($('assetVersionId').value.trim() === id) {
+      $('assetResult').textContent = 'Error: ' + e.message;
+    }
   }
 }
 
