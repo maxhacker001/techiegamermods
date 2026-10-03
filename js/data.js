@@ -87,7 +87,10 @@
         tutorialBody: tutorial?.body || "",
         androidMin: latest?.android_min || "",
         architecture: latest?.architecture || "",
+        minSdk: latest?.min_sdk || "",
+        targetSdk: latest?.target_sdk || "",
         changelog: latest?.changelog || "",
+        releaseAssets: Array.isArray(live.assets) ? live.assets : [],
         download_apk: publishedFile ? publishedFile.id : "",
         download_extra: ""
       };
@@ -115,7 +118,10 @@
         features: cleanLines(row.latest_mod_info || ""),
         screenshots: [],
         youtube: "",
-        tutorialBody: ""
+        tutorialBody: "",
+        minSdk: "",
+        targetSdk: "",
+        releaseAssets: []
       };
     }
   };
