@@ -103,6 +103,12 @@
       <label>Package name</label><input id="package">
       <label>Google Play URL</label><input id="playstore">
       <label>Icon URL</label><input id="icon">
+      <label>App icon file</label><input id="iconFile" type="file" accept="image/png,image/jpeg,image/webp">
+      <div class="toolbar" style="margin-top:8px">
+        <button id="uploadIcon" class="secondary">Upload app icon</button>
+      </div>
+      <small class="muted">Select an existing app from Catalog first, then upload a PNG, JPEG, or WebP icon. The icon is saved to R2 and linked automatically.</small>
+      <pre id="iconResult"></pre>
       <label>Description</label><textarea id="description" rows="6"></textarea>
       <label>Related apps</label>
       <input id="relatedApps" placeholder="spotify-mod, capcut-mod, inshot-mod">
@@ -602,6 +608,32 @@ $('createApp').onclick = async () => {
   } catch(e) { $('createResult').textContent='Error: '+e.message; }
 };
 
+$('uploadIcon').onclick = async () => {
+  try {
+    const appId = $('appEditId').value.trim();
+    const file = $('iconFile').files[0];
+    if (!appId) throw new Error('Select an existing app from Catalog first.');
+    if (!file) throw new Error('Choose an icon file first.');
+
+    const form = new FormData();
+    form.append('file', file);
+    const response = await fetch(
+      apiBase() + '/api/admin/apps/' + encodeURIComponent(appId) + '/icon',
+      { method:'POST', headers:authHeaders(), body:form }
+    );
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || ('HTTP ' + response.status));
+
+    $('icon').value = data.icon_url || '';
+    $('iconResult').textContent = JSON.stringify(data, null, 2);
+    $('iconFile').value = '';
+    await loadStats();
+    await loadApps();
+  } catch(e) {
+    $('iconResult').textContent = 'Error: ' + e.message;
+  }
+};
+
 $('saveApp').onclick = async () => {
   try {
     const id=$('appEditId').value.trim();
@@ -614,6 +646,8 @@ $('saveApp').onclick = async () => {
 
 $('newApp').onclick = () => {
   ['appEditId','name','slug','publisher','genre','package','playstore','icon','description','relatedApps'].forEach(id => $(id).value='');
+  $('iconFile').value='';
+  $('iconResult').textContent='';
   $('category').value='apps';
   $('createApp').textContent='Create draft';
   $('createApp').disabled=false;
