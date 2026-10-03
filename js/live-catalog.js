@@ -115,6 +115,9 @@
 
       renderSearchResults(grid, list);
 
+      // Search mode has no active category; category buttons return when the search is cleared.
+      document.querySelectorAll(".filter-btn").forEach(item => item.classList.remove("active"));
+
       const trendingSection = $("trendingSection");
       if (trendingSection) trendingSection.style.display = "none";
 
