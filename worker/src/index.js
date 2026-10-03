@@ -864,6 +864,18 @@ async function adminEditTutorial(request, tutorialId, env) {
     tutorialId
   ).run();
 
+  // The public tutorial page uses the parent catalog app for its title and
+  // long write-up. Keep those fields synchronized when a tutorial is edited.
+  if (body.app_id) {
+    await env.DB.prepare(
+      "UPDATE apps SET name=?, description_html=?, updated_at=CURRENT_TIMESTAMP WHERE id=?"
+    ).bind(
+      String(body.title).trim(),
+      String(body.description_html || ""),
+      body.app_id
+    ).run();
+  }
+
   return json({ id: tutorialId }, 200, env);
 }
 
