@@ -449,51 +449,6 @@ const apps = [
   download_apk: "https://example.com/gbwhatsapp-mod.apk",
   download_extra: "https://example.com/gbwhatsapp-xapk.apk"
     },
-  {
-  id: "remini-mod",
-  name: "Remini MOD",
-  category: "apps",
-  version: "3.8.5",
-  size: "65 MB",
-  image: "images/remini.png",
-  modTitle: "Pro Unlocked",
-  updated: "December 21, 2025",
-  publisher: "Bending Spoons",
-  genre: "Photo Editing",
-  playstore: "https://play.google.com/store/apps/details?id=com.remini.app",
-  description: `
-    <strong>AI PHOTO ENHANCER</strong><br><br>
-    Remini MOD APK - Unlimited AI credits, HD enhancement, no ads.<br><br>
-
-    <strong>RESTORE OLD PHOTOS</strong><br><br>
-    Bring blurry or old photos back to life with powerful AI.<br><br>
-
-    <strong>ENHANCE QUALITY</strong><br><br>
-    Turn low-resolution photos into crystal clear HD.<br><br>
-
-    <strong>BATCH PROCESSING</strong><br><br>
-    Enhance multiple photos at once without limits.<br><br>
-
-    <strong>NO ADS & UNLIMITED CREDITS</strong><br><br>
-    Use all pro features freely without waiting.
-  `,
-  features: [
-    "Pro Unlocked",
-    "Unlimited Credits",
-    "HD Enhancement",
-    "Batch Processing",
-    "No Ads"
-  ],
-  screenshots: [
-    "images/screenshots/remini1.png",
-    "images/screenshots/remini2.png",
-    "images/screenshots/remini3.png",
-    "images/screenshots/remini4.png"
-  ],
-  youtube: "https://www.youtube.com/watch?v=YOUR_REMINI_VIDEO",
-  download_apk: "https://example.com/remini-mod.apk",
-  download_extra: "https://example.com/remini-xapk.apk"
-},
 {
   id: "picsart-mod",
   name: "PicsArt MOD",
