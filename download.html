@@ -160,7 +160,7 @@
 
     // Title
     document.getElementById("downloadTitle").textContent = "Download: " + app.name + " v" + app.version + " MOD APK (" + (app.modTitle || "Premium Unlocked") + ")";
-    document.getElementById("downloadDate").textContent = (app.updated || "December 26, 2025") + " (3 hours ago)";
+    document.getElementById("downloadDate").textContent = app.updated || "Release date unavailable";
     document.getElementById("redBannerText").textContent = app.name + " - All Mod";
     document.getElementById("notesAppName").textContent = app.name;
 // Download buttons: treat missing/demo placeholders as unavailable instead of redirecting users.
