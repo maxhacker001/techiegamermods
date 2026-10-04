@@ -1321,8 +1321,10 @@ $('uploadAsset').onclick = async () => {
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || ('HTTP ' + response.status));
     $('assetFile').value = '';
-    appAssetsCache.delete($('selectedAppId').value.trim());
-    await loadAppAssets($('selectedAppId').value.trim());
+    const selectedAppId = $('selectedAppId').value.trim();
+    appAssetsCache.delete(selectedAppId);
+    if (selectedAppId) await loadAppAssets(selectedAppId);
+    else await loadVersionAssets(versionId);
     $('assetResult').textContent = 'Extra file uploaded.';
     await loadStats();
   } catch(e) {
