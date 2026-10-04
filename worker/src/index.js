@@ -127,62 +127,34 @@ async function getRelatedApps(appId, env) {
     .replace(/\s+/g, " ")
     .trim();
 
-  const tokenize = (value) => normalize(value)
-    .split(" ")
-    .filter(token => token.length >= 3);
-
-  const stopWords = new Set([
-    "the","and","for","with","from","this","that","your","our","you","are",
-    "app","apps","mod","mods","game","games","tutorial","tutorials","guide",
-    "version","android","download","official","latest","free","mobile",
-    "premium","pro","apk","apkmod"
-  ]);
-
   const topicGroups = [
-    ["video","editing","editor","capcut","inshot","kinemaster","alight motion","vn video","film","reels","shorts"],
-    ["photo","photography","photo editor","lightroom","picsart","snapseed","photoshop","image","images"],
+    ["video","editing","editor","capcut","inshot","kinemaster","alight motion","vn video"],
     ["video downloader","downloader","download manager","save video","video download","snaptube","vidmate","tubemate"],
+    ["photo","photo editor","lightroom","picsart","snapseed","photoshop"],
     ["music","spotify","audio","player","sound","streaming","podcast"],
     ["social","whatsapp","telegram","instagram","facebook","messenger","chat"],
     ["shooter","war","battle","combat","fps","shooting","call of duty","cod","pubg","free fire","battlefield"],
     ["football","soccer","fifa","efootball","dream league","dls","football manager"],
     ["racing","car","cars","asphalt","need for speed","racing"],
     ["strategy","clash","warcraft","civilization","tactics"],
-    ["anime","manga","otaku","crunchyroll","anime"],
+    ["anime","manga","otaku","crunchyroll"],
     ["browser","web browser","privacy browser","firefox","chrome","edge","opera"],
     ["file manager","file explorer","zarchiver","archive","zip","rar"],
-    ["vpn","privacy","proxy","webrtc","dns"]
+    ["vpn","privacy","proxy","webrtc","dns"],
+    ["modding","apk","patch","mt manager","apktool","reverse engineering"]
   ];
 
-  const groupMatches = (text) => {
+  const groupsFor = (text) => {
     const lower = normalize(text);
     return topicGroups
       .filter(group => group.some(term => lower.includes(normalize(term))))
-      .map(group => group.join(" "))
-      .filter(Boolean);
+      .map(group => group.join("|"));
   };
-
-  const termSet = (text) => new Set(
-    tokenize(text).filter(token => !stopWords.has(token))
-  );
 
   try {
     const current = await env.DB.prepare(`
-      SELECT
-        a.id,
-        a.category_id,
-        c.slug AS category_slug,
-        a.name,
-        a.genre,
-        a.description_html,
-        COALESCE((
-          SELECT GROUP_CONCAT(
-            COALESCE(t.title, '') || ' ' || COALESCE(t.body, ''),
-            ' '
-          )
-          FROM tutorials t
-          WHERE t.app_id=a.id AND t.status='published'
-        ), '') AS tutorial_text
+      SELECT a.id, a.category_id, c.slug AS category_slug,
+             a.name, a.genre, a.description_html
       FROM apps a
       JOIN categories c ON c.id=a.category_id
       WHERE a.id=? AND a.status='published'
@@ -191,32 +163,9 @@ async function getRelatedApps(appId, env) {
 
     if (!current) return [];
 
-    const currentTags = await env.DB.prepare(
-      "SELECT tag FROM app_tags WHERE app_id=? ORDER BY tag"
-    ).bind(appId).all();
-
-    const sourceText = [
-      current.name,
-      current.genre,
-      current.description_html,
-      current.tutorial_text,
-      ...(currentTags.results || []).map(row => row.tag)
-    ].join(" ");
-
-    const sourceGenre = normalize(current.genre);
-    const sourceCategory = normalize(current.category_slug);
-    const sourceTerms = termSet(sourceText);
-    const sourceGroups = new Set(groupMatches(sourceText));
-
     const candidates = await env.DB.prepare(`
       SELECT
-        a.id,
-        a.slug,
-        a.name,
-        a.publisher,
-        a.genre,
-        a.icon_url,
-        a.status,
+        a.id, a.slug, a.name, a.publisher, a.genre, a.icon_url, a.description_html,
         c.slug AS category_slug,
         (
           SELECT vv.version_name
@@ -231,83 +180,76 @@ async function getRelatedApps(appId, env) {
           WHERE vv.app_id=a.id AND vv.status='published'
           ORDER BY datetime(vv.updated_at) DESC
           LIMIT 1
-        ) AS size_bytes,
-        COALESCE((
-          SELECT GROUP_CONCAT(
-            COALESCE(t.title, '') || ' ' || COALESCE(t.body, ''),
-            ' '
-          )
-          FROM tutorials t
-          WHERE t.app_id=a.id AND t.status='published'
-        ), '') AS tutorial_text,
-        a.description_html
+        ) AS size_bytes
       FROM apps a
       JOIN categories c ON c.id=a.category_id
       WHERE a.id<>?
         AND a.status='published'
         AND a.category_id=?
-      ORDER BY datetime(a.updated_at) DESC, a.name ASC
-      LIMIT 300
-    `).bind(appId, current.category_id).all();
+      ORDER BY
+        CASE WHEN lower(COALESCE(a.genre,'')) = lower(COALESCE(?,'')) THEN 0 ELSE 1 END,
+        datetime(a.updated_at) DESC,
+        a.name ASC
+      LIMIT 100
+    `).bind(appId, current.category_id, current.genre || "").all();
+
+    const sourceText = normalize([
+      current.name,
+      current.genre,
+      current.description_html
+    ].join(" "));
+    const sourceGroups = new Set(groupsFor(sourceText));
+
+    // For tutorials, fetch the published tutorial text once so the Related
+    // section is based on what the tutorial teaches.
+    let sourceTutorialText = "";
+    if (String(current.category_slug || "") === "tutorials") {
+      const tutorial = await env.DB.prepare(`
+        SELECT COALESCE(GROUP_CONCAT(COALESCE(title,'') || ' ' || COALESCE(body,''), ' '),'') AS text
+        FROM tutorials
+        WHERE app_id=? AND status='published'
+      `).bind(appId).first();
+      sourceTutorialText = normalize(tutorial?.text || "");
+    }
+
+    const baseSource = normalize(sourceText + " " + sourceTutorialText);
 
     const ranked = (candidates.results || []).map(row => {
-      const candidateText = [
+      const candidateText = normalize([
         row.name,
         row.genre,
-        row.description_html,
-        row.tutorial_text
-      ].join(" ");
-
-      const candidateGenre = normalize(row.genre);
-      const candidateTerms = termSet(candidateText);
-      const candidateGroups = new Set(groupMatches(candidateText));
+        row.description_html
+      ].join(" "));
 
       let score = 0;
 
-      // Primary rule for normal apps/games:
-      // exact genre match is the strongest relevance signal.
-      if (sourceGenre && candidateGenre === sourceGenre) {
+      if (normalize(row.genre) && normalize(row.genre) === normalize(current.genre)) {
         score += 1000;
-      } else if (sourceGenre && candidateGenre) {
-        // Related genre wording can still qualify when the source/candidate
-        // share a clear topic group, but never outrank an exact genre match.
-        score += 0;
       }
 
-      // Topic/agenda relevance.
+      const candidateGroups = new Set(groupsFor(candidateText));
       for (const group of candidateGroups) {
-        if (sourceGroups.has(group)) score += 250;
+        if (sourceGroups.has(group)) score += 300;
       }
 
-      // Shared meaningful name/slug/genre words help rank the same agenda
-      // even when different publishers use slightly different genre labels.
-      let sharedTerms = 0;
-      for (const token of candidateTerms) {
-        if (sourceTerms.has(token)) sharedTerms++;
-      }
-      score += Math.min(sharedTerms, 12) * 12;
-
-      // Tutorials are related by what the tutorial is actually about:
-      // title/body/topic terms, not merely by arbitrary publisher metadata.
-      if (sourceCategory === "tutorials") {
+      if (String(current.category_slug || "") === "tutorials") {
         score = 0;
-        const sourceTopicWords = sourceTerms;
-        for (const token of candidateTerms) {
-          if (sourceTopicWords.has(token)) score += 30;
-        }
         for (const group of candidateGroups) {
-          if (sourceGroups.has(group)) score += 220;
+          if (baseSource.includes(group.split("|")[0])) score += 250;
+        }
+        const sourceWords = new Set(baseSource.split(" ").filter(w => w.length >= 4));
+        const candidateWords = new Set(candidateText.split(" ").filter(w => w.length >= 4));
+        for (const word of candidateWords) {
+          if (sourceWords.has(word)) score += 25;
         }
       }
 
       return { row, score };
     });
 
-    // Only return genuinely relevant candidates. This prevents unrelated
-    // apps from filling the Related section just because they are recent.
     const relevant = ranked
       .filter(item => item.score > 0)
-      .sort((a, b) =>
+      .sort((a,b) =>
         b.score - a.score ||
         String(a.row.name || "").localeCompare(String(b.row.name || ""))
       )
