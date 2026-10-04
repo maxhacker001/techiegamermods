@@ -164,7 +164,7 @@
 
     if (state.query) {
       const query = normalizeSearch(state.query);
-      const list = searchMatches(query, state.searchResults || state.apps);
+      const list = searchMatches(query, state.apps);
       state.query = query;
 
       renderGroupedSearch(grid, list);
@@ -208,12 +208,11 @@
 
     if (input && !input.dataset.liveCatalogBound) {
       input.dataset.liveCatalogBound = "1";
-      input.addEventListener("input", async () => {
+      input.addEventListener("input", () => {
         state.query = input.value.trim();
-        const seq = ++state.searchSeq;
+        state.searchResults = null;
 
         if (!state.query) {
-          state.searchResults = null;
           state.category = "apps";
           const filters = $("filtersSection");
           if (filters) filters.style.display = "flex";
@@ -221,67 +220,25 @@
           return;
         }
 
-        // Render local results immediately.
-        state.searchResults = null;
+        // Search the full local live catalog on every keystroke.
+        // Matching is based on the literal typed substring(s) in app name/slug.
         homeRender();
-
-        try {
-          const response = await window.TGMApi.listApps({
-            search: normalizeSearch(state.query),
-            limit: 100
-          });
-          if (seq !== state.searchSeq || normalizeSearch(state.query) === "") return;
-
-          const remote = (response.apps || []).map(window.TGMApi.normalizeListApp);
-          state.searchResults = remote;
-
-          // Keep the catalog cache aware of newly returned matching records.
-          const bySlug = new Map(state.apps.map(app => [app.slug, app]));
-          remote.forEach(app => bySlug.set(app.slug, app));
-          state.apps = Array.from(bySlug.values());
-
-          homeRender();
-        } catch (_) {
-          // Local results remain visible if the live query fails.
-        }
-      });
+      });;
     }
 
     const searchBtn = $("searchBtn");
     if (searchBtn && !searchBtn.dataset.liveCatalogBound) {
       searchBtn.dataset.liveCatalogBound = "1";
-      searchBtn.addEventListener("click", async () => {
-        const value = input ? input.value.trim() : "";
-        state.query = value;
-        state.searchSeq++;
-        const seq = state.searchSeq;
+      searchBtn.addEventListener("click", () => {
+        state.query = input ? input.value.trim() : "";
+        state.searchResults = null;
 
-        if (!value) {
-          state.searchResults = null;
+        if (!state.query) {
           state.category = "apps";
-          homeRender();
-          return;
         }
 
-        state.searchResults = null;
         homeRender();
-
-        try {
-          const response = await window.TGMApi.listApps({
-            search: normalizeSearch(value),
-            limit: 100
-          });
-          if (seq !== state.searchSeq) return;
-          const remote = (response.apps || []).map(window.TGMApi.normalizeListApp);
-          state.searchResults = remote;
-
-          const bySlug = new Map(state.apps.map(app => [app.slug, app]));
-          remote.forEach(app => bySlug.set(app.slug, app));
-          state.apps = Array.from(bySlug.values());
-
-          homeRender();
-        } catch (_) {}
-      });
+      });;
     }
 
     document.querySelectorAll(".filter-btn").forEach(btn => {
