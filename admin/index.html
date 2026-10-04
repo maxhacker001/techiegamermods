@@ -169,6 +169,13 @@
         <button id="loadFiles" class="secondary">Load current files</button>
       </div>
       <pre id="uploadResult"></pre>
+      <div style="overflow:auto;margin-top:12px">
+        <table>
+          <thead><tr><th>File</th><th>Type</th><th>Size</th><th>Published</th><th>SHA-256</th><th></th></tr></thead>
+          <tbody id="uploadFileRows"></tbody>
+        </table>
+      </div>
+      <pre id="uploadFileResult" class="muted">No release files loaded.</pre>
     </section>
 
     <section class="panel" id="assetUploadPanel">
@@ -716,113 +723,141 @@ async function loadVersions(autoSelectLatest=false) {
 async function loadFiles(versionId) {
   const id = String(versionId || '').trim();
   const rows = $('fileRows');
+  const uploadRows = $('uploadFileRows');
   const result = $('filesResult');
+  const uploadResult = $('uploadFileResult');
 
   if (!id) {
-    rows.innerHTML = '';
-    result.textContent = 'Enter or select a version first.';
+    if (rows) rows.innerHTML = '';
+    if (uploadRows) uploadRows.innerHTML = '';
+    if (result) result.textContent = 'Enter or select a version first.';
+    if (uploadResult) uploadResult.textContent = 'Enter or select a version first.';
     return;
   }
 
-  rows.innerHTML = '';
-  result.textContent = 'Loading current release files...';
+  if (rows) rows.innerHTML = '';
+  if (uploadRows) uploadRows.innerHTML = '';
+  if (result) result.textContent = 'Loading current release files...';
+  if (uploadResult) uploadResult.textContent = 'Loading current release files...';
 
-  const render = (files, sourceLabel='') => {
-    rows.innerHTML = '';
+  const bindDelete = (container, files, listVersionId) => {
+    if (!container) return;
+    container.querySelectorAll('.delete-file').forEach(btn => {
+      btn.onclick = async () => {
+        if (!confirm('Delete this release file permanently? This cannot be undone.')) return;
+        btn.disabled = true;
+        try {
+          await request('/api/admin/files/' + encodeURIComponent(btn.dataset.id), { method:'DELETE' });
+          if (result) result.textContent = 'File permanently deleted.';
+          if (uploadResult) uploadResult.textContent = 'File permanently deleted.';
+          await loadStats();
+          await loadApps();
+          await loadVersions();
+          await loadFiles(listVersionId);
+        } catch(e) {
+          btn.disabled = false;
+          if (result) result.textContent = 'Error: ' + e.message;
+          if (uploadResult) uploadResult.textContent = 'Error: ' + e.message;
+        }
+      };
+    });
+
+    container.querySelectorAll('.use-file').forEach(btn => {
+      btn.onclick = () => {
+        const file = files.find(f => f.id === btn.dataset.id);
+        const text = file
+          ? ((file.original_name || 'File') + ' • ' + formatBytes(file.bytes) + ' • ' + String(file.file_type || '').toUpperCase())
+          : 'File not found.';
+        if (result) result.textContent = text;
+        if (uploadResult) uploadResult.textContent = text;
+      };
+    });
+  };
+
+  const renderInto = (container, files) => {
+    if (!container) return;
+    container.innerHTML = '';
 
     (files || []).forEach(file => {
       const tr = document.createElement('tr');
-      const versionInfo = file.version_name
-        ? '<br><span class="muted">' + escapeHtml(file.app_name || '') + ' • v' + escapeHtml(file.version_name) + '</span>'
-        : '';
-
       tr.innerHTML =
-        '<td>' + escapeHtml(file.original_name || '—') + versionInfo + '</td>' +
+        '<td>' + escapeHtml(file.original_name || '—') + '</td>' +
         '<td>' + escapeHtml(String(file.file_type || '').toUpperCase()) + '</td>' +
         '<td>' + formatBytes(file.bytes) + '</td>' +
         '<td>' + (file.published ? 'yes' : 'no') + '</td>' +
         '<td><code>' + escapeHtml(file.sha256 || '—') + '</code></td>' +
         '<td><button class="secondary use-file" data-id="' + escapeAttr(file.id) + '">Use</button> ' +
         '<button class="danger delete-file" data-id="' + escapeAttr(file.id) + '">Delete</button></td>';
-
-      rows.appendChild(tr);
+      container.appendChild(tr);
     });
-
-    rows.querySelectorAll('.use-file').forEach(btn => {
-      btn.onclick = () => {
-        const file = (files || []).find(f => f.id === btn.dataset.id);
-        result.textContent = file
-          ? ((file.original_name || 'File') + ' • ' + formatBytes(file.bytes) + ' • ' + String(file.file_type || '').toUpperCase())
-          : 'File not found.';
-      };
-    });
-
-    rows.querySelectorAll('.delete-file').forEach(btn => {
-      btn.onclick = async () => {
-        if (!confirm('Delete this release file permanently? This cannot be undone.')) return;
-        btn.disabled = true;
-        try {
-          await request('/api/admin/files/' + encodeURIComponent(btn.dataset.id), { method:'DELETE' });
-          result.textContent = 'File permanently deleted.';
-          await loadStats();
-          await loadApps();
-          await loadVersions();
-          await loadFiles(id);
-        } catch(e) {
-          btn.disabled = false;
-          result.textContent = 'Error: ' + e.message;
-        }
-      };
-    });
-
-    if (files?.length) {
-      result.textContent =
-        (sourceLabel ? sourceLabel + ' • ' : '') +
-        files.map(file => (file.original_name || 'File') + ' • ' + formatBytes(file.bytes)).join('\\n');
-    } else {
-      result.textContent = 'No release files found.';
-    }
   };
 
   try {
-    // Primary lookup: exact version relation.
     const exact = await request('/api/admin/versions/' + encodeURIComponent(id) + '/files');
     const exactFiles = Array.isArray(exact.files) ? exact.files : [];
+
     if (exactFiles.length) {
-      render(exactFiles, 'Current version');
+      renderInto(rows, exactFiles);
+      renderInto(uploadRows, exactFiles);
+      bindDelete(rows, exactFiles, id);
+      bindDelete(uploadRows, exactFiles, id);
+
+      const summary = exactFiles.map(file =>
+        (file.original_name || 'File') + ' • ' + formatBytes(file.bytes)
+      ).join('\\n');
+
+      if (result) result.textContent = 'Current version • ' + summary;
+      if (uploadResult) uploadResult.textContent = 'Current version • ' + summary;
       return;
     }
 
-    // Recovery lookup: ask the backend directly for every file attached to
-    // the selected app. This avoids an empty result when an older release was
-    // uploaded against a different version record.
     const appId =
-      $('selectedAppId').value.trim() ||
+      $('selectedAppId')?.value.trim() ||
       exact.version?.app_id ||
-      $('versionAppId').value.trim() ||
+      $('versionAppId')?.value.trim() ||
       '';
 
     if (appId) {
       const all = await request('/api/admin/files?app_id=' + encodeURIComponent(appId));
       const allFiles = Array.isArray(all.files) ? all.files : [];
+
       if (allFiles.length) {
-        render(allFiles, 'Files in selected app');
+        renderInto(rows, allFiles);
+        renderInto(uploadRows, allFiles);
+        bindDelete(rows, allFiles, id);
+        bindDelete(uploadRows, allFiles, id);
+
+        const summary = allFiles.map(file =>
+          (file.original_name || 'File') + ' • ' + formatBytes(file.bytes)
+        ).join('\\n');
+
+        if (result) result.textContent = 'Files in selected app • ' + summary;
+        if (uploadResult) uploadResult.textContent = 'Files in selected app • ' + summary;
         return;
       }
     }
 
-    // Final recovery: global admin file list. Stats already confirms whether
-    // any files exist, so this makes a mismatch visible instead of silently
-    // showing a blank panel.
     const global = await request('/api/admin/files');
     const globalFiles = Array.isArray(global.files) ? global.files : [];
+
+    renderInto(rows, globalFiles);
+    renderInto(uploadRows, globalFiles);
+    bindDelete(rows, globalFiles, id);
+    bindDelete(uploadRows, globalFiles, id);
+
     if (globalFiles.length) {
-      render(globalFiles, 'All uploaded release files');
+      const summary = globalFiles.map(file =>
+        (file.original_name || 'File') + ' • ' + formatBytes(file.bytes)
+      ).join('\\n');
+      if (result) result.textContent = 'All uploaded release files • ' + summary;
+      if (uploadResult) uploadResult.textContent = 'All uploaded release files • ' + summary;
     } else {
-      result.textContent = 'No release files exist in the database.';
+      if (result) result.textContent = 'No release files exist in the database.';
+      if (uploadResult) uploadResult.textContent = 'No release files exist in the database.';
     }
   } catch(e) {
-    result.textContent = 'Error loading files: ' + e.message;
+    if (result) result.textContent = 'Error loading files: ' + e.message;
+    if (uploadResult) uploadResult.textContent = 'Error loading files: ' + e.message;
   }
 }
 
