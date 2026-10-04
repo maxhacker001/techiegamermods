@@ -119,44 +119,62 @@ async function getRelatedApps(appId, env) {
     image: row.icon_url || null
   }));
 
-  const tokenize = (value) => String(value || "")
+  const normalize = (value) => String(value || "")
     .toLowerCase()
-    .replace(/<[^>]+>/g, " ")
-    .split(/[^a-z0-9]+/)
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&[a-z0-9#]+;/gi, " ")
+    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/\\s+/g, " ")
+    .trim();
+
+  const tokenize = (value) => normalize(value)
+    .split(" ")
     .filter(token => token.length >= 3);
 
   const stopWords = new Set([
-    "the","and","for","with","from","this","that","your","our","you",
-    "app","apps","mod","mods","game","games","tutorial","guide","pro",
-    "version","android","download","official","latest","free"
+    "the","and","for","with","from","this","that","your","our","you","are",
+    "app","apps","mod","mods","game","games","tutorial","tutorials","guide",
+    "version","android","download","official","latest","free","mobile",
+    "premium","pro","apk","apkmod"
   ]);
 
-  const themeGroups = [
-    ["shooter","war","battle","combat","gun","weapon","military","fps","shooting","action","call of duty","cod","pubg","free fire","battlefield"],
-    ["football","soccer","fifa","efootball","dream league","dls","football manager"],
-    ["video","editing","capcut","inshot","kinemaster","alight motion","vn video","film"],
-    ["photo","photography","lightroom","picsart","snapseed","photoshop"],
-    ["music","spotify","audio","player","sound","streaming"],
+  const topicGroups = [
+    ["video","editing","editor","capcut","inshot","kinemaster","alight motion","vn video","film","reels","shorts"],
+    ["photo","photography","photo editor","lightroom","picsart","snapseed","photoshop","image","images"],
+    ["video downloader","downloader","download manager","save video","video download","snaptube","vidmate","tubemate"],
+    ["music","spotify","audio","player","sound","streaming","podcast"],
     ["social","whatsapp","telegram","instagram","facebook","messenger","chat"],
+    ["shooter","war","battle","combat","fps","shooting","call of duty","cod","pubg","free fire","battlefield"],
+    ["football","soccer","fifa","efootball","dream league","dls","football manager"],
     ["racing","car","cars","asphalt","need for speed","racing"],
     ["strategy","clash","warcraft","civilization","tactics"],
-    ["anime","manga","otaku","crunchyroll","anime"]
+    ["anime","manga","otaku","crunchyroll","anime"],
+    ["browser","web browser","privacy browser","firefox","chrome","edge","opera"],
+    ["file manager","file explorer","zarchiver","archive","zip","rar"],
+    ["vpn","privacy","proxy","webrtc","dns"]
   ];
 
-  const themeTermsFor = (text) => {
-    const lower = String(text || "").toLowerCase();
-    const terms = new Set();
-    for (const group of themeGroups) {
-      const matched = group.some(term => lower.includes(term));
-      if (matched) group.forEach(term => terms.add(term));
-    }
-    return terms;
+  const groupMatches = (text) => {
+    const lower = normalize(text);
+    return topicGroups
+      .filter(group => group.some(term => lower.includes(normalize(term))))
+      .map(group => group.join(" "))
+      .filter(Boolean);
   };
+
+  const termSet = (text) => new Set(
+    tokenize(text).filter(token => !stopWords.has(token))
+  );
 
   try {
     const current = await env.DB.prepare(`
       SELECT
-        a.id, a.category_id, a.name, a.genre, a.description_html,
+        a.id,
+        a.category_id,
+        c.slug AS category_slug,
+        a.name,
+        a.genre,
+        a.description_html,
         COALESCE((
           SELECT GROUP_CONCAT(
             COALESCE(t.title, '') || ' ' || COALESCE(t.body, ''),
@@ -166,6 +184,7 @@ async function getRelatedApps(appId, env) {
           WHERE t.app_id=a.id AND t.status='published'
         ), '') AS tutorial_text
       FROM apps a
+      JOIN categories c ON c.id=a.category_id
       WHERE a.id=? AND a.status='published'
       LIMIT 1
     `).bind(appId).first();
@@ -176,7 +195,7 @@ async function getRelatedApps(appId, env) {
       "SELECT tag FROM app_tags WHERE app_id=? ORDER BY tag"
     ).bind(appId).all();
 
-    const currentText = [
+    const sourceText = [
       current.name,
       current.genre,
       current.description_html,
@@ -184,47 +203,10 @@ async function getRelatedApps(appId, env) {
       ...(currentTags.results || []).map(row => row.tag)
     ].join(" ");
 
-    const sourceTokens = new Set(
-      tokenize(currentText).filter(token => !stopWords.has(token))
-    );
-    const sourceThemes = themeTermsFor(currentText);
-    const sourceGenre = String(current.genre || "").toLowerCase().trim();
-
-    const explicit = await env.DB.prepare(`
-      SELECT
-        a.id,
-        a.slug,
-        a.name,
-        a.publisher,
-        a.genre,
-        a.icon_url,
-        a.status,
-        r.sort_order,
-        (
-          SELECT vv.version_name
-          FROM versions vv
-          WHERE vv.app_id=a.id AND vv.status='published'
-          ORDER BY datetime(vv.updated_at) DESC
-          LIMIT 1
-        ) AS version,
-        (
-          SELECT vv.size_bytes
-          FROM versions vv
-          WHERE vv.app_id=a.id AND vv.status='published'
-          ORDER BY datetime(vv.updated_at) DESC
-          LIMIT 1
-        ) AS size_bytes
-      FROM app_relations r
-      JOIN apps a ON a.id=r.related_app_id
-      WHERE r.app_id=? AND a.status='published'
-      ORDER BY r.sort_order ASC, datetime(a.updated_at) DESC, a.name ASC
-      LIMIT 12
-    `).bind(appId).all();
-
-    const explicitRows = explicit.results || [];
-    const explicitRank = new Map(
-      explicitRows.map((row, index) => [row.id, 2000 - index])
-    );
+    const sourceGenre = normalize(current.genre);
+    const sourceCategory = normalize(current.category_slug);
+    const sourceTerms = termSet(sourceText);
+    const sourceGroups = new Set(groupMatches(sourceText));
 
     const candidates = await env.DB.prepare(`
       SELECT
@@ -233,9 +215,9 @@ async function getRelatedApps(appId, env) {
         a.name,
         a.publisher,
         a.genre,
-        a.description_html,
         a.icon_url,
         a.status,
+        c.slug AS category_slug,
         (
           SELECT vv.version_name
           FROM versions vv
@@ -257,13 +239,15 @@ async function getRelatedApps(appId, env) {
           )
           FROM tutorials t
           WHERE t.app_id=a.id AND t.status='published'
-        ), '') AS tutorial_text
+        ), '') AS tutorial_text,
+        a.description_html
       FROM apps a
+      JOIN categories c ON c.id=a.category_id
       WHERE a.id<>?
         AND a.status='published'
         AND a.category_id=?
       ORDER BY datetime(a.updated_at) DESC, a.name ASC
-      LIMIT 200
+      LIMIT 300
     `).bind(appId, current.category_id).all();
 
     const ranked = (candidates.results || []).map(row => {
@@ -274,60 +258,68 @@ async function getRelatedApps(appId, env) {
         row.tutorial_text
       ].join(" ");
 
-      const candidateTokens = new Set(
-        tokenize(candidateText).filter(token => !stopWords.has(token))
-      );
-      const candidateThemes = themeTermsFor(candidateText);
+      const candidateGenre = normalize(row.genre);
+      const candidateTerms = termSet(candidateText);
+      const candidateGroups = new Set(groupMatches(candidateText));
 
-      let score = explicitRank.get(row.id) || 0;
+      let score = 0;
 
-      if (sourceGenre && String(row.genre || "").toLowerCase().trim() === sourceGenre) {
-        score += 15;
+      // Primary rule for normal apps/games:
+      // exact genre match is the strongest relevance signal.
+      if (sourceGenre && candidateGenre === sourceGenre) {
+        score += 1000;
+      } else if (sourceGenre && candidateGenre) {
+        // Related genre wording can still qualify when the source/candidate
+        // share a clear topic group, but never outrank an exact genre match.
+        score += 0;
       }
 
-      for (const token of candidateTokens) {
-        if (sourceTokens.has(token)) score += 4;
+      // Topic/agenda relevance.
+      for (const group of candidateGroups) {
+        if (sourceGroups.has(group)) score += 250;
       }
 
-      for (const theme of candidateThemes) {
-        if (sourceThemes.has(theme)) score += 12;
+      // Shared meaningful name/slug/genre words help rank the same agenda
+      // even when different publishers use slightly different genre labels.
+      let sharedTerms = 0;
+      for (const token of candidateTerms) {
+        if (sourceTerms.has(token)) sharedTerms++;
       }
+      score += Math.min(sharedTerms, 12) * 12;
 
-      const sourceLower = currentText.toLowerCase();
-      const candidateLower = candidateText.toLowerCase();
-      for (const group of themeGroups) {
-        const sourceHasGroup = group.some(term => sourceLower.includes(term));
-        const candidateHasGroup = group.some(term => candidateLower.includes(term));
-        if (sourceHasGroup && candidateHasGroup) score += 25;
+      // Tutorials are related by what the tutorial is actually about:
+      // title/body/topic terms, not merely by arbitrary publisher metadata.
+      if (sourceCategory === "tutorials") {
+        score = 0;
+        const sourceTopicWords = sourceTerms;
+        for (const token of candidateTerms) {
+          if (sourceTopicWords.has(token)) score += 30;
+        }
+        for (const group of candidateGroups) {
+          if (sourceGroups.has(group)) score += 220;
+        }
       }
 
       return { row, score };
     });
 
-    const merged = [
-      ...explicitRows.map(row => ({ row, score: explicitRank.get(row.id) || 2000 })),
-      ...ranked
-    ];
+    // Only return genuinely relevant candidates. This prevents unrelated
+    // apps from filling the Related section just because they are recent.
+    const relevant = ranked
+      .filter(item => item.score > 0)
+      .sort((a, b) =>
+        b.score - a.score ||
+        String(a.row.name || "").localeCompare(String(b.row.name || ""))
+      )
+      .slice(0, 12)
+      .map(item => item.row);
 
-    const bestById = new Map();
-    for (const item of merged) {
-      const previous = bestById.get(item.row.id);
-      if (!previous || item.score > previous.score) bestById.set(item.row.id, item);
-    }
-
-    return shape(
-      [...bestById.values()]
-        .sort((a, b) =>
-          b.score - a.score ||
-          String(a.row.name || "").localeCompare(String(b.row.name || ""))
-        )
-        .slice(0, 12)
-        .map(item => item.row)
-    );
+    return shape(relevant);
   } catch (_) {
     return [];
   }
 }
+
 async function saveRelatedApps(appId, relatedInput, env) {
   try {
     const raw = Array.isArray(relatedInput)
