@@ -269,28 +269,30 @@
           const filters = $("filtersSection");
           if (filters) filters.style.display = "flex";
 
+          // Explicitly restore the Home page so Home works even when the
+          // current view was created by live search.
           showPage("homePage");
           homeRender();
 
-          // Home must always return the user to the top of the home experience.
-          // Reset both document scroll roots first, then place the viewport at
-          // the Trending Mods section after the home page is visible.
-          window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-          document.documentElement.scrollTop = 0;
-          document.body.scrollTop = 0;
+          const returnToTrending = () => {
+            showPage("homePage");
 
-          const goHomeTop = () => {
             const trending = $("trendingSection");
             if (trending) {
-              const top = Math.max(0, trending.getBoundingClientRect().top + window.scrollY - 8);
+              trending.style.display = "block";
+              const top = Math.max(
+                0,
+                trending.getBoundingClientRect().top + window.scrollY - 8
+              );
               window.scrollTo({ top, left: 0, behavior: "smooth" });
             } else {
               window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
             }
           };
 
+          // Wait until the Home render has restored the Trending section.
           requestAnimationFrame(() => {
-            requestAnimationFrame(goHomeTop);
+            requestAnimationFrame(returnToTrending);
           });
         } else if (item.dataset.category) {
           categoryRender(item.dataset.category);
