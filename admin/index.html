@@ -1333,7 +1333,13 @@ $('uploadAsset').onclick = async () => {
 $('loadApps').onclick = loadApps;
 $('loadVersions').onclick = loadVersions;
 $('loadFiles').onclick = async () => { const id=$('fileVersionId').value.trim() || $('versionEditId').value.trim(); if(id) await loadFiles(id); };
-$('loadAssets').onclick = async () => { const id=$('selectedAppId').value.trim(); if(id) await loadAppAssets(id); };
+$('loadAssets').onclick = async () => {
+  const versionId = $('assetVersionId').value.trim();
+  const appId = $('selectedAppId').value.trim();
+  if (versionId) await loadVersionAssets(versionId);
+  else if (appId) await loadAppAssets(appId);
+  else $('assetResult').textContent = 'Select an app or enter a version ID first.';
+};
 $('selectedAppId').addEventListener('change', async ()=>{
   const id=$('selectedAppId').value.trim();
   $('versionAppId').value=id;
