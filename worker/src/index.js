@@ -91,24 +91,16 @@ async function listApps(request, env) {
   }
 
   if (search) {
-    const terms = search.split(/\\s+/).map(term => term.trim()).filter(Boolean);
+    const terms = search.split(/\s+/).map(term => term.trim()).filter(Boolean);
     for (const term of terms) {
       const pattern = `%${term}%`;
       sql += `
         AND (
           lower(a.name) LIKE ?
           OR lower(a.slug) LIKE ?
-          OR lower(COALESCE(a.package_name, '')) LIKE ?
-          OR lower(COALESCE(a.publisher, '')) LIKE ?
-          OR lower(COALESCE(a.genre, '')) LIKE ?
-          OR lower(a.description_html) LIKE ?
-          OR EXISTS (
-            SELECT 1 FROM app_tags t
-            WHERE t.app_id = a.id AND lower(t.tag) LIKE ?
-          )
         )
       `;
-      bindings.push(pattern, pattern, pattern, pattern, pattern, pattern, pattern);
+      bindings.push(pattern, pattern);
     }
   }
 
