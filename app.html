@@ -270,15 +270,9 @@
     let foundLiveApp = false;
     let relatedApps = [];
 
-    // Allow tutorial entries created entirely from Admin/D1 to open even
-    // when they have no hard-coded entry in js/data.js.
-    if (!app) {
-      app = {
-        id: appId, name: appId, category: "tutorials", version: "—",
-        size: "—", image: "images/logo.png", features: [], screenshots: [],
-        description: "", youtube: "", modTitle: "Video Tutorial", releaseAssets: []
-      };
-    }
+    // Keep the legacy catalog entry when one exists. For live-only apps,
+    // resolve the exact published record through the catalog endpoint if the
+    // detail endpoint is temporarily unavailable.
 
     // Prefer the published Worker record when it exists. Fall back to the
     // original local catalog so every legacy page keeps its existing layout.
@@ -288,22 +282,61 @@
         try {
           live = await window.TGMApi.getApp(appId);
         } catch (_) {
-          // Legacy tutorial IDs (for example "tut-lucky-patcher") can differ
-          // from the live CMS slug. Resolve those old links by exact name.
-          if (hasLegacyApp && app.name) {
-            const matches = await window.TGMApi.listApps({
-              category: "tutorials",
-              search: app.name,
-              limit: 20
-            });
+          // Resolve the exact published slug through the catalog endpoint.
+          // This prevents a live app from being misclassified as a tutorial
+          // when its detailed endpoint is temporarily unavailable.
+          try {
+            const matches = await window.TGMApi.listApps({ search: appId, limit: 100 });
             const exact = (matches.apps || []).find(row =>
-              String(row.name || "").trim().toLowerCase() ===
-              String(app.name || "").trim().toLowerCase()
+              String(row.slug || row.id || "").trim().toLowerCase() ===
+              String(appId || "").trim().toLowerCase()
             );
             if (exact) {
-              live = await window.TGMApi.getApp(exact.slug || exact.id);
+              foundLiveApp = true;
+              const legacy = app || {};
+              const liveApp = exact;
+              app = {
+                id: liveApp.slug || liveApp.id || appId,
+                name: liveApp.name || legacy.name || appId,
+                category: liveApp.category_slug || legacy.category || "apps",
+                version: liveApp.latest_version || legacy.version || "—",
+                size: liveApp.latest_size_bytes
+                  ? window.TGMApi.formatBytes(liveApp.latest_size_bytes)
+                  : (legacy.size || "—"),
+                image: liveApp.icon_url
+                  ? window.TGMApi.imageUrl(liveApp.icon_url)
+                  : (legacy.image || "images/logo.png"),
+                modTitle: liveApp.latest_mod_info || legacy.modTitle || "Release information",
+                androidMin: legacy.androidMin || "",
+                architecture: legacy.architecture || "",
+                minSdk: legacy.minSdk || "",
+                targetSdk: legacy.targetSdk || "",
+                changelog: legacy.changelog || "",
+                releaseAssets: legacy.releaseAssets || [],
+                updated: liveApp.updated_at || legacy.updated || "",
+                publisher: liveApp.publisher || legacy.publisher || "",
+                genre: liveApp.genre || legacy.genre || "",
+                playstore: liveApp.play_store_url || legacy.playstore || "",
+                description: liveApp.description_html || legacy.description || "",
+                features: liveApp.latest_mod_info ? [liveApp.latest_mod_info] : (legacy.features || []),
+                screenshots: legacy.screenshots || [],
+                youtube: legacy.youtube || "",
+                tutorialBody: ""
+              };
+            } else if (hasLegacyApp && app.name) {
+              const matchesByName = await window.TGMApi.listApps({
+                search: app.name,
+                limit: 100
+              });
+              const exactByName = (matchesByName.apps || []).find(row =>
+                String(row.name || "").trim().toLowerCase() ===
+                String(app.name || "").trim().toLowerCase()
+              );
+              if (exactByName) {
+                live = await window.TGMApi.getApp(exactByName.slug || exactByName.id);
+              }
             }
-          }
+          } catch (_) {}
         }
 
         if (live && live.app) {
@@ -384,7 +417,7 @@
     }
 
     if (!hasLegacyApp && !foundLiveApp) {
-      fail("Tutorial not found", "This tutorial is not published in the live catalog yet.");
+      fail("App not found", "This app is not available in the live catalog right now.");
       return;
     }
 
