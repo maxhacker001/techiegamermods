@@ -117,13 +117,10 @@
         ...(Array.isArray(app.features) ? app.features : [])
       ].join(" "));
 
-      // Primary behavior: contiguous substring match, including short
-      // fragments such as "c", "ca", "cal", "call".
-      if (haystack.includes(q)) return true;
-
-      // For multi-word searches, keep a useful OR-style match so each
-      // meaningful word can surface related releases while the user types.
-      return terms.length > 1 && terms.some(term => term.length >= 2 && haystack.includes(term));
+      // Normal live-search behavior:
+      // - one fragment: match anywhere (c -> ca -> cal -> call)
+      // - multiple words: EVERY word must be present
+      return terms.every(term => haystack.includes(term));
     });
 
     return matches.sort((a, b) =>
