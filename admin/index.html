@@ -1471,15 +1471,9 @@ async function loadExistingScreenshots() {
     return;
   }
 
-  try {
-    const data = await request('/api/admin/apps/' + encodeURIComponent(appId) + '/screenshots');
-    const shots = data.screenshots || [];
+  target.innerHTML = '<p class="muted">Loading current screenshots...</p>';
 
-    if (!shots.length) {
-      target.innerHTML = '<p class="muted">No screenshots are currently linked to this app.</p>';
-      return;
-    }
-
+  const renderCmsScreenshots = (shots) => {
     target.innerHTML = '';
     shots.forEach((shot, index) => {
       const row = document.createElement('div');
@@ -1493,13 +1487,13 @@ async function loadExistingScreenshots() {
       const info = document.createElement('div');
       info.innerHTML =
         '<div><b>' + escapeHtml(shot.alt_text || ('Screenshot ' + (index + 1))) + '</b></div>' +
-        '<div class="muted">Order: ' + escapeHtml(shot.sort_order) + '</div>';
+        '<div class="muted">CMS screenshot • Order: ' + escapeHtml(shot.sort_order) + '</div>';
 
       const del = document.createElement('button');
       del.className = 'danger';
       del.textContent = 'Delete';
       del.onclick = async () => {
-        if (!confirm('Delete this screenshot?')) return;
+        if (!confirm('Delete this screenshot permanently? This cannot be undone.')) return;
         del.disabled = true;
         try {
           await request('/api/admin/screenshots/' + encodeURIComponent(shot.id), { method: 'DELETE' });
@@ -1514,6 +1508,99 @@ async function loadExistingScreenshots() {
       row.append(img, info, del);
       target.appendChild(row);
     });
+  };
+
+  const renderLegacyScreenshots = (paths, slug) => {
+    target.innerHTML = '';
+    const heading = document.createElement('div');
+    heading.className = 'notice';
+    heading.style.marginBottom = '12px';
+    heading.textContent = 'Legacy screenshots found in the site files. They are not yet linked to D1/R2. Import them here to make them fully CMS-managed and deletable.';
+    target.appendChild(heading);
+
+    paths.forEach((path, index) => {
+      const row = document.createElement('div');
+      row.style.cssText = 'display:grid;grid-template-columns:90px 1fr auto;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);';
+
+      const img = document.createElement('img');
+      img.src = '../images/screenshots/' + encodeURIComponent(path);
+      img.alt = slug + ' legacy screenshot ' + (index + 1);
+      img.style.cssText = 'width:80px;height:80px;object-fit:cover;border-radius:10px;border:1px solid var(--border);';
+
+      const info = document.createElement('div');
+      info.innerHTML =
+        '<div><b>' + escapeHtml(path) + '</b></div>' +
+        '<div class="muted">Legacy static screenshot • Order: ' + (index + 1) + '</div>';
+
+      const importBtn = document.createElement('button');
+      importBtn.className = 'secondary';
+      importBtn.textContent = 'Import to CMS';
+      importBtn.onclick = async () => {
+        importBtn.disabled = true;
+        importBtn.textContent = 'Importing…';
+        try {
+          const response = await fetch('../images/screenshots/' + encodeURIComponent(path), { cache: 'no-store' });
+          if (!response.ok) throw new Error('Could not read legacy screenshot (HTTP ' + response.status + ').');
+
+          const blob = await response.blob();
+          const form = new FormData();
+          form.append('file', new File([blob], path, { type: blob.type || 'image/png' }));
+          form.append('alt_text', slug + ' screenshot ' + (index + 1));
+          form.append('sort_order', String(index));
+
+          const upload = await fetch(apiBase() + '/api/admin/apps/' + encodeURIComponent(appId) + '/screenshots', {
+            method: 'POST',
+            headers: authHeaders(),
+            body: form
+          });
+          const data = await upload.json();
+          if (!upload.ok) throw new Error(data.error || ('HTTP ' + upload.status));
+
+          $('screenshotResult').textContent = 'Imported ' + path + ' into CMS.';
+          await loadExistingScreenshots();
+        } catch (e) {
+          importBtn.disabled = false;
+          importBtn.textContent = 'Import to CMS';
+          $('screenshotResult').textContent = 'Error: ' + e.message;
+        }
+      };
+
+      row.append(img, info, importBtn);
+      target.appendChild(row);
+    });
+  };
+
+  try {
+    const data = await request('/api/admin/apps/' + encodeURIComponent(appId) + '/screenshots');
+    const shots = Array.isArray(data.screenshots) ? data.screenshots : [];
+
+    if (shots.length) {
+      renderCmsScreenshots(shots);
+      $('screenshotResult').textContent = shots.length + ' CMS screenshot(s) loaded.';
+      return;
+    }
+
+    // The existing public catalog still contains a small set of legacy
+    // screenshot files in GitHub Pages. They were never migrated into the
+    // D1/R2 screenshot table, which is why the Admin panel saw nothing.
+    let manifest = {};
+    try {
+      const response = await fetch('../images/screenshots/manifest.json', { cache: 'no-store' });
+      if (response.ok) manifest = await response.json();
+    } catch (_) {}
+
+    const app = appCache.get(appId);
+    const slug = String(app?.slug || '').trim();
+    const legacyPaths = Array.isArray(manifest[slug]) ? manifest[slug] : [];
+
+    if (legacyPaths.length) {
+      renderLegacyScreenshots(legacyPaths, slug);
+      $('screenshotResult').textContent = legacyPaths.length + ' legacy screenshot(s) found. Import them to CMS to enable Delete.';
+      return;
+    }
+
+    target.innerHTML = '<p class="muted">No screenshots are currently linked to this app.</p>';
+    $('screenshotResult').textContent = 'No CMS or legacy screenshots found for this app.';
   } catch (e) {
     target.innerHTML = '<p class="muted">Unable to load current screenshots.</p>';
     $('screenshotResult').textContent = 'Error: ' + e.message;
