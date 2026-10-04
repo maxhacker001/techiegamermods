@@ -800,6 +800,42 @@ async function adminEditVersion(request, versionId, env) {
   return json({ id: versionId }, 200, env);
 }
 
+async function adminListAllFiles(request, env) {
+  if (!requireAdmin(request, env)) return json({ error: "Unauthorized" }, 401, env);
+  if (!env.DB) return json({ error: "Database binding is not configured" }, 500, env);
+
+  const url = new URL(request.url);
+  const versionId = (url.searchParams.get("version_id") || "").trim();
+  const appId = (url.searchParams.get("app_id") || "").trim();
+
+  let sql = `
+    SELECT
+      f.id, f.version_id, f.file_type, f.storage_key, f.original_name,
+      f.mime_type, f.bytes, f.sha256, f.scan_status, f.published, f.created_at,
+      v.app_id, v.version_name,
+      a.slug AS app_slug, a.name AS app_name
+    FROM files f
+    JOIN versions v ON v.id = f.version_id
+    JOIN apps a ON a.id = v.app_id
+    WHERE 1=1
+  `;
+  const bindings = [];
+
+  if (versionId) {
+    sql += " AND f.version_id=?";
+    bindings.push(versionId);
+  }
+  if (appId) {
+    sql += " AND v.app_id=?";
+    bindings.push(appId);
+  }
+
+  sql += " ORDER BY datetime(f.created_at) DESC";
+
+  const result = await env.DB.prepare(sql).bind(...bindings).all();
+  return json({ files: result.results || [] }, 200, env);
+}
+
 async function adminListFilesForVersion(request, versionId, env) {
   if (!requireAdmin(request, env)) return json({ error: "Unauthorized" }, 401, env);
   const version = await env.DB.prepare("SELECT id, app_id, version_name FROM versions WHERE id=? LIMIT 1")
@@ -1572,6 +1608,10 @@ export default {
       if (path.startsWith("/api/admin/versions/") && path.endsWith("/status") && request.method === "PATCH") {
         const versionId = decodeURIComponent(path.slice("/api/admin/versions/".length, -"/status".length));
         return adminSetVersionStatus(request, versionId, env);
+      }
+
+      if (path === "/api/admin/files" && request.method === "GET") {
+        return adminListAllFiles(request, env);
       }
 
       if (path === "/api/admin/files" && request.method === "POST") {
