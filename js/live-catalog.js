@@ -104,16 +104,15 @@
     if (!q) return source.slice();
 
     const terms = q.split(" ").filter(Boolean);
-
-    const matches = source.filter(app => {
-      const searchableName = normalizeSearch([app.name, app.slug].join(" "));
-      return terms.every(term => searchableName.includes(term));
-    });
-
-    return matches.sort((a, b) =>
-      searchScore(b, q) - searchScore(a, q) ||
-      String(a.name || "").localeCompare(String(b.name || ""))
-    );
+    return source
+      .filter(app => {
+        const nameAndSlug = normalizeSearch([app.name, app.slug].join(" "));
+        return terms.every(term => nameAndSlug.includes(term));
+      })
+      .sort((a, b) =>
+        searchScore(b, q) - searchScore(a, q) ||
+        String(a.name || "").localeCompare(String(b.name || ""))
+      );
   };
 
   const renderGroupedSearch = (target, list) => {
