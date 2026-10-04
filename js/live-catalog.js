@@ -106,21 +106,8 @@
     const terms = q.split(" ").filter(Boolean);
 
     const matches = source.filter(app => {
-      const haystack = normalizeSearch([
-        app.name,
-        app.slug,
-        app.publisher,
-        app.genre,
-        app.description,
-        app.category_name,
-        app.modTitle,
-        ...(Array.isArray(app.features) ? app.features : [])
-      ].join(" "));
-
-      // Normal live-search behavior:
-      // - one fragment: match anywhere (c -> ca -> cal -> call)
-      // - multiple words: EVERY word must be present
-      return terms.every(term => haystack.includes(term));
+      const searchableName = normalizeSearch([app.name, app.slug].join(" "));
+      return terms.every(term => searchableName.includes(term));
     });
 
     return matches.sort((a, b) =>
