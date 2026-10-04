@@ -99,28 +99,36 @@
     return value;
   };
 
-  const searchMatches = (query) => {
-    const exact = state.apps.filter(app => {
-      const name = normalizeSearch(app.name);
-      const slug = normalizeSearch(app.slug);
-      return name === query || slug === query;
-    });
-    if (exact.length) return exact;
+  const searchMatches = (query, source = state.apps) => {
+    const q = normalizeSearch(query);
+    if (!q) return source.slice();
 
-    const titleMatches = state.apps.filter(app =>
-      normalizeSearch([app.name, app.slug].join(" ")).includes(query)
-    );
-    if (titleMatches.length) return titleMatches;
+    const terms = q.split(" ").filter(Boolean);
 
-    return state.apps.filter(app =>
-      normalizeSearch([
+    const matches = source.filter(app => {
+      const haystack = normalizeSearch([
         app.name,
         app.slug,
         app.publisher,
         app.genre,
         app.description,
-        app.category_name
-      ].join(" ")).includes(query)
+        app.category_name,
+        app.modTitle,
+        ...(Array.isArray(app.features) ? app.features : [])
+      ].join(" "));
+
+      // Primary behavior: contiguous substring match, including short
+      // fragments such as "c", "ca", "cal", "call".
+      if (haystack.includes(q)) return true;
+
+      // For multi-word searches, keep a useful OR-style match so each
+      // meaningful word can surface related releases while the user types.
+      return terms.length > 1 && terms.some(term => term.length >= 2 && haystack.includes(term));
+    });
+
+    return matches.sort((a, b) =>
+      searchScore(b, q) - searchScore(a, q) ||
+      String(a.name || "").localeCompare(String(b.name || ""))
     );
   };
 
@@ -172,7 +180,7 @@
 
     if (state.query) {
       const query = normalizeSearch(state.query);
-      const list = searchMatches(query);
+      const list = searchMatches(query, state.searchResults || state.apps);
       state.query = query;
 
       renderGroupedSearch(grid, list);
@@ -216,24 +224,79 @@
 
     if (input && !input.dataset.liveCatalogBound) {
       input.dataset.liveCatalogBound = "1";
-      input.addEventListener("input", () => {
+      input.addEventListener("input", async () => {
         state.query = input.value.trim();
+        const seq = ++state.searchSeq;
+
         if (!state.query) {
+          state.searchResults = null;
           state.category = "apps";
           const filters = $("filtersSection");
           if (filters) filters.style.display = "flex";
+          homeRender();
+          return;
         }
+
+        // Render local results immediately.
+        state.searchResults = null;
         homeRender();
+
+        try {
+          const response = await window.TGMApi.listApps({
+            search: normalizeSearch(state.query),
+            limit: 100
+          });
+          if (seq !== state.searchSeq || normalizeSearch(state.query) === "") return;
+
+          const remote = (response.apps || []).map(window.TGMApi.normalizeListApp);
+          state.searchResults = remote;
+
+          // Keep the catalog cache aware of newly returned matching records.
+          const bySlug = new Map(state.apps.map(app => [app.slug, app]));
+          remote.forEach(app => bySlug.set(app.slug, app));
+          state.apps = Array.from(bySlug.values());
+
+          homeRender();
+        } catch (_) {
+          // Local results remain visible if the live query fails.
+        }
       });
     }
 
     const searchBtn = $("searchBtn");
     if (searchBtn && !searchBtn.dataset.liveCatalogBound) {
       searchBtn.dataset.liveCatalogBound = "1";
-      searchBtn.addEventListener("click", () => {
-        state.query = input ? input.value.trim() : "";
-        if (!state.query) state.category = "apps";
+      searchBtn.addEventListener("click", async () => {
+        const value = input ? input.value.trim() : "";
+        state.query = value;
+        state.searchSeq++;
+        const seq = state.searchSeq;
+
+        if (!value) {
+          state.searchResults = null;
+          state.category = "apps";
+          homeRender();
+          return;
+        }
+
+        state.searchResults = null;
         homeRender();
+
+        try {
+          const response = await window.TGMApi.listApps({
+            search: normalizeSearch(value),
+            limit: 100
+          });
+          if (seq !== state.searchSeq) return;
+          const remote = (response.apps || []).map(window.TGMApi.normalizeListApp);
+          state.searchResults = remote;
+
+          const bySlug = new Map(state.apps.map(app => [app.slug, app]));
+          remote.forEach(app => bySlug.set(app.slug, app));
+          state.apps = Array.from(bySlug.values());
+
+          homeRender();
+        } catch (_) {}
       });
     }
 
