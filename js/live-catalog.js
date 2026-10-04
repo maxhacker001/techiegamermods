@@ -265,7 +265,9 @@
           if (filters) filters.style.display = "flex";
           showPage("homePage");
           homeRender();
-          window.scrollTo({ top: 0, behavior: "smooth" });
+          const trending = $("trendingSection");
+          if (trending) trending.scrollIntoView({ behavior: "smooth", block: "start" });
+          else window.scrollTo({ top: 0, behavior: "smooth" });
         } else if (item.dataset.category) {
           categoryRender(item.dataset.category);
         } else if (item.classList.contains("blog")) {
@@ -281,21 +283,6 @@
       });
     });
 
-    const menuToggle = $("menuToggle");
-    const sidebar = $("sidebar");
-    const overlay = $("overlay");
-
-    if (menuToggle && sidebar && overlay && !menuToggle.dataset.drawerBound) {
-      menuToggle.dataset.drawerBound = "1";
-      menuToggle.addEventListener("click", () => {
-        sidebar.classList.toggle("open");
-        overlay.classList.toggle("open");
-      });
-      overlay.addEventListener("click", () => {
-        sidebar.classList.remove("open");
-        overlay.classList.remove("open");
-      });
-    }
   };
 
   const setup = async () => {
@@ -305,10 +292,10 @@
         "<p style='grid-column:1/-1;text-align:center;color:var(--muted);margin:50px'>Loading live catalog…</p>";
     }
 
+    setupNavigation();
     try {
       const data = await window.TGMApi.listApps({ limit: 100 });
       state.apps = (data.apps || []).map(window.TGMApi.normalizeListApp);
-      setupNavigation();
 
       if (state.apps.length) {
         const hash = window.location.hash.replace(/^#/, "");
