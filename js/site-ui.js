@@ -21,6 +21,21 @@
       sidebar.querySelectorAll("a").forEach(link => {
         link.addEventListener("click", () => {
           close();
+
+          if (link.classList.contains("home")) {
+            setTimeout(() => {
+              const homePage = document.getElementById("homePage");
+              if (homePage) homePage.style.display = "block";
+
+              const trending = document.getElementById("trendingSection");
+              if (trending) {
+                const top = Math.max(0, trending.getBoundingClientRect().top + window.scrollY - 8);
+                window.scrollTo({ top, left: 0, behavior: "smooth" });
+              } else {
+                window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+              }
+            }, 0);
+          }
         });
       });
     }
