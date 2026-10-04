@@ -264,14 +264,35 @@
         if (item.classList.contains("home")) {
           state.category = "apps";
           state.query = "";
+          state.searchResults = null;
           if (input) input.value = "";
+
           const filters = $("filtersSection");
           if (filters) filters.style.display = "flex";
+
           showPage("homePage");
           homeRender();
-          const trending = $("trendingSection");
-          if (trending) trending.scrollIntoView({ behavior: "smooth", block: "start" });
-          else window.scrollTo({ top: 0, behavior: "smooth" });
+
+          // Home must always return the user to the top of the home experience.
+          // Reset both document scroll roots first, then place the viewport at
+          // the Trending Mods section after the home page is visible.
+          window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+          document.documentElement.scrollTop = 0;
+          document.body.scrollTop = 0;
+
+          const goHomeTop = () => {
+            const trending = $("trendingSection");
+            if (trending) {
+              const top = Math.max(0, trending.getBoundingClientRect().top + window.scrollY - 8);
+              window.scrollTo({ top, left: 0, behavior: "smooth" });
+            } else {
+              window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+            }
+          };
+
+          requestAnimationFrame(() => {
+            requestAnimationFrame(goHomeTop);
+          });
         } else if (item.dataset.category) {
           categoryRender(item.dataset.category);
         } else if (item.classList.contains("blog")) {
