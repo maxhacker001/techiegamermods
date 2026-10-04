@@ -831,7 +831,7 @@ async function adminDeleteIcon(request, appId, env) {
   for (const row of rows.results || []) {
     try { const details = JSON.parse(row.details_json || "{}"); if (details.storage_key) keys.push(details.storage_key); } catch (_) {}
   }
-  for (const key of [...new Set(keys)]) { try { await env.BUCKET.delete(key); } catch (_) {} }
+  for (const key of [...new Set(keys)]) { await env.BUCKET.delete(key); }
   await env.DB.prepare("UPDATE apps SET icon_url=NULL,updated_at=CURRENT_TIMESTAMP WHERE id=?").bind(appId).run();
   await env.DB.prepare("DELETE FROM admin_audit_log WHERE entity_type='app_icon' AND entity_id=?").bind(appId).run();
   await env.DB.prepare("INSERT INTO admin_audit_log(actor,action,entity_type,entity_id,details_json) VALUES('admin','delete','app_icon',?,?)").bind(appId, JSON.stringify({ deleted_keys: [...new Set(keys)].length })).run();
@@ -843,7 +843,7 @@ async function adminDeleteFile(request, fileId, env) {
   if (!env.DB || !env.BUCKET) return json({ error: "Storage/database binding is not configured" }, 500, env);
   const file = await env.DB.prepare("SELECT id,version_id,storage_key,original_name,published FROM files WHERE id=? LIMIT 1").bind(fileId).first();
   if (!file) return json({ error: "File not found" }, 404, env);
-  try { await env.BUCKET.delete(file.storage_key); } catch (_) {}
+  await env.BUCKET.delete(file.storage_key);
   await env.DB.prepare("DELETE FROM files WHERE id=?").bind(fileId).run();
   await env.DB.prepare("INSERT INTO admin_audit_log(actor,action,entity_type,entity_id,details_json) VALUES('admin','delete','file',?,?)").bind(fileId, JSON.stringify({ version_id: file.version_id, original_name: file.original_name, published: file.published })).run();
   return json({ id: fileId, deleted: true }, 200, env);
@@ -854,7 +854,7 @@ async function adminDeleteVersionAsset(request, assetId, env) {
   if (!env.DB || !env.BUCKET) return json({ error: "Storage/database binding is not configured" }, 500, env);
   const asset = await env.DB.prepare("SELECT id,version_id,storage_key,label,original_name,published FROM release_assets WHERE id=? LIMIT 1").bind(assetId).first();
   if (!asset) return json({ error: "Extra file not found" }, 404, env);
-  try { await env.BUCKET.delete(asset.storage_key); } catch (_) {}
+  await env.BUCKET.delete(asset.storage_key);
   await env.DB.prepare("DELETE FROM release_assets WHERE id=?").bind(assetId).run();
   await env.DB.prepare("INSERT INTO admin_audit_log(actor,action,entity_type,entity_id,details_json) VALUES('admin','delete','release_asset',?,?)").bind(assetId, JSON.stringify({ version_id: asset.version_id, label: asset.label, original_name: asset.original_name, published: asset.published })).run();
   return json({ id: assetId, deleted: true }, 200, env);
