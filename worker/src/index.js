@@ -124,7 +124,7 @@ async function getRelatedApps(appId, env) {
     .replace(/<[^>]*>/g, " ")
     .replace(/&[a-z0-9#]+;/gi, " ")
     .replace(/[^a-z0-9]+/g, " ")
-    .replace(/\\s+/g, " ")
+    .replace(/\s+/g, " ")
     .trim();
 
   const tokenize = (value) => normalize(value)
