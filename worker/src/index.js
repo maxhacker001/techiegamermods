@@ -94,6 +94,8 @@ async function listApps(request, env) {
     sql += `
       AND (
         lower(a.name) LIKE ?
+        OR lower(a.slug) LIKE ?
+        OR lower(COALESCE(a.package_name, '')) LIKE ?
         OR lower(COALESCE(a.publisher, '')) LIKE ?
         OR lower(COALESCE(a.genre, '')) LIKE ?
         OR lower(a.description_html) LIKE ?
@@ -104,7 +106,7 @@ async function listApps(request, env) {
       )
     `;
     const pattern = `%${search}%`;
-    bindings.push(pattern, pattern, pattern, pattern, pattern);
+    bindings.push(pattern, pattern, pattern, pattern, pattern, pattern, pattern);
   }
 
   sql += " ORDER BY datetime(a.updated_at) DESC LIMIT ?";
