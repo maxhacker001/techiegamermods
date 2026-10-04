@@ -361,66 +361,96 @@ async function saveRelatedApps(appId, relatedInput, env) {
 }
 
 async function getApp(slug, env) {
-  const app = await env.DB.prepare(`
+  if (!env.DB) return json({ error: "Database binding is not configured" }, 500, env);
+
+  const safeFirst = async (query, fallback = null, bindings = []) => {
+    try {
+      return await env.DB.prepare(query).bind(...bindings).first();
+    } catch (_) {
+      return fallback;
+    }
+  };
+
+  const safeAll = async (query, fallback = [], bindings = []) => {
+    try {
+      const result = await env.DB.prepare(query).bind(...bindings).all();
+      return result.results || fallback;
+    } catch (_) {
+      return fallback;
+    }
+  };
+
+  const app = await safeFirst(`
     SELECT
       a.*, c.slug AS category_slug, c.name AS category_name
     FROM apps a
     JOIN categories c ON c.id = a.category_id
     WHERE a.slug = ? AND a.status = 'published'
     LIMIT 1
-  `).bind(slug).first();
+  `, null, [slug]);
 
   if (!app) return json({ error: "App not found" }, 404, env);
 
-  const versions = await env.DB.prepare(`
+  const versions = await safeAll(`
     SELECT id, version_name, mod_info, changelog, android_min,
            architecture, min_sdk, target_sdk, size_bytes, status, created_at, updated_at
     FROM versions
     WHERE app_id = ? AND status = 'published'
     ORDER BY datetime(updated_at) DESC
-  `).bind(app.id).all();
+  `, [], [app.id]);
 
-  const screenshots = await env.DB.prepare(
-    "SELECT id, storage_key, alt_text, sort_order FROM screenshots WHERE app_id=? ORDER BY sort_order ASC, id ASC"
-  ).bind(app.id).all();
+  const screenshots = await safeAll(
+    "SELECT id, storage_key, alt_text, sort_order FROM screenshots WHERE app_id=? ORDER BY sort_order ASC, id ASC",
+    [],
+    [app.id]
+  );
 
-  const versionRows = versions.results || [];
   let files = [];
-  if (versionRows.length) {
-    const placeholders = versionRows.map(() => "?").join(",");
-    const fileRows = await env.DB.prepare(
-      "SELECT id, version_id, file_type, original_name, mime_type, bytes, sha256, scan_status, published, created_at FROM files WHERE version_id IN (" + placeholders + ") AND published=1 AND scan_status='clean' ORDER BY datetime(created_at) DESC"
-    ).bind(...versionRows.map(v => v.id)).all();
-    files = fileRows.results || [];
+  if (versions.length) {
+    const placeholders = versions.map(() => "?").join(",");
+    files = await safeAll(
+      "SELECT id, version_id, file_type, original_name, mime_type, bytes, sha256, scan_status, published, created_at FROM files WHERE version_id IN (" + placeholders + ") AND published=1 AND scan_status='clean' ORDER BY datetime(created_at) DESC",
+      [],
+      versions.map(v => v.id)
+    );
   }
 
   let assets = [];
-  if (versionRows.length) {
-    const placeholders = versionRows.map(() => "?").join(",");
-    const assetRows = await env.DB.prepare(
-      "SELECT id,version_id,asset_type,label,original_name,mime_type,bytes,sha256,published,created_at FROM release_assets WHERE version_id IN (" + placeholders + ") AND published=1 ORDER BY datetime(created_at) ASC,label ASC"
-    ).bind(...versionRows.map(v => v.id)).all();
-    assets = (assetRows.results || []).map(row => ({ ...row, download_url: "/download-asset/" + row.id }));
+  if (versions.length) {
+    const placeholders = versions.map(() => "?").join(",");
+    const assetRows = await safeAll(
+      "SELECT id,version_id,asset_type,label,original_name,mime_type,bytes,sha256,published,created_at FROM release_assets WHERE version_id IN (" + placeholders + ") AND published=1 ORDER BY datetime(created_at) ASC,label ASC",
+      [],
+      versions.map(v => v.id)
+    );
+    assets = assetRows.map(row => ({ ...row, download_url: "/download-asset/" + row.id }));
   }
 
-  const tags = await env.DB.prepare(`
-    SELECT tag FROM app_tags WHERE app_id = ? ORDER BY tag
-  `).bind(app.id).all();
+  const tags = await safeAll(
+    "SELECT tag FROM app_tags WHERE app_id = ? ORDER BY tag",
+    [],
+    [app.id]
+  );
 
-  const tutorials = await env.DB.prepare(`
+  const tutorials = await safeAll(`
     SELECT id, title, video_url, body, created_at, updated_at
     FROM tutorials
     WHERE app_id = ? AND status = 'published'
     ORDER BY datetime(updated_at) DESC
-  `).bind(app.id).all();
+  `, [], [app.id]);
 
-  const related_apps = await getRelatedApps(app.id, env);
+  let related_apps = [];
+  try {
+    related_apps = await getRelatedApps(app.id, env);
+  } catch (_) {
+    related_apps = [];
+  }
 
   return json({
     app,
-    versions: versions.results || [],
+    versions,
     related_apps,
-    screenshots: (screenshots.results || []).map((row) => ({
+    screenshots: screenshots.map(row => ({
       id: row.id,
       alt_text: row.alt_text,
       sort_order: row.sort_order,
@@ -428,10 +458,11 @@ async function getApp(slug, env) {
     })),
     files,
     assets,
-    tags: (tags.results || []).map((row) => row.tag),
-    tutorials: tutorials.results || []
+    tags: tags.map(row => row.tag),
+    tutorials
   }, 200, env);
 }
+
 
 async function listCategories(env) {
   const { results = [] } = await env.DB.prepare(
