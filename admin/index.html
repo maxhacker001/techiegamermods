@@ -799,7 +799,7 @@ async function loadAppAssets(appId) {
         if (!confirm('Delete this extra file permanently?')) return;
         btn.disabled = true;
         try {
-          await request('/api/admin/versions/' + encodeURIComponent(btn.dataset.versionId) + '/assets/' + encodeURIComponent(btn.dataset.id), { method:'DELETE' });
+          await request('/api/admin/versions/' + encodeURIComponent(btn.dataset.id) + '/assets', { method:'DELETE' });
           appAssetsCache.delete(id);
           result.textContent = 'Extra file deleted.';
           await loadAppAssets(id);
@@ -874,31 +874,52 @@ async function loadVersionAssets(versionId) {
   if (!id) return;
 
   const rows = $('assetRows');
-  if (rows) rows.innerHTML = '';
-  $('assetResult').textContent = 'Loading extra files...';
+  const result = $('assetResult');
+  rows.innerHTML = '';
+  result.textContent = 'Loading extra files...';
 
   try {
     const data = await request('/api/admin/versions/' + encodeURIComponent(id) + '/assets');
-
-    // Do not allow a stale request to repaint another app's config list.
-    // The version field is cleared immediately when a new app is selected.
     if ($('assetVersionId').value.trim() !== id) return;
 
-    rows.innerHTML = '';
-    (data.assets || []).forEach(asset => {
+    const assets = Array.isArray(data.assets) ? data.assets : [];
+    assets.forEach(asset => {
       const tr = document.createElement('tr');
       tr.innerHTML =
+        '<td>' + escapeHtml(data.version?.version_name || '—') + '</td>' +
         '<td>' + escapeHtml(asset.label || '—') + '</td>' +
         '<td>' + escapeHtml(String(asset.asset_type || 'config').toUpperCase()) + '</td>' +
         '<td>' + escapeHtml(asset.original_name || '—') + '</td>' +
-        '<td>' + formatBytes(asset.bytes) + '</td>';
+        '<td>' + formatBytes(asset.bytes) + '</td>' +
+        '<td><button class="danger delete-asset" data-id="' + escapeAttr(asset.id) + '">Delete</button></td>';
       rows.appendChild(tr);
     });
-    $('assetResult').textContent = JSON.stringify(data, null, 2);
-  } catch(e) {
-    if ($('assetVersionId').value.trim() === id) {
-      $('assetResult').textContent = 'Error: ' + e.message;
-    }
+
+    rows.querySelectorAll('.delete-asset').forEach(btn => {
+      btn.onclick = async () => {
+        if (!confirm('Delete this extra file permanently? This cannot be undone.')) return;
+        btn.disabled = true;
+        try {
+          await request('/api/admin/versions/' + encodeURIComponent(btn.dataset.id) + '/assets', { method:'DELETE' });
+          appAssetsCache.delete($('selectedAppId').value.trim());
+          result.textContent = 'Extra file permanently deleted.';
+          await loadVersionAssets(id);
+          const appId = $('selectedAppId').value.trim();
+          if (appId) await loadAppAssets(appId);
+          await loadStats();
+          await loadApps();
+        } catch (e) {
+          btn.disabled = false;
+          result.textContent = 'Error: ' + e.message;
+        }
+      };
+    });
+
+    result.textContent = assets.length
+      ? assets.map(asset => (asset.label || asset.original_name || 'Extra file') + ' • ' + formatBytes(asset.bytes)).join('\\n')
+      : 'No extra files saved for this version.';
+  } catch (e) {
+    if ($('assetVersionId').value.trim() === id) result.textContent = 'Error: ' + e.message;
   }
 }
 
