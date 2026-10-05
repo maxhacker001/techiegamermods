@@ -2411,3 +2411,69 @@ html,body{
     top:auto !important;
   }
 }
+
+
+/* =========================================================
+   MOBILE RENDER GUARANTEE — uses the actual layout width,
+   not 100vw, so closing borders cannot be clipped by a
+   browser scrollbar/viewport difference.
+   ========================================================= */
+@media(max-width:680px){
+  html,body,#mainContent,#homePage,
+  .tgm-header,.tgm-topbar,.tgm-dashboard,
+  .tgm-catalog-section,.tgm-category-section,
+  .tgm-section-head,.tgm-two-col-grid,.tgm-category-columns,
+  .tgm-hero{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    box-sizing:border-box !important;
+  }
+
+  .tgm-hero{
+    width:calc(100% - 2px) !important;
+    max-width:calc(100% - 2px) !important;
+    margin-right:2px !important;
+  }
+
+  .tgm-app-row{
+    width:calc(100% - 2px) !important;
+    max-width:calc(100% - 2px) !important;
+    margin-right:2px !important;
+    box-sizing:border-box !important;
+    grid-template-columns:62px minmax(0,1fr) 44px !important;
+    gap:8px !important;
+  }
+
+  .tgm-badge{
+    width:44px !important;
+    min-width:44px !important;
+    max-width:44px !important;
+    padding:4px 1px !important;
+    box-sizing:border-box !important;
+  }
+
+  .tgm-search-group,
+  #recommendedGrid{
+    box-sizing:border-box !important;
+    min-width:0 !important;
+  }
+
+  .tgm-search-group-grid,
+  #recommendedGrid{
+    display:grid !important;
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:10px !important;
+    width:100% !important;
+    min-width:0 !important;
+  }
+
+  .tgm-search-group-grid .card,
+  #recommendedGrid .card{
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    box-sizing:border-box !important;
+    margin:0 !important;
+  }
+}
