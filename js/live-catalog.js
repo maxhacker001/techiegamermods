@@ -179,6 +179,10 @@
     }
 
     const list = state.apps.filter(app => app.category === state.category);
+
+    if (window.TGMHomeSections?.render) {
+      window.TGMHomeSections.render(state.apps);
+    }
     render(grid, list, state.category === "tutorials");
 
     const trendingSection = $("trendingSection");
@@ -260,7 +264,17 @@
       item.addEventListener("click", event => {
         event.preventDefault();
 
-        if (item.classList.contains("home")) {
+        if (item.dataset.homeSection) {
+          const homePage = $("homePage");
+          if (homePage) showPage("homePage");
+          const section = $(item.dataset.homeSection);
+          if (section) {
+            requestAnimationFrame(() => {
+              const top = Math.max(0, section.getBoundingClientRect().top + window.scrollY - 10);
+              window.scrollTo({ top, left: 0, behavior: "smooth" });
+            });
+          }
+        } else if (item.classList.contains("home")) {
           state.category = "apps";
           state.query = "";
           state.searchResults = null;
