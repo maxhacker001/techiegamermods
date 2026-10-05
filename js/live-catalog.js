@@ -203,13 +203,42 @@
   };
   const categoryRender = (category) => {
     state.category = category;
-    const title = $("categoryTitle");
-    if (title) title.textContent = titleFor(category);
+    state.query = "";
+    state.searchResults = null;
 
-    const grid = $("categoryGrid");
+    const input = $("searchInput");
+    const topInput = $("topSearchInput");
+    if (input) input.value = "";
+    if (topInput) topInput.value = "";
+
+    const dashboard = $("catalogDashboard");
+    const grid = $("appsContainer");
+    const legacySearch = $("legacySearchArea");
+    const filters = $("filtersSection");
     const list = state.apps.filter(app => app.category === category);
+
+    // App/Game category pages keep the same homepage header + supplied hero.
+    // Only the catalog content underneath changes to the selected category.
+    showPage("homePage");
+    if (dashboard) {
+      dashboard.style.display = "block";
+      dashboard.querySelectorAll(".tgm-catalog-section, .tgm-category-section")
+        .forEach(section => { section.style.display = "none"; });
+    }
+    if (legacySearch) legacySearch.style.display = "block";
+    if (filters) filters.style.display = "none";
     render(grid, list, category === "tutorials");
-    showPage("categoryPage");
+
+    document.querySelectorAll(".top-nav-link").forEach(link => {
+      link.classList.toggle(
+        "active",
+        link.classList.contains("home") ? false : link.dataset.category === category
+      );
+    });
+
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    });
   };
 
   const setupNavigation = () => {
@@ -278,10 +307,7 @@
           homeRender();
           requestAnimationFrame(() => {
             const trending = $("trendingSection");
-            const top = trending
-              ? Math.max(0, trending.getBoundingClientRect().top + window.scrollY - 8)
-              : 0;
-            window.scrollTo({ top, left: 0, behavior: "smooth" });
+            window.scrollTo({ top: 0, left: 0, behavior: "auto" });
           });
         } else if (item.dataset.category) {
           state.query = "";
@@ -354,25 +380,8 @@
           showPage("homePage");
           homeRender();
 
-          const returnToTrending = () => {
-            showPage("homePage");
-
-            const trending = $("trendingSection");
-            if (trending) {
-              trending.style.display = "block";
-              const top = Math.max(
-                0,
-                trending.getBoundingClientRect().top + window.scrollY - 8
-              );
-              window.scrollTo({ top, left: 0, behavior: "smooth" });
-            } else {
-              window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
-            }
-          };
-
-          // Wait until the Home render has restored the Trending section.
           requestAnimationFrame(() => {
-            requestAnimationFrame(returnToTrending);
+            window.scrollTo({ top: 0, left: 0, behavior: "auto" });
           });
         } else if (item.dataset.category) {
           categoryRender(item.dataset.category);
