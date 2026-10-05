@@ -30,7 +30,7 @@
     const badge = category === "games" ? "MOD" : "MOD";
 
     return `
-      <article class="tgm-app-row">
+      <article class="tgm-app-row" data-app-href="app.html?id=\${id}" role="link" tabindex="0" aria-label="View \${esc(name)}">
         <a class="tgm-app-image-link" href="app.html?id=${id}" aria-label="View ${esc(name)}">
           <img src="${esc(image)}" alt="${esc(name)}" loading="lazy" onerror="this.src='images/logo.png'">
         </a>
@@ -44,12 +44,32 @@
     `;
   };
 
+  const bindCardNavigation = (root) => {
+    root.querySelectorAll(".tgm-app-row").forEach(row => {
+      if (row.dataset.cardBound) return;
+      row.dataset.cardBound = "1";
+      row.addEventListener("click", event => {
+        if (event.target.closest("a,button,input,select,textarea")) return;
+        const href = row.dataset.appHref;
+        if (href) window.location.href = href;
+      });
+      row.addEventListener("keydown", event => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        if (event.target.closest("a,button,input,select,textarea")) return;
+        event.preventDefault();
+        const href = row.dataset.appHref;
+        if (href) window.location.href = href;
+      });
+    });
+  };
+
   const renderGrid = (id, apps, emptyText) => {
     const el = document.getElementById(id);
     if (!el) return;
     el.innerHTML = apps.length
       ? apps.map(card).join("")
       : `<p style="grid-column:1/-1;color:var(--muted);font-size:12px;padding:8px 2px">${esc(emptyText || "No releases yet.")}</p>`;
+    bindCardNavigation(el);
   };
 
   const scoreForEssential = (app) => {
