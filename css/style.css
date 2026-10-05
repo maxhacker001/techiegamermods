@@ -1241,3 +1241,22 @@ body.light .tgm-hero-features .tgm-slogan{color:#059669}
   .tgm-reference-search{left:10.5% !important;top:67.6% !important;width:43.3% !important;height:20.2% !important}
   .tgm-reference-search input{font-size:12px !important}
 }
+
+/* Whole catalog card is an active hit area */
+.tgm-app-row{
+  cursor:pointer;
+  user-select:none;
+}
+.tgm-app-row:focus-visible{
+  outline:2px solid var(--neon);
+  outline-offset:2px;
+}
+.tgm-app-row:hover .tgm-app-row img{
+  transform:scale(1.04);
+}
+.tgm-app-row img{
+  transition:transform .18s ease,filter .18s ease;
+}
+.tgm-app-row:hover img{
+  filter:brightness(1.08) saturate(1.08);
+}
