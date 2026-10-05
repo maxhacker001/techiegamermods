@@ -3,7 +3,7 @@
   // lightweight catalog endpoint only. Detail pages fetch their own full data
   // when opened. This prevents one homepage load from issuing dozens of D1
   // detail queries.
-  const apps = [];
+  var apps = [];
   window.apps = apps;
 
   const mapRow = (row) => ({
