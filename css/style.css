@@ -888,3 +888,126 @@ header{
     padding:12px;
   }
 }
+
+
+/* ===============================
+   Modyolo-inspired catalog hub
+   No copied branding/assets; Techie Gamer identity remains primary.
+================================ */
+.catalog-hub{
+  max-width:1200px;
+  margin:0 auto;
+  padding:0 15px 10px;
+}
+.hub-section{
+  background:rgba(18,26,22,.72);
+  border:1px solid rgba(0,255,156,.14);
+  border-radius:14px;
+  padding:18px;
+  margin:16px 0;
+  box-shadow:0 8px 28px rgba(0,0,0,.12);
+}
+.hub-heading{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:14px;
+}
+.hub-heading h2{
+  font-size:21px;
+  margin:0;
+  color:var(--text);
+}
+.hub-more{
+  display:inline-block;
+  padding:8px 13px;
+  border-radius:7px;
+  background:var(--neon);
+  color:#04110b;
+  font-weight:700;
+  text-decoration:none;
+  font-size:12px;
+}
+.hub-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+.hub-card{
+  min-width:0;
+  display:grid;
+  grid-template-columns:58px 1fr;
+  gap:10px;
+  align-items:center;
+  padding:10px;
+  border:1px solid rgba(0,255,156,.14);
+  border-radius:10px;
+  background:rgba(7,12,9,.52);
+}
+.hub-card img{
+  width:58px;
+  height:58px;
+  border-radius:12px;
+  object-fit:cover;
+}
+.hub-card h3{
+  margin:0 0 5px;
+  font-size:14px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.hub-card p{
+  margin:0;
+  color:var(--muted);
+  font-size:11px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.hub-card a{
+  display:inline-block;
+  margin-top:7px;
+  font-size:11px;
+  color:var(--neon);
+  text-decoration:none;
+}
+.hub-category-columns{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+}
+.hub-category-columns h3{
+  margin:0 0 10px;
+  color:var(--neon);
+  font-size:15px;
+}
+.hub-category-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px 18px;
+}
+.hub-category-grid a{
+  color:#dcefe7;
+  text-decoration:none;
+  font-size:12px;
+}
+.hub-category-grid a:hover{
+  color:var(--neon);
+}
+body.light .hub-section{
+  background:rgba(255,255,255,.92);
+  border-color:rgba(0,191,255,.18);
+}
+body.light .hub-card{
+  background:#f8fafc;
+  border-color:rgba(0,191,255,.14);
+}
+body.light .hub-category-grid a{
+  color:#334155;
+}
+@media(max-width:640px){
+  .hub-grid{grid-template-columns:1fr;}
+  .hub-category-columns{grid-template-columns:1fr;}
+}
