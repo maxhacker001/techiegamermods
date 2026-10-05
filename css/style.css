@@ -2219,3 +2219,185 @@ html,body{
     max-width:48px !important;
   }
 }
+
+
+/* =========================================================
+   MOBILE FINAL CONTENT / CARD EDGE FIX
+   Keeps the proven static layout, but guarantees the right
+   border of banners/cards remains visible inside the viewport.
+   ========================================================= */
+@media(max-width:680px){
+  /* The drawer control is part of the page flow, not a floating
+     control that follows the user while scrolling. */
+  #menuToggle{
+    position:absolute !important;
+    top:14px !important;
+    left:4px !important;
+    width:44px !important;
+    height:44px !important;
+    z-index:1001 !important;
+  }
+
+  /* Banner and catalog end one pixel before the physical viewport
+     boundary so their closing border can always be painted. */
+  .tgm-hero,
+  .tgm-dashboard,
+  .tgm-catalog-section,
+  .tgm-category-section,
+  .tgm-section-head,
+  .tgm-two-col-grid,
+  .tgm-category-columns{
+    width:calc(100vw - 2px) !important;
+    max-width:calc(100vw - 2px) !important;
+    margin-left:0 !important;
+    margin-right:0 !important;
+    box-sizing:border-box !important;
+  }
+
+  .tgm-two-col-grid{
+    overflow:visible !important;
+  }
+
+  .tgm-app-row{
+    width:100% !important;
+    max-width:100% !important;
+    grid-template-columns:62px minmax(0,1fr) 48px !important;
+    gap:8px !important;
+    padding:8px !important;
+    box-sizing:border-box !important;
+    overflow:hidden !important;
+  }
+
+  .tgm-badge{
+    width:48px !important;
+    min-width:48px !important;
+    max-width:48px !important;
+    padding:4px 1px !important;
+    box-sizing:border-box !important;
+  }
+
+  /* Search: slightly farther left while remaining exactly centered. */
+  .tgm-top-search{
+    width:81vw !important;
+    max-width:81vw !important;
+    flex:0 0 81vw !important;
+    margin-left:9.5vw !important;
+    margin-right:9.5vw !important;
+    box-sizing:border-box !important;
+  }
+
+  /* Home row uses the same physical left edge as the banner. */
+  .tgm-main-nav{
+    width:calc(100vw - 2px) !important;
+    max-width:calc(100vw - 2px) !important;
+    padding-left:0 !important;
+    padding-right:0 !important;
+    margin-left:0 !important;
+    margin-right:0 !important;
+  }
+
+  /* Compact grouped search/recommendation cards. */
+  .tgm-search-results-grid,
+  #recommendedGrid{
+    width:100% !important;
+    max-width:100% !important;
+    display:grid !important;
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:10px !important;
+    box-sizing:border-box !important;
+  }
+
+  .tgm-search-group{
+    grid-column:1/-1;
+    width:100%;
+    box-sizing:border-box;
+    padding:10px;
+    border:1px solid rgba(0,255,156,.20);
+    border-radius:12px;
+    background:rgba(5,14,10,.62);
+  }
+
+  .tgm-search-group-title{
+    margin:0 0 8px !important;
+    color:var(--neon) !important;
+    font-size:15px !important;
+    font-weight:800 !important;
+    text-align:left !important;
+  }
+
+  .tgm-search-group-grid{
+    display:grid !important;
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:9px !important;
+  }
+
+  .tgm-search-group-grid .card,
+  #recommendedGrid .card{
+    min-width:0 !important;
+    width:100% !important;
+    margin:0 !important;
+    padding:10px !important;
+    box-sizing:border-box !important;
+    overflow:hidden !important;
+  }
+
+  .tgm-search-group-grid .card img,
+  #recommendedGrid .card img{
+    width:56px !important;
+    height:56px !important;
+    margin-bottom:6px !important;
+  }
+
+  .tgm-search-group-grid .card h3,
+  #recommendedGrid .card h3{
+    min-width:0 !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+    white-space:nowrap !important;
+    font-size:12px !important;
+  }
+
+  .tgm-search-group-grid .card p,
+  #recommendedGrid .card p{
+    min-width:0 !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+    white-space:nowrap !important;
+    font-size:10px !important;
+  }
+
+  .tgm-search-group-grid .card a,
+  #recommendedGrid .card a{
+    padding:6px 9px !important;
+    font-size:10px !important;
+  }
+}
+
+/* Search/recommendation clusters on larger screens too. */
+.tgm-search-results-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:14px;
+  width:100%;
+}
+
+.tgm-search-group{
+  grid-column:1/-1;
+  padding:14px;
+  border:1px solid rgba(0,255,156,.20);
+  border-radius:14px;
+  background:rgba(5,14,10,.62);
+}
+
+.tgm-search-group-title{
+  margin:0 0 10px;
+  color:var(--neon);
+  font-size:18px;
+  font-weight:800;
+}
+
+.tgm-search-group-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;
+}
