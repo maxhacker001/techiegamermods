@@ -8,33 +8,54 @@
     .replace(/"/g,"&quot;")
     .replace(/'/g,"&#039;");
 
-  const norm = (value) => String(value || "").toLowerCase().trim();
+  const text = (value) => String(value || "").trim();
+  const norm = (value) => text(value).toLowerCase();
 
-  const byUpdated = (a,b) => String(b.updated || "").localeCompare(String(a.updated || ""));
+  const featureLine = (app) => {
+    const features = Array.isArray(app.features)
+      ? app.features.filter(Boolean).map(text).filter(Boolean)
+      : [];
+    if (features.length) return features.slice(0,3).join(" • ");
+    const info = text(app.modTitle);
+    return info || text(app.genre) || "Updated release";
+  };
 
   const card = (app) => {
-    const name = app.name || "Untitled";
-    const version = app.version && app.version !== "—" ? app.version : "Release";
-    const size = app.size && app.size !== "—" ? " • " + app.size : "";
-    const image = app.image || app.icon_url || "images/logo.png";
+    const name = text(app.name) || "Untitled";
+    const version = text(app.version) && text(app.version) !== "—" ? text(app.version) : "—";
+    const size = text(app.size) && text(app.size) !== "—" ? text(app.size) : "—";
+    const image = text(app.image) || text(app.icon_url) || "images/logo.png";
     const id = encodeURIComponent(app.slug || app.id || "");
+    const category = norm(app.category);
+    const badge = category === "games" ? "MOD" : "MOD";
+
     return `
-      <article class="hub-card">
-        <img src="${esc(image)}" alt="${esc(name)}" loading="lazy" onerror="this.src='images/logo.png'">
-        <div>
-          <h3>${esc(name)}</h3>
-          <p>${esc(version + size)}</p>
-          <a href="app.html?id=${id}">View</a>
+      <article class="tgm-app-row">
+        <a class="tgm-app-image-link" href="app.html?id=${id}" aria-label="View ${esc(name)}">
+          <img src="${esc(image)}" alt="${esc(name)}" loading="lazy" onerror="this.src='images/logo.png'">
+        </a>
+        <div class="tgm-app-copy">
+          <h3 title="${esc(name)}">${esc(name)}</h3>
+          <div class="tgm-meta">☁ <span>${esc(version)}</span> &nbsp;&nbsp; ▣ <span>${esc(size)}</span></div>
+          <div class="tgm-featureline">🛠 <span>${esc(featureLine(app))}</span></div>
         </div>
+        <a class="tgm-badge" href="app.html?id=${id}">${badge}</a>
       </article>
     `;
   };
 
-  const renderGrid = (id, rows, emptyText = "No releases yet.") => {
+  const renderGrid = (id, apps, emptyText) => {
     const el = document.getElementById(id);
     if (!el) return;
-    el.innerHTML = rows.length ? rows.map(card).join("") :
-      `<p style="grid-column:1/-1;color:var(--muted);font-size:13px;margin:4px 0">${esc(emptyText)}</p>`;
+    el.innerHTML = apps.length
+      ? apps.map(card).join("")
+      : `<p style="grid-column:1/-1;color:var(--muted);font-size:12px;padding:8px 2px">${esc(emptyText || "No releases yet.")}</p>`;
+  };
+
+  const scoreForEssential = (app) => {
+    const hay = norm([app.name,app.genre,app.description,app.slug].join(" "));
+    const terms = ["tiktok","spotify","youtube","snap","photo","video","editor","music","browser","download","whatsapp","telegram","vpn","file","utility","social"];
+    return terms.reduce((score, term) => score + (hay.includes(term) ? 10 : 0), 0);
   };
 
   const renderCategories = (apps) => {
@@ -42,45 +63,40 @@
     const gameLinks = document.getElementById("gameCategoryLinks");
     if (!appLinks || !gameLinks) return;
 
-    const appGenres = [...new Set(
-      apps.filter(a => a.category === "apps").map(a => String(a.genre || "").trim()).filter(Boolean)
+    const build = (category) => [...new Set(
+      apps.filter(a => a.category === category)
+        .map(a => text(a.genre))
+        .filter(Boolean)
     )].sort((a,b) => a.localeCompare(b));
 
-    const gameGenres = [...new Set(
-      apps.filter(a => a.category === "games").map(a => String(a.genre || "").trim()).filter(Boolean)
-    )].sort((a,b) => a.localeCompare(b));
+    const makeLinks = (genres, category) => genres.length
+      ? genres.map(genre =>
+          `<a href="#" data-hub-genre="${esc(genre)}" data-hub-category="${esc(category)}">${esc(genre)}</a>`
+        ).join("")
+      : "<span style='color:var(--muted);font-size:12px'>No categories yet.</span>";
 
-    const link = (genre, category) => {
-      const href = "#";
-      return `<a href="${href}" data-hub-genre="${esc(genre)}" data-hub-category="${esc(category)}">${esc(genre)}</a>`;
-    };
-
-    appLinks.innerHTML = appGenres.length
-      ? appGenres.map(g => link(g,"apps")).join("")
-      : "<span style='color:var(--muted);font-size:12px'>No app categories yet.</span>";
-
-    gameLinks.innerHTML = gameGenres.length
-      ? gameGenres.map(g => link(g,"games")).join("")
-      : "<span style='color:var(--muted);font-size:12px'>No game categories yet.</span>";
+    appLinks.innerHTML = makeLinks(build("apps"), "apps");
+    gameLinks.innerHTML = makeLinks(build("games"), "games");
 
     document.querySelectorAll("[data-hub-genre]").forEach(anchor => {
       if (anchor.dataset.hubBound) return;
       anchor.dataset.hubBound = "1";
-      anchor.addEventListener("click", (event) => {
+      anchor.addEventListener("click", event => {
         event.preventDefault();
-        const category = anchor.dataset.hubCategory;
+        const category = anchor.dataset.hubCategory || "apps";
         const genre = norm(anchor.dataset.hubGenre);
-        const appsForGenre = apps.filter(a => a.category === category && norm(a.genre) === genre);
-        const target = document.getElementById("appsContainer");
+        const matches = apps.filter(a =>
+          a.category === category && norm(a.genre) === genre
+        );
+        const dashboard = document.getElementById("catalogDashboard");
+        if (dashboard) dashboard.style.display = "none";
+        const legacy = document.getElementById("legacySearchArea");
+        if (legacy) legacy.style.display = "block";
         const filters = document.getElementById("filtersSection");
-        const home = document.getElementById("homePage");
-        if (home) home.style.display = "block";
-        if (filters) filters.scrollIntoView({behavior:"smooth",block:"start"});
-        if (target) {
-          target.innerHTML = appsForGenre.length
-            ? appsForGenre.map(a => card(a)).join("")
-            : `<p style="color:var(--muted)">No releases in this category yet.</p>`;
-        }
+        if (filters) filters.style.display = "none";
+        const grid = document.getElementById("appsContainer");
+        if (grid) grid.innerHTML = matches.map(card).join("");
+        window.scrollTo({top:0,left:0,behavior:"smooth"});
       });
     });
   };
@@ -88,35 +104,46 @@
   const render = (apps) => {
     if (!Array.isArray(apps)) return;
 
-    const published = apps.slice().sort(byUpdated);
+    const published = apps.filter(a => a && a.id).slice().sort((a,b) =>
+      String(b.updated || "").localeCompare(String(a.updated || ""))
+    );
+
     const appRows = published.filter(a => a.category === "apps");
     const gameRows = published.filter(a => a.category === "games");
 
-    // "Essential" is utility-oriented, not simply the newest six apps.
-    const essentialTerms = [
-      "video","editor","downloader","music","audio","browser","file",
-      "vpn","utility","social","productivity","tool","photo"
-    ];
-    const essential = appRows.filter(a => {
-      const hay = norm([a.name,a.genre,a.description,a.slug].join(" "));
-      return essentialTerms.some(term => hay.includes(term));
-    }).slice(0,6);
+    const essential = appRows
+      .slice()
+      .sort((a,b) => scoreForEssential(b)-scoreForEssential(a) || String(a.name).localeCompare(String(b.name)))
+      .slice(0,4);
 
-    const premium = appRows.slice(0,6);
-    const latestGames = gameRows.slice(0,6);
+    const gamesLatest = gameRows.slice(0,4);
 
-    const early = published.filter(a => /early access|beta|early-access|test build/i.test(
-      [a.name,a.genre,a.description].join(" ")
-    )).slice(0,6);
+    const premium = appRows.slice(0,8).filter(a =>
+      /premium|pro|unlocked|ad.?free|no ads|mod/i.test(
+        [a.modTitle,a.description,a.genre].join(" ")
+      )
+    ).slice(0,4);
+
+    const used = new Set([...essential,...gamesLatest,...premium].map(a => a.id));
+    const editors = published
+      .filter(a => !used.has(a.id))
+      .slice(0,4);
+
+    const early = published.filter(a =>
+      /early access|beta|early-access|preview|test build/i.test(
+        [a.name,a.genre,a.description].join(" ")
+      )
+    ).slice(0,4);
 
     renderGrid("essentialAppsGrid", essential, "No essential app releases yet.");
-    renderGrid("gamesLatestGrid", latestGames, "No game releases yet.");
+    renderGrid("gamesLatestGrid", gamesLatest, "No game releases yet.");
     renderGrid("premiumAppsGrid", premium, "No premium app releases yet.");
+    renderGrid("editorsChoiceGrid", editors, "No editor's choice releases yet.");
 
     const earlySection = document.getElementById("early-access");
     if (earlySection) {
       earlySection.hidden = early.length === 0;
-      if (early.length) renderGrid("earlyAccessGrid", early);
+      if (early.length) renderGrid("earlyAccessGrid", early, "No early-access releases yet.");
     }
 
     renderCategories(published);
