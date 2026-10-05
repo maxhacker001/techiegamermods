@@ -1260,3 +1260,15 @@ body.light .tgm-hero-features .tgm-slogan{color:#059669}
 .tgm-app-row:hover img{
   filter:brightness(1.08) saturate(1.08);
 }
+
+/* Header brand icon: use the standalone Techie Gamer icon */
+.tgm-header .tgm-brand img{
+  width:52px !important;
+  height:52px !important;
+  object-fit:contain !important;
+  object-position:center !important;
+  border-radius:8px !important;
+  transform:none !important;
+  background:transparent !important;
+  filter:none !important;
+}
