@@ -38,20 +38,36 @@
     formatBytes,
     imageUrl,
     normalizeListApp,
-    async getApp(slug) {
-      const response = await fetch(base + "/api/apps/" + encodeURIComponent(slug), {
-        headers: { accept: "application/json" }
-      });
-      if (!response.ok) throw new Error("API returned HTTP " + response.status);
-      return response.json();
+    async getApp(slug, options = {}) {
+      const timeoutMs = Number(options.timeoutMs || 10000);
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), timeoutMs);
+      try {
+        const response = await fetch(base + "/api/apps/" + encodeURIComponent(slug), {
+          headers: { accept: "application/json" },
+          signal: options.signal || controller.signal
+        });
+        if (!response.ok) throw new Error("API returned HTTP " + response.status);
+        return response.json();
+      } finally {
+        clearTimeout(timer);
+      }
     },
-    async listApps(params = {}) {
+    async listApps(params = {}, options = {}) {
       const query = new URLSearchParams(params);
-      const response = await fetch(base + "/api/apps?" + query.toString(), {
-        headers: { accept: "application/json" }
-      });
-      if (!response.ok) throw new Error("API returned HTTP " + response.status);
-      return response.json();
+      const timeoutMs = Number(options.timeoutMs || 10000);
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), timeoutMs);
+      try {
+        const response = await fetch(base + "/api/apps?" + query.toString(), {
+          headers: { accept: "application/json" },
+          signal: options.signal || controller.signal
+        });
+        if (!response.ok) throw new Error("API returned HTTP " + response.status);
+        return response.json();
+      } finally {
+        clearTimeout(timer);
+      }
     }
   };
 })();
