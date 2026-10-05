@@ -25,23 +25,28 @@
       });
     }
 
-    const modeToggle = document.querySelector(".mode-toggle");
-    const modeText = document.getElementById("modeText");
-    if (modeToggle && modeText && !modeToggle.dataset.uiBound) {
-      modeToggle.dataset.uiBound = "1";
+    const modeToggles = document.querySelectorAll(".mode-toggle");
+    const modeTextNodes = document.querySelectorAll("#modeText");
+    if (modeToggles.length) {
       const apply = () => {
         const light = localStorage.getItem("theme") === "light";
         document.body.classList.toggle("light", light);
-        modeText.textContent = light ? "🌙 Dark Mode" : "☀ Light Mode";
+        modeTextNodes.forEach(node => {
+          node.textContent = light ? "🌙 Dark Mode" : "☀ Light Mode";
+        });
       };
       apply();
-      modeToggle.addEventListener("click", event => {
-        event.preventDefault();
-        localStorage.setItem(
-          "theme",
-          document.body.classList.contains("light") ? "dark" : "light"
-        );
-        apply();
+      modeToggles.forEach(modeToggle => {
+        if (modeToggle.dataset.uiBound) return;
+        modeToggle.dataset.uiBound = "1";
+        modeToggle.addEventListener("click", event => {
+          event.preventDefault();
+          localStorage.setItem(
+            "theme",
+            document.body.classList.contains("light") ? "dark" : "light"
+          );
+          apply();
+        });
       });
     }
   };
