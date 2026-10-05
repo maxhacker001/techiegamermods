@@ -161,14 +161,19 @@
     const grid = $("appsContainer");
     const dashboard = $("catalogDashboard");
     const legacySearch = $("legacySearchArea");
-    if (!grid) return;
+    if (!grid || !dashboard) return;
+
+    const dashboardSections = dashboard.querySelectorAll(".tgm-catalog-section, .tgm-category-section");
 
     if (state.query) {
       const query = normalizeSearch(state.query);
       const list = searchMatches(query, state.apps);
       state.query = query;
 
-      if (dashboard) dashboard.style.display = "none";
+      dashboard.style.display = "block";
+      dashboardSections.forEach(section => {
+        section.style.display = "none";
+      });
       if (legacySearch) legacySearch.style.display = "block";
       const filters = $("filtersSection");
       if (filters) filters.style.display = "none";
@@ -176,7 +181,10 @@
       return;
     }
 
-    if (dashboard) dashboard.style.display = "block";
+    dashboard.style.display = "block";
+    dashboardSections.forEach(section => {
+      section.style.display = "";
+    });
     if (legacySearch) legacySearch.style.display = "none";
 
     if (window.TGMHomeSections?.render) {
@@ -187,7 +195,7 @@
     render(grid, list, state.category === "tutorials");
 
     const trendingSection = $("trendingSection");
-    if (trendingSection) trendingSection.style.display = "block";
+    if (trendingSection) trendingSection.style.display = "";
 
     document.querySelectorAll(".filter-btn").forEach(item =>
       item.classList.toggle("active", item.dataset.category === state.category)
