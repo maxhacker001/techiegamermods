@@ -1951,3 +1951,72 @@ html,body{
     max-width:100vw !important;
   }
 }
+
+
+/* =========================================================
+   MOBILE MICRO-ALIGNMENT PASS
+   Keeps the locked/static layout. Only adjusts the requested
+   navigation/search positions and makes every card end cleanly
+   at the right viewport edge.
+   ========================================================= */
+@media(max-width:680px){
+  /* Home row starts on the same left rail as the banner. */
+  .tgm-main-nav{
+    width:100% !important;
+    max-width:100% !important;
+    padding-left:20px !important;
+    padding-right:0 !important;
+    margin-left:0 !important;
+    margin-right:0 !important;
+    gap:12px !important;
+    box-sizing:border-box !important;
+  }
+
+  /* Search begins around the first T of "TECHIE GAMER MODS"
+     in the supplied banner, while remaining centered in the
+     usable visual area requested by the reference. */
+  .tgm-top-search{
+    width:78% !important;
+    max-width:none !important;
+    flex:0 0 78% !important;
+    margin-left:11% !important;
+    margin-right:11% !important;
+    box-sizing:border-box !important;
+  }
+
+  /* Give every catalog card a real, exact viewport width so its
+     right edge and MOD button are fully visible. */
+  .tgm-two-col-grid{
+    width:100% !important;
+    max-width:100% !important;
+    padding:0 !important;
+    box-sizing:border-box !important;
+  }
+
+  .tgm-app-row{
+    width:100% !important;
+    max-width:100% !important;
+    box-sizing:border-box !important;
+    grid-template-columns:62px minmax(0,1fr) 58px !important;
+    gap:10px !important;
+    padding:8px !important;
+    overflow:hidden !important;
+  }
+
+  .tgm-app-copy{
+    width:100% !important;
+    min-width:0 !important;
+    overflow:hidden !important;
+  }
+
+  .tgm-badge{
+    width:58px !important;
+    min-width:58px !important;
+    max-width:58px !important;
+    box-sizing:border-box !important;
+    overflow:hidden !important;
+    text-align:center !important;
+    padding-left:4px !important;
+    padding-right:4px !important;
+  }
+}
