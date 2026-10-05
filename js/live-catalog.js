@@ -222,7 +222,7 @@
         // Search the full local live catalog on every keystroke.
         // Matching is based on the literal typed substring(s) in app name/slug.
         homeRender();
-      });;
+      });
     }
 
     const searchBtn = $("searchBtn");
