@@ -37,6 +37,10 @@
   <a href="#" class="sidebar-item tutorials" data-category="tutorials">🔧 Modding Tutorials</a>
   <a href="#" class="sidebar-item blog">📝 Blog</a>
   <a href="#" class="sidebar-item faq">❓ FAQ</a>
+  <a href="#essential-apps" class="sidebar-item hub-nav" data-home-section="essential-apps">⭐ Essential Apps</a>
+  <a href="#games-mod-latest" class="sidebar-item hub-nav" data-home-section="games-mod-latest">🎮 Latest Game Mods</a>
+  <a href="#premium-apps-latest" class="sidebar-item hub-nav" data-home-section="premium-apps-latest">💎 Premium Apps</a>
+  <a href="#catalog-categories" class="sidebar-item hub-nav" data-home-section="catalog-categories">📂 Categories</a>
   <a href="#" class="sidebar-item mode-toggle">
     <span id="modeText">☀ Light Mode</span>
   </a>
@@ -70,6 +74,38 @@
     </div>
 
     <!-- TRENDING MODS SECTION -->
+    <!-- Modyolo-inspired catalog hub: no News block, keeps Techie Gamer branding. -->
+    <div id="catalogHub" class="catalog-hub" aria-label="Featured catalog sections">
+      <section class="hub-section" id="essential-apps">
+        <div class="hub-heading"><h2>Essential Apps</h2><a href="#essential-apps" class="hub-more" data-home-section="essential-apps">View More</a></div>
+        <div class="hub-grid" id="essentialAppsGrid"></div>
+      </section>
+
+      <section class="hub-section" id="games-mod-latest">
+        <div class="hub-heading"><h2>Games Mod - Latest</h2><a href="#games-mod-latest" class="hub-more" data-home-section="games-mod-latest">View More</a></div>
+        <div class="hub-grid" id="gamesLatestGrid"></div>
+      </section>
+
+      <section class="hub-section" id="premium-apps-latest">
+        <div class="hub-heading"><h2>Premium Apps - Latest</h2><a href="#premium-apps-latest" class="hub-more" data-home-section="premium-apps-latest">View More</a></div>
+        <div class="hub-grid" id="premiumAppsGrid"></div>
+      </section>
+
+      <section class="hub-section" id="early-access" hidden>
+        <div class="hub-heading"><h2>Early Access</h2><a href="#early-access" class="hub-more" data-home-section="early-access">View More</a></div>
+        <div class="hub-grid" id="earlyAccessGrid"></div>
+      </section>
+
+      <section class="hub-section" id="catalog-categories">
+        <div class="hub-heading"><h2>Categories</h2></div>
+        <div class="hub-category-columns">
+          <div><h3>Apps</h3><div id="appCategoryLinks" class="hub-category-grid"></div></div>
+          <div><h3>Games</h3><div id="gameCategoryLinks" class="hub-category-grid"></div></div>
+        </div>
+      </section>
+    </div>
+
+
     <div class="trending-section" id="trendingSection">
       <h2 class="trending-title">🔥 Trending Mods</h2>
       <div class="trending-grid">
@@ -247,6 +283,7 @@
 <script src="js/pwa.js"></script>
 <script src="js/site-ui.js"></script>
 <script src="js/live-catalog.js"></script>
+<script src="js/home-sections.js"></script>
 
 <!-- Live catalog renderer: js/live-catalog.js -->
 
