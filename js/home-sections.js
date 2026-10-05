@@ -30,7 +30,7 @@
     const badge = category === "games" ? "MOD" : "MOD";
 
     return `
-      <article class="tgm-app-row" data-app-href="app.html?id=\${id}" role="link" tabindex="0" aria-label="View \${esc(name)}">
+      <article class="tgm-app-row" data-app-href="app.html?id=${id}" role="link" tabindex="0" aria-label="View \${esc(name)}">
         <a class="tgm-app-image-link" href="app.html?id=${id}" aria-label="View ${esc(name)}">
           <img src="${esc(image)}" alt="${esc(name)}" loading="lazy" onerror="this.src='images/logo.png'">
         </a>
