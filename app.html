@@ -265,6 +265,53 @@
       return;
     }
 
+    // Initialize the app-page shell immediately. Network requests below must
+    // never prevent the drawer, overlay, or theme switch from responding.
+    const setupAppShell = () => {
+      if (window.__TGM_APP_SHELL_READY) return;
+      window.__TGM_APP_SHELL_READY = true;
+
+      const menuToggle = document.getElementById("menuToggle");
+      const sidebar = document.getElementById("sidebar");
+      const overlay = document.getElementById("overlay");
+
+      if (menuToggle && sidebar && overlay) {
+        menuToggle.addEventListener("click", () => {
+          sidebar.classList.toggle("open");
+          overlay.classList.toggle("open");
+        });
+        overlay.addEventListener("click", () => {
+          sidebar.classList.remove("open");
+          overlay.classList.remove("open");
+        });
+      }
+
+      const modeToggle = document.querySelector(".mode-toggle");
+      const modeText = document.getElementById("modeText");
+      const body = document.body;
+
+      if (modeText) {
+        if (localStorage.getItem("theme") === "light") {
+          body.classList.add("light");
+          modeText.textContent = "🌙 Dark Mode";
+        } else {
+          modeText.textContent = "☀ Light Mode";
+        }
+      }
+
+      if (modeToggle) {
+        modeToggle.addEventListener("click", (e) => {
+          e.preventDefault();
+          body.classList.toggle("light");
+          const light = body.classList.contains("light");
+          localStorage.setItem("theme", light ? "light" : "dark");
+          if (modeText) modeText.textContent = light ? "🌙 Dark Mode" : "☀ Light Mode";
+        });
+      }
+    };
+
+    setupAppShell();
+
     const catalogApps = Array.isArray(window.apps) ? window.apps : [];
     let app = catalogApps.find(a => a.id === appId);
     const hasLegacyApp = Boolean(app);
@@ -281,13 +328,13 @@
       try {
         let live = null;
         try {
-          live = await window.TGMApi.getApp(appId);
+          live = await window.TGMApi.getApp(appId, { timeoutMs: 5000 });
         } catch (_) {
           // Resolve the exact published slug through the catalog endpoint.
           // This prevents a live app from being misclassified as a tutorial
           // when its detailed endpoint is temporarily unavailable.
           try {
-            const matches = await window.TGMApi.listApps({ search: appId, limit: 100 });
+            const matches = await window.TGMApi.listApps({ search: appId, limit: 100 }, { timeoutMs: 5000 });
             const exact = (matches.apps || []).find(row =>
               String(row.slug || row.id || "").trim().toLowerCase() ===
               String(appId || "").trim().toLowerCase()
@@ -328,7 +375,7 @@
               const matchesByName = await window.TGMApi.listApps({
                 search: app.name,
                 limit: 100
-              });
+              }, { timeoutMs: 5000 });
               const exactByName = (matchesByName.apps || []).find(row =>
                 String(row.name || "").trim().toLowerCase() ===
                 String(app.name || "").trim().toLowerCase()
@@ -868,44 +915,8 @@
       }
     });
 
-    // DRAWER
-    const menuToggle = document.getElementById('menuToggle');
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('overlay');
-
-    menuToggle.addEventListener('click', () => {
-      sidebar.classList.toggle('open');
-      overlay.classList.toggle('open');
-    });
-
-    overlay.addEventListener('click', () => {
-      sidebar.classList.remove('open');
-      overlay.classList.remove('open');
-    });
-
-    // LIGHT/DARK MODE
-    const modeToggle = document.querySelector('.mode-toggle');
-    const modeText = document.getElementById('modeText');
-    const body = document.body;
-
-    if (localStorage.getItem('theme') === 'light') {
-      body.classList.add('light');
-      modeText.textContent = '🌙 Dark Mode';
-    } else {
-      modeText.textContent = '☀ Light Mode';
-    }
-
-    modeToggle.addEventListener('click', (e) => {
-      e.preventDefault();
-      body.classList.toggle('light');
-      if (body.classList.contains('light')) {
-        localStorage.setItem('theme', 'light');
-        modeText.textContent = '🌙 Dark Mode';
-      } else {
-        localStorage.setItem('theme', 'dark');
-        modeText.textContent = '☀ Light Mode';
-      }
-    });
+    // Drawer/theme were initialized immediately at page start.
+    // Do not bind them again after the network-dependent detail work.
   });
 </script>
 
