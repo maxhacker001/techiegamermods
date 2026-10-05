@@ -276,6 +276,12 @@
       const sidebar = document.getElementById("sidebar");
       const overlay = document.getElementById("overlay");
 
+      if (menuToggle && window.matchMedia("(max-width:680px)").matches) {
+        menuToggle.style.position = "absolute";
+        menuToggle.style.top = "14px";
+        menuToggle.style.left = "4px";
+      }
+
       if (menuToggle && sidebar && overlay) {
         menuToggle.addEventListener("click", () => {
           sidebar.classList.toggle("open");
@@ -722,6 +728,14 @@
     // single vertical/horizontal strip on mobile.
     if (recommendedGrid) {
       recommendedGrid.classList.add("tgm-related-cluster-grid");
+      recommendedGrid.style.display = "grid";
+      recommendedGrid.style.width = "100%";
+      recommendedGrid.style.minWidth = "0";
+      recommendedGrid.style.gridTemplateColumns =
+        window.matchMedia("(max-width:680px)").matches
+          ? "repeat(2,minmax(0,1fr))"
+          : "repeat(3,minmax(0,1fr))";
+      recommendedGrid.style.gap = "10px";
     }
 
     // Optional release config / extra downloads.
