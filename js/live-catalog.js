@@ -285,7 +285,7 @@
           showPage("blogPage");
         }
       });
-    }
+    });
 
     const searchBtn = $("searchBtn");
     if (searchBtn && !searchBtn.dataset.liveCatalogBound) {
