@@ -718,6 +718,12 @@
       recommendedGrid.appendChild(card);
     });
 
+    // Keep related releases in a compact clustered grid instead of a long
+    // single vertical/horizontal strip on mobile.
+    if (recommendedGrid) {
+      recommendedGrid.classList.add("tgm-related-cluster-grid");
+    }
+
     // Optional release config / extra downloads.
     const assetsSection = document.getElementById("releaseAssetsSection");
     const assetsList = document.getElementById("releaseAssetsList");
