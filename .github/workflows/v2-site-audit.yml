@@ -90,3 +90,43 @@ jobs:
                   import subprocess
                   subprocess.run(["node","--check",str(p)],check=True)
           PY
+
+      - name: Live GitHub Pages smoke test
+        env:
+          SITE_URL: https://maxhacker001.github.io/techiegamermods/
+          EXPECTED_ASSET_VERSION: 20261005-4
+        run: |
+          python - <<'PY'
+          import os, re, sys, urllib.request
+          from urllib.error import HTTPError, URLError
+
+          site = os.environ['SITE_URL']
+          version = os.environ['EXPECTED_ASSET_VERSION']
+          req = urllib.request.Request(site, headers={'User-Agent':'TGM-Live-Audit/1.0'})
+          try:
+              with urllib.request.urlopen(req, timeout=30) as r:
+                  html = r.read().decode('utf-8', 'replace')
+                  code = r.status
+          except (HTTPError, URLError, TimeoutError) as e:
+              raise SystemExit(f'Live GitHub Pages check failed: {e}')
+
+          if code != 200:
+              raise SystemExit(f'Live GitHub Pages returned HTTP {code}')
+
+          required = [
+              f'css/style.css?v={version}',
+              f'js/pwa.js?v={version}',
+              f'js/site-ui.js?v={version}',
+              f'js/live-catalog.js?v={version}',
+              f'js/home-sections.js?v={version}',
+          ]
+          missing = [x for x in required if x not in html]
+          if missing:
+              raise SystemExit('Live GitHub Pages is serving an older HTML build. Missing: ' + ', '.join(missing))
+
+          if 'id="menuToggle"' not in html or 'id="sidebar"' not in html:
+              raise SystemExit('Live GitHub Pages is missing the drawer shell.')
+
+          print(f'Live GitHub Pages check passed: {site}')
+          print(f'HTTP {code}; expected frontend asset version {version} is live.')
+          PY
