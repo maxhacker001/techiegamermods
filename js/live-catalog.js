@@ -117,6 +117,10 @@
 
   const renderGroupedSearch = (target, list) => {
     if (!target) return;
+    target.classList.add("tgm-search-results-grid");
+    target.style.display = "grid";
+    target.style.width = "100%";
+    target.style.minWidth = "0";
     target.innerHTML = "";
 
     if (!list.length) {
