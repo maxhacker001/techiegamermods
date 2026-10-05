@@ -1654,3 +1654,144 @@ body.light .tgm-hero-features .tgm-slogan{color:#059669}
     font-size:24px !important;
   }
 }
+
+
+/* =========================================================
+   MOBILE NO-DRAG / TRUE VIEWPORT FIT
+   Final pass: no horizontal page shifting and no content
+   extending beyond the phone viewport.
+   ========================================================= */
+html,body{
+  max-width:100%;
+  overflow-x:hidden !important;
+}
+
+@media(max-width:680px){
+  html,body,#mainContent,#homePage{
+    width:100% !important;
+    max-width:100% !important;
+    overflow-x:hidden !important;
+  }
+
+  /* One fixed mobile content rail. */
+  .tgm-dashboard{
+    width:94% !important;
+    max-width:94% !important;
+    margin-left:auto !important;
+    margin-right:auto !important;
+    padding:0 !important;
+    overflow:visible !important;
+  }
+
+  /* Remove the generic <section> side padding from catalog sections.
+     It was creating a second, hidden horizontal offset. */
+  .tgm-catalog-section,
+  .tgm-category-section{
+    width:100% !important;
+    max-width:100% !important;
+    margin-left:0 !important;
+    margin-right:0 !important;
+    padding:0 !important;
+  }
+
+  /* Every catalog row must be constrained to the viewport rail. */
+  .tgm-two-col-grid,
+  .tgm-app-row,
+  .tgm-section-head,
+  .tgm-category-columns{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+  }
+
+  .tgm-two-col-grid{
+    grid-template-columns:minmax(0,1fr) !important;
+    overflow:hidden !important;
+  }
+
+  .tgm-app-row{
+    grid-template-columns:62px minmax(0,1fr) auto !important;
+    min-width:0 !important;
+    overflow:hidden !important;
+  }
+
+  .tgm-app-copy{
+    min-width:0 !important;
+    max-width:100% !important;
+  }
+
+  .tgm-app-copy h3,
+  .tgm-meta,
+  .tgm-featureline{
+    min-width:0 !important;
+    max-width:100% !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+    white-space:nowrap !important;
+  }
+
+  .tgm-badge{
+    max-width:100% !important;
+    white-space:nowrap !important;
+  }
+
+  /* Banner uses the same exact rail as the cards. */
+  .tgm-hero{
+    width:94% !important;
+    max-width:94% !important;
+    margin-left:auto !important;
+    margin-right:auto !important;
+    padding:0 !important;
+    overflow:hidden !important;
+  }
+
+  /* Keep the brand inside the viewport instead of allowing its
+     long title to create horizontal document width. */
+  .tgm-brand{
+    max-width:calc(100vw - 80px) !important;
+    overflow:hidden !important;
+  }
+
+  .tgm-brand-copy{
+    min-width:0 !important;
+    max-width:100% !important;
+    overflow:hidden !important;
+  }
+
+  .tgm-brand-copy strong{
+    max-width:100% !important;
+    font-size:21px !important;
+    line-height:1.02 !important;
+    white-space:normal !important;
+    overflow-wrap:normal !important;
+  }
+
+  /* Nav is clipped to the viewport rather than making the page wider. */
+  .tgm-main-nav{
+    width:94% !important;
+    max-width:94% !important;
+    min-width:0 !important;
+    overflow:hidden !important;
+    margin-left:auto !important;
+    margin-right:auto !important;
+  }
+
+  .tgm-main-nav a{
+    flex:0 0 auto !important;
+  }
+
+  /* Search stays the only intentionally centered element. */
+  .tgm-top-search{
+    width:76vw !important;
+    max-width:76vw !important;
+    min-width:0 !important;
+    flex:0 0 76vw !important;
+    margin-left:auto !important;
+    margin-right:auto !important;
+  }
+
+  .tgm-top-search input{
+    min-width:0 !important;
+    max-width:100% !important;
+  }
+}
