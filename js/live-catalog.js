@@ -327,7 +327,25 @@
         await window.TGM_LIVE_READY;
       }
 
-      const source = Array.isArray(window.apps) ? window.apps : [];
+      let source = Array.isArray(window.apps) ? window.apps : [];
+
+      // Primary path: reuse the single catalog request started by data.js.
+      // Fallback: if that global cache is empty, make exactly one catalog
+      // request here. This keeps the homepage alive without returning to the
+      // old per-app hydration behavior.
+      if (!source.length) {
+        try {
+          const response = await window.TGMApi.listApps({ limit: 100 });
+          const rows = Array.isArray(response.apps) ? response.apps : [];
+          source = rows.map(window.TGMApi.normalizeListApp);
+          if (Array.isArray(window.apps)) {
+            window.apps.splice(0, window.apps.length, ...source);
+          }
+        } catch (fallbackError) {
+          console.warn("Live catalog fallback failed:", fallbackError);
+        }
+      }
+
       state.apps = source.slice();
 
       if (state.apps.length) {
