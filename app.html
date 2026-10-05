@@ -265,7 +265,8 @@
       return;
     }
 
-    let app = apps.find(a => a.id === appId);
+    const catalogApps = Array.isArray(window.apps) ? window.apps : [];
+    let app = catalogApps.find(a => a.id === appId);
     const hasLegacyApp = Boolean(app);
     let foundLiveApp = false;
     let relatedApps = [];
