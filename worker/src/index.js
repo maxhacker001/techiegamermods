@@ -112,33 +112,25 @@ async function listApps(request, env) {
 }
 
 async function getRelatedApps(appId, env) {
-  const shape = (rows) => (rows || []).map(row => ({
-    ...row,
-    version: row.version || "—",
-    size_bytes: Number(row.size_bytes || 0),
-    image: row.icon_url || null
-  }));
-
   const normalize = (value) => String(value || "")
     .toLowerCase()
     .replace(/<[^>]*>/g, " ")
-    .replace(/&[a-z0-9#]+;/gi, " ")
     .replace(/[^a-z0-9]+/g, " ")
     .replace(/\s+/g, " ")
     .trim();
 
   const topicGroups = [
     ["video","editing","editor","capcut","inshot","kinemaster","alight motion","vn video"],
-    ["video downloader","downloader","download manager","save video","video download","snaptube","vidmate","tubemate"],
-    ["photo","photo editor","lightroom","picsart","snapseed","photoshop"],
-    ["music","spotify","audio","player","sound","streaming","podcast"],
-    ["social","whatsapp","telegram","instagram","facebook","messenger","chat"],
-    ["shooter","war","battle","combat","fps","shooting","call of duty","cod","pubg","free fire","battlefield"],
-    ["football","soccer","fifa","efootball","dream league","dls","football manager"],
-    ["racing","car","cars","asphalt","need for speed","racing"],
+    ["downloader","download","snaptube","vidmate","tubemate","download manager"],
+    ["photo","photography","photo editor","lightroom","picsart","snapseed","photoshop"],
+    ["music","spotify","audio","player","sound","streaming"],
+    ["social","whatsapp","telegram","instagram","facebook","messenger"],
+    ["shooter","war","battle","combat","fps","shooting","call of duty","pubg","free fire"],
+    ["football","soccer","fifa","efootball","dream league","dls"],
+    ["racing","car","cars","asphalt","need for speed"],
     ["strategy","clash","warcraft","civilization","tactics"],
     ["anime","manga","otaku","crunchyroll"],
-    ["browser","web browser","privacy browser","firefox","chrome","edge","opera"],
+    ["browser","firefox","chrome","edge","opera"],
     ["file manager","file explorer","zarchiver","archive","zip","rar"],
     ["vpn","privacy","proxy","webrtc","dns"],
     ["modding","apk","patch","mt manager","apktool","reverse engineering"]
@@ -165,99 +157,57 @@ async function getRelatedApps(appId, env) {
 
     const candidates = await env.DB.prepare(`
       SELECT
-        a.id, a.slug, a.name, a.publisher, a.genre, a.icon_url, a.description_html,
+        a.id, a.slug, a.name, a.publisher, a.genre, a.icon_url,
         c.slug AS category_slug,
-        (
-          SELECT vv.version_name
-          FROM versions vv
-          WHERE vv.app_id=a.id AND vv.status='published'
-          ORDER BY datetime(vv.updated_at) DESC
-          LIMIT 1
-        ) AS version,
-        (
-          SELECT vv.size_bytes
-          FROM versions vv
-          WHERE vv.app_id=a.id AND vv.status='published'
-          ORDER BY datetime(vv.updated_at) DESC
-          LIMIT 1
-        ) AS size_bytes
+        v.version_name AS version,
+        v.size_bytes AS size_bytes
       FROM apps a
       JOIN categories c ON c.id=a.category_id
+      LEFT JOIN versions v ON v.id=(
+        SELECT vv.id FROM versions vv
+        WHERE vv.app_id=a.id AND vv.status='published'
+        ORDER BY datetime(vv.updated_at) DESC LIMIT 1
+      )
       WHERE a.id<>?
         AND a.status='published'
         AND a.category_id=?
-      ORDER BY
-        CASE WHEN lower(COALESCE(a.genre,'')) = lower(COALESCE(?,'')) THEN 0 ELSE 1 END,
-        datetime(a.updated_at) DESC,
-        a.name ASC
-      LIMIT 100
+      ORDER BY CASE
+        WHEN lower(COALESCE(a.genre,''))=lower(COALESCE(?,'')) THEN 0
+        ELSE 1
+      END,
+      datetime(a.updated_at) DESC,
+      a.name ASC
+      LIMIT 40
     `).bind(appId, current.category_id, current.genre || "").all();
 
-    const sourceText = normalize([
-      current.name,
-      current.genre,
-      current.description_html
-    ].join(" "));
+    const sourceText = normalize([current.name,current.genre,current.description_html].join(" "));
     const sourceGroups = new Set(groupsFor(sourceText));
 
-    // For tutorials, fetch the published tutorial text once so the Related
-    // section is based on what the tutorial teaches.
-    let sourceTutorialText = "";
-    if (String(current.category_slug || "") === "tutorials") {
-      const tutorial = await env.DB.prepare(`
-        SELECT COALESCE(GROUP_CONCAT(COALESCE(title,'') || ' ' || COALESCE(body,''), ' '),'') AS text
-        FROM tutorials
-        WHERE app_id=? AND status='published'
-      `).bind(appId).first();
-      sourceTutorialText = normalize(tutorial?.text || "");
-    }
-
-    const baseSource = normalize(sourceText + " " + sourceTutorialText);
-
-    const ranked = (candidates.results || []).map(row => {
-      const candidateText = normalize([
-        row.name,
-        row.genre,
-        row.description_html
-      ].join(" "));
-
-      let score = 0;
-
-      if (normalize(row.genre) && normalize(row.genre) === normalize(current.genre)) {
-        score += 1000;
-      }
-
-      const candidateGroups = new Set(groupsFor(candidateText));
-      for (const group of candidateGroups) {
-        if (sourceGroups.has(group)) score += 300;
-      }
-
-      if (String(current.category_slug || "") === "tutorials") {
-        score = 0;
+    return (candidates.results || [])
+      .map(row => {
+        let score = normalize(row.genre) === normalize(current.genre) && normalize(current.genre) ? 1000 : 0;
+        const candidateGroups = groupsFor([row.name,row.genre].join(" "));
         for (const group of candidateGroups) {
-          if (baseSource.includes(group.split("|")[0])) score += 250;
+          if (sourceGroups.has(group)) score += 300;
         }
-        const sourceWords = new Set(baseSource.split(" ").filter(w => w.length >= 4));
-        const candidateWords = new Set(candidateText.split(" ").filter(w => w.length >= 4));
-        for (const word of candidateWords) {
+        const sourceWords = new Set(sourceText.split(" ").filter(x => x.length >= 4));
+        for (const word of normalize([row.name,row.genre].join(" ")).split(" ").filter(x => x.length >= 4)) {
           if (sourceWords.has(word)) score += 25;
         }
-      }
-
-      return { row, score };
-    });
-
-    const relevant = ranked
-      .filter(item => item.score > 0)
-      .sort((a,b) =>
-        b.score - a.score ||
-        String(a.row.name || "").localeCompare(String(b.row.name || ""))
-      )
-      .slice(0, 12)
-      .map(item => item.row);
-
-    return shape(relevant);
-  } catch (_) {
+        return {
+          ...row,
+          version: row.version || "—",
+          size_bytes: Number(row.size_bytes || 0),
+          image: row.icon_url || null,
+          score
+        };
+      })
+      .filter(row => row.score > 0)
+      .sort((a,b) => b.score-a.score || String(a.name||"").localeCompare(String(b.name||"")))
+      .slice(0,12)
+      .map(({score,...row}) => row);
+  } catch (error) {
+    console.error("Related apps lookup failed:", error);
     return [];
   }
 }
