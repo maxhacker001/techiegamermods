@@ -2020,3 +2020,202 @@ html,body{
     padding-right:4px !important;
   }
 }
+
+
+/* =========================================================
+   MOBILE FINAL DIMENSION LOCK
+   Full-viewport content rail with controlled centered search.
+   ========================================================= */
+@media(max-width:680px){
+  /* Hard viewport boundary */
+  html,
+  body{
+    width:100vw !important;
+    max-width:100vw !important;
+    min-width:0 !important;
+    overflow-x:hidden !important;
+    overscroll-behavior-x:none !important;
+    touch-action:pan-y !important;
+  }
+
+  #mainContent,
+  #homePage,
+  .tgm-header,
+  .tgm-topbar,
+  .tgm-dashboard{
+    width:100vw !important;
+    max-width:100vw !important;
+    min-width:0 !important;
+    margin-left:0 !important;
+    margin-right:0 !important;
+  }
+
+  /* ---------------------------------------------------------
+     BRAND
+     Drawer -> icon -> full Techie Gamer Mods title.
+     --------------------------------------------------------- */
+  .tgm-topbar{
+    padding:8px 0 9px !important;
+    overflow:hidden !important;
+  }
+
+  .tgm-brand{
+    width:100% !important;
+    max-width:100% !important;
+    margin:0 !important;
+    padding-left:56px !important;
+    padding-right:6px !important;
+    flex:1 1 100% !important;
+    box-sizing:border-box !important;
+    overflow:hidden !important;
+    display:flex !important;
+    align-items:center !important;
+    gap:9px !important;
+  }
+
+  .tgm-header .tgm-brand img{
+    width:40px !important;
+    height:40px !important;
+    flex:0 0 40px !important;
+  }
+
+  .tgm-brand-copy{
+    min-width:0 !important;
+    max-width:100% !important;
+    overflow:hidden !important;
+  }
+
+  .tgm-brand-copy strong{
+    display:block !important;
+    width:max-content !important;
+    max-width:100% !important;
+    font-size:18px !important;
+    line-height:1 !important;
+    white-space:nowrap !important;
+    overflow:hidden !important;
+    text-overflow:clip !important;
+  }
+
+  /* ---------------------------------------------------------
+     NAVIGATION
+     Starts exactly at x=0 like the banner/cards.
+     --------------------------------------------------------- */
+  .tgm-main-nav{
+    width:100vw !important;
+    max-width:100vw !important;
+    margin:0 !important;
+    padding:0 !important;
+    box-sizing:border-box !important;
+    justify-content:flex-start !important;
+    gap:11px !important;
+    overflow:hidden !important;
+  }
+
+  .tgm-main-nav a{
+    flex:0 0 auto !important;
+    font-size:11px !important;
+  }
+
+  .tgm-main-nav .top-nav-theme{
+    display:none !important;
+  }
+
+  /* ---------------------------------------------------------
+     SEARCH
+     11vw left + 78vw width + 11vw right = exact center.
+     --------------------------------------------------------- */
+  .tgm-top-search{
+    width:78vw !important;
+    max-width:78vw !important;
+    min-width:0 !important;
+    flex:0 0 78vw !important;
+    margin-left:11vw !important;
+    margin-right:11vw !important;
+    box-sizing:border-box !important;
+  }
+
+  /* ---------------------------------------------------------
+     BANNER + CATALOG = EDGE TO EDGE
+     --------------------------------------------------------- */
+  .tgm-hero,
+  .tgm-dashboard,
+  .tgm-catalog-section,
+  .tgm-category-section,
+  .tgm-section-head,
+  .tgm-two-col-grid,
+  .tgm-category-columns{
+    width:100vw !important;
+    max-width:100vw !important;
+    min-width:0 !important;
+    margin-left:0 !important;
+    margin-right:0 !important;
+    padding-left:0 !important;
+    padding-right:0 !important;
+    box-sizing:border-box !important;
+  }
+
+  .tgm-hero{
+    overflow:hidden !important;
+  }
+
+  /* Every card ends exactly at the viewport edge. */
+  .tgm-app-row{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    margin:0 !important;
+    padding:8px !important;
+    box-sizing:border-box !important;
+    grid-template-columns:62px minmax(0,1fr) 52px !important;
+    gap:9px !important;
+    overflow:hidden !important;
+  }
+
+  .tgm-app-copy{
+    min-width:0 !important;
+    max-width:100% !important;
+    overflow:hidden !important;
+  }
+
+  .tgm-app-copy h3,
+  .tgm-meta,
+  .tgm-featureline{
+    min-width:0 !important;
+    max-width:100% !important;
+    overflow:hidden !important;
+    white-space:nowrap !important;
+    text-overflow:ellipsis !important;
+  }
+
+  .tgm-badge{
+    width:52px !important;
+    min-width:52px !important;
+    max-width:52px !important;
+    padding:4px 2px !important;
+    box-sizing:border-box !important;
+    white-space:nowrap !important;
+    overflow:hidden !important;
+    text-align:center !important;
+  }
+
+  /* Drawer sits on the same physical left edge, with a safe gap
+     from the brand icon. */
+  #menuToggle{
+    left:4px !important;
+    top:14px !important;
+    width:44px !important;
+    height:44px !important;
+    font-size:24px !important;
+  }
+
+  /* Floating controls cannot contribute to document width. */
+  #whatsapp-float{
+    right:14px !important;
+    max-width:52px !important;
+  }
+
+  #backToTop{
+    right:14px !important;
+    max-width:48px !important;
+  }
+}
