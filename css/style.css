@@ -2401,3 +2401,13 @@ html,body{
   grid-template-columns:repeat(3,minmax(0,1fr));
   gap:12px;
 }
+
+
+/* Mobile pages must scroll normally; no sticky header following the reader. */
+@media(max-width:680px){
+  header,
+  .tgm-header{
+    position:relative !important;
+    top:auto !important;
+  }
+}
