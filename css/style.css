@@ -1349,3 +1349,114 @@ body.light .tgm-hero-features .tgm-slogan{color:#059669}
     box-shadow:0 4px 12px rgba(37,211,102,.28) !important;
   }
 }
+
+/* =========================================================
+   MOBILE CATALOG STRUCTURE FIX
+   Layout-only fix: preserves search, catalog order, drawer,
+   live catalog, cards, categories and desktop styling.
+   ========================================================= */
+@media(max-width:680px){
+  .tgm-dashboard{
+    width:94%;
+    max-width:94%;
+    margin-left:auto;
+    margin-right:auto;
+    padding-left:0;
+    padding-right:0;
+  }
+
+  .tgm-catalog-section{
+    width:100%;
+    margin:18px 0 0;
+  }
+
+  .tgm-section-head{
+    width:100%;
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    align-items:center;
+    gap:10px;
+    margin-bottom:10px;
+  }
+
+  .tgm-section-title{
+    min-width:0;
+    width:100%;
+    display:grid;
+    grid-template-columns:auto minmax(0,1fr);
+    align-items:center;
+    column-gap:7px;
+  }
+
+  .tgm-section-title>span{
+    flex:none;
+    font-size:22px;
+    line-height:1;
+  }
+
+  .tgm-section-title h2{
+    min-width:0;
+    margin:0;
+    font-size:18px;
+    line-height:1.12;
+    white-space:normal;
+    overflow-wrap:anywhere;
+    word-break:normal;
+  }
+
+  .tgm-section-title p{
+    display:none;
+  }
+
+  .tgm-view-more{
+    flex:none;
+    min-width:max-content;
+    padding:7px 9px;
+    font-size:10px;
+    line-height:1;
+    white-space:nowrap;
+    justify-self:end;
+  }
+
+  .tgm-two-col-grid{
+    width:100%;
+    display:grid;
+    grid-template-columns:1fr;
+    gap:10px;
+  }
+
+  .tgm-app-row{
+    width:100%;
+    min-width:0;
+    grid-template-columns:62px minmax(0,1fr) auto;
+    gap:10px;
+    padding:8px;
+  }
+
+  .tgm-app-row img{
+    width:56px;
+    height:56px;
+  }
+
+  .tgm-app-copy{
+    min-width:0;
+  }
+
+  .tgm-app-copy h3,
+  .tgm-featureline{
+    min-width:0;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .tgm-category-section{
+    width:100%;
+    margin-top:18px;
+  }
+
+  .tgm-category-columns{
+    width:100%;
+    grid-template-columns:1fr;
+    gap:18px;
+  }
+}
