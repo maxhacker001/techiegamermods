@@ -159,6 +159,8 @@
 
   const homeRender = () => {
     const grid = $("appsContainer");
+    const dashboard = $("catalogDashboard");
+    const legacySearch = $("legacySearchArea");
     if (!grid) return;
 
     if (state.query) {
@@ -166,30 +168,26 @@
       const list = searchMatches(query, state.apps);
       state.query = query;
 
-      renderGroupedSearch(grid, list);
-
-      document.querySelectorAll(".filter-btn").forEach(item => item.classList.remove("active"));
-
-      const trendingSection = $("trendingSection");
-      if (trendingSection) trendingSection.style.display = "none";
-
+      if (dashboard) dashboard.style.display = "none";
+      if (legacySearch) legacySearch.style.display = "block";
       const filters = $("filtersSection");
       if (filters) filters.style.display = "none";
+      renderGroupedSearch(grid, list);
       return;
     }
 
-    const list = state.apps.filter(app => app.category === state.category);
+    if (dashboard) dashboard.style.display = "block";
+    if (legacySearch) legacySearch.style.display = "none";
 
     if (window.TGMHomeSections?.render) {
       window.TGMHomeSections.render(state.apps);
     }
+
+    const list = state.apps.filter(app => app.category === state.category);
     render(grid, list, state.category === "tutorials");
 
     const trendingSection = $("trendingSection");
-    if (trendingSection) renderTrending();
-
-    const filters = $("filtersSection");
-    if (filters) filters.style.display = "flex";
+    if (trendingSection) trendingSection.style.display = "block";
 
     document.querySelectorAll(".filter-btn").forEach(item =>
       item.classList.toggle("active", item.dataset.category === state.category)
@@ -226,6 +224,66 @@
         // Search the full local live catalog on every keystroke.
         // Matching is based on the literal typed substring(s) in app name/slug.
         homeRender();
+      });
+    }
+
+    const topInput = $("topSearchInput");
+    const topBtn = $("topSearchBtn");
+
+    if (topInput && !topInput.dataset.liveCatalogBound) {
+      topInput.dataset.liveCatalogBound = "1";
+      topInput.addEventListener("input", () => {
+        if (input) {
+          input.value = topInput.value;
+          input.dispatchEvent(new Event("input", { bubbles: true }));
+        }
+      });
+      if (input) {
+        input.addEventListener("input", () => {
+          if (topInput.value !== input.value) topInput.value = input.value;
+        });
+      }
+    }
+
+    if (topBtn && !topBtn.dataset.liveCatalogBound) {
+      topBtn.dataset.liveCatalogBound = "1";
+      topBtn.addEventListener("click", () => {
+        if (input) {
+          input.value = topInput ? topInput.value : "";
+          input.dispatchEvent(new Event("input", { bubbles: true }));
+        }
+      });
+    }
+
+    document.querySelectorAll(".top-nav-link").forEach(item => {
+      if (item.dataset.liveCatalogBound) return;
+      item.dataset.liveCatalogBound = "1";
+      item.addEventListener("click", event => {
+        event.preventDefault();
+        if (item.classList.contains("home")) {
+          state.category = "apps";
+          state.query = "";
+          state.searchResults = null;
+          if (input) input.value = "";
+          if (topInput) topInput.value = "";
+          showPage("homePage");
+          homeRender();
+          requestAnimationFrame(() => {
+            const trending = $("trendingSection");
+            const top = trending
+              ? Math.max(0, trending.getBoundingClientRect().top + window.scrollY - 8)
+              : 0;
+            window.scrollTo({ top, left: 0, behavior: "smooth" });
+          });
+        } else if (item.dataset.category) {
+          state.query = "";
+          state.searchResults = null;
+          if (input) input.value = "";
+          if (topInput) topInput.value = "";
+          categoryRender(item.dataset.category);
+        } else if (item.classList.contains("blog")) {
+          showPage("blogPage");
+        }
       });
     }
 
