@@ -1272,3 +1272,80 @@ body.light .tgm-hero-features .tgm-slogan{color:#059669}
   background:transparent !important;
   filter:none !important;
 }
+
+/* ===============================
+   FINAL SITE POLISH
+   Preserve the working catalog/search while keeping the UI lighter.
+================================ */
+.tgm-header .tgm-brand img{
+  width:42px !important;
+  height:42px !important;
+  object-fit:contain !important;
+  object-position:center !important;
+  border-radius:8px !important;
+  transform:none !important;
+  background:transparent !important;
+}
+
+#menuToggle{
+  top:10px !important;
+  left:14px !important;
+  width:48px !important;
+  height:48px !important;
+  font-size:27px !important;
+  background:rgba(0,255,156,.08) !important;
+  border:1px solid rgba(0,255,156,.18) !important;
+  text-shadow:none !important;
+  box-shadow:0 0 14px rgba(0,255,156,.16) !important;
+  backdrop-filter:blur(6px) !important;
+}
+#menuToggle:hover{
+  transform:scale(1.02) !important;
+}
+#sidebar{
+  box-shadow:12px 0 30px rgba(0,0,0,.30) !important;
+}
+.sidebar-item{
+  box-shadow:0 4px 12px rgba(0,0,0,.20) !important;
+}
+.sidebar-item:hover{
+  transform:translateX(4px) !important;
+  box-shadow:0 7px 18px rgba(0,255,156,.16) !important;
+}
+
+.tgm-app-row,
+.tgm-app-row:hover,
+.card,
+.card:hover{
+  transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease !important;
+}
+
+@media(max-width:680px){
+  #matrix-canvas{
+    display:none !important;
+  }
+  header{
+    backdrop-filter:none !important;
+  }
+  #sidebar{
+    backdrop-filter:none !important;
+  }
+  #menuToggle{
+    backdrop-filter:none !important;
+    box-shadow:0 0 10px rgba(0,255,156,.12) !important;
+  }
+  .tgm-hero{
+    box-shadow:none !important;
+  }
+  .tgm-app-row,
+  .tgm-app-row:hover,
+  .card,
+  .card:hover{
+    box-shadow:none !important;
+    transform:none !important;
+  }
+  #whatsapp-float{
+    animation:none !important;
+    box-shadow:0 4px 12px rgba(37,211,102,.28) !important;
+  }
+}
