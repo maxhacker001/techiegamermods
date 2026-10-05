@@ -389,10 +389,10 @@
 
         if (live && live.app) {
           foundLiveApp = true;
-          const legacy = app;
+          const legacy = app || {};
           const liveApp = live.app;
           const versions = live.versions || [];
-          const latest = versions[0];
+          const latest = versions[0] || null;
           const files = live.files || [];
           const assets = live.assets || [];
           const latestFile = latest ? files.find(file => file.version_id === latest.id) : null;
@@ -663,7 +663,7 @@
       ? "🎬 Videos Related to This"
       : "🔥 Apps Related to This";
     if (!relatedApps.length) {
-      relatedApps = apps
+      relatedApps = catalogApps
         .filter(a =>
           a.id !== appId &&
           a.category === app.category &&
