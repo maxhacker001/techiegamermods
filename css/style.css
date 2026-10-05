@@ -1460,3 +1460,102 @@ body.light .tgm-hero-features .tgm-slogan{color:#059669}
     gap:18px;
   }
 }
+
+
+/* =========================================================
+   MOBILE HEADER ALIGNMENT + SCROLL FIX
+   Keeps desktop untouched. Aligns mobile navigation with
+   the catalog cards, centers the header search, and prevents
+   the large sticky header from overlaying the hero/catalog.
+   ========================================================= */
+@media(max-width:680px){
+  /* Let the whole mobile header scroll naturally.
+     The previous tall sticky header was allowing the banner
+     and cards to show through underneath it while scrolling. */
+  .tgm-header{
+    position:relative !important;
+    top:auto !important;
+    background:#070b09 !important;
+    border-bottom:1px solid rgba(0,255,156,.16) !important;
+    box-shadow:none !important;
+    isolation:isolate;
+  }
+
+  /* Match the left/right content rhythm used by the catalog. */
+  .tgm-topbar{
+    width:100%;
+    max-width:none;
+    padding:8px 35px 9px !important;
+    gap:8px !important;
+  }
+
+  /* Keep the logo/brand clear of the smaller floating menu button. */
+  .tgm-brand{
+    min-width:0 !important;
+    flex:1 1 auto !important;
+    margin-left:90px !important;
+  }
+
+  /* Center the functional header search in the viewport/content area. */
+  .tgm-top-search{
+    order:3;
+    width:78% !important;
+    max-width:none !important;
+    flex:0 0 78% !important;
+    margin:4px auto 0 !important;
+    height:44px;
+  }
+
+  /* Start Home exactly on the same left line as the catalog cards. */
+  .tgm-main-nav{
+    order:2;
+    width:100% !important;
+    margin:0 !important;
+    padding:0 !important;
+    justify-content:flex-start !important;
+    align-items:center !important;
+    gap:12px !important;
+    overflow:visible;
+  }
+
+  .tgm-main-nav a{
+    flex:none;
+    padding:5px 0 8px !important;
+    font-size:12px !important;
+    line-height:1;
+  }
+
+  .tgm-main-nav .top-nav-theme{
+    flex:none;
+    margin-left:2px;
+    font-size:22px;
+  }
+
+  /* Smaller, slightly shifted floating drawer trigger. */
+  #menuToggle{
+    top:14px !important;
+    left:20px !important;
+    width:44px !important;
+    height:44px !important;
+    font-size:24px !important;
+    border-radius:50% !important;
+  }
+
+  /* Slightly more compact mobile drawer itself. */
+  #sidebar{
+    width:270px !important;
+  }
+
+  .sidebar-item{
+    padding:14px 16px !important;
+    margin:8px 0 !important;
+    border-radius:14px !important;
+    font-size:15px !important;
+  }
+
+  /* Keep the hero visually separated from the header after the
+     header stops behaving like a giant overlay. */
+  .tgm-hero{
+    margin-top:14px !important;
+  }
+}
