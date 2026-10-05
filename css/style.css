@@ -1150,3 +1150,94 @@ body.light .tgm-hero-features .tgm-slogan{color:#059669}
   .tgm-hero-features{order:3;padding:5px 10px 12px}
   .tgm-hero-features .tgm-slogan{display:none}
 }
+
+/* =========================================================
+   EXACT SUPPLIED REFERENCE HERO
+   The reference image is the visual layer; search remains
+   functional through a transparent overlay.
+   ========================================================= */
+.tgm-header .tgm-brand img{
+  width:54px !important;
+  height:54px !important;
+  object-fit:cover !important;
+  object-position:60% 52% !important;
+  border-radius:50% !important;
+  transform:scale(1.08);
+  background:#020807;
+}
+.tgm-hero{
+  position:relative !important;
+  display:block !important;
+  max-width:89.3% !important;
+  height:auto !important;
+  min-height:0 !important;
+  aspect-ratio:1975/410 !important;
+  margin:7px auto 10px !important;
+  padding:0 !important;
+  overflow:hidden !important;
+  border:1px solid rgba(0,255,156,.34) !important;
+  border-radius:8px !important;
+  background:#020807 !important;
+  box-shadow:none !important;
+}
+.tgm-reference-hero{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  object-fit:cover !important;
+  object-position:center !important;
+  display:block !important;
+}
+.tgm-reference-search{
+  position:absolute !important;
+  left:10.5% !important;
+  top:67.6% !important;
+  width:43.3% !important;
+  height:20.2% !important;
+  display:flex !important;
+  align-items:center !important;
+  overflow:hidden !important;
+  background:rgba(0,0,0,.02) !important;
+  border:0 !important;
+  border-radius:5px !important;
+  z-index:4 !important;
+}
+.tgm-reference-search>span{
+  flex:0 0 10% !important;
+  text-align:center !important;
+  color:transparent !important;
+  font-size:1.7rem !important;
+  user-select:none !important;
+}
+.tgm-reference-search input{
+  flex:1 !important;
+  min-width:0 !important;
+  height:100% !important;
+  border:0 !important;
+  outline:0 !important;
+  padding:0 10px !important;
+  background:transparent !important;
+  color:#f2fff9 !important;
+  font-size:clamp(11px,1.25vw,18px) !important;
+  font-family:inherit !important;
+}
+.tgm-reference-search input::placeholder{color:transparent !important}
+.tgm-reference-search button{
+  flex:0 0 13% !important;
+  width:13% !important;
+  height:100% !important;
+  border:0 !important;
+  background:transparent !important;
+  color:transparent !important;
+  cursor:pointer !important;
+}
+.tgm-reference-search:focus-within{
+  background:rgba(0,0,0,.16) !important;
+}
+.legacy-search-area{display:none}
+@media(max-width:680px){
+  .tgm-hero{max-width:94% !important;aspect-ratio:1975/410 !important}
+  .tgm-reference-search{left:10.5% !important;top:67.6% !important;width:43.3% !important;height:20.2% !important}
+  .tgm-reference-search input{font-size:12px !important}
+}
