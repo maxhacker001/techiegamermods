@@ -7,6 +7,12 @@
     const sidebar = document.getElementById("sidebar");
     const overlay = document.getElementById("overlay");
 
+    if (menu && window.matchMedia("(max-width:680px)").matches) {
+      menu.style.position = "absolute";
+      menu.style.top = "14px";
+      menu.style.left = "4px";
+    }
+
     if (menu && sidebar && overlay && !menu.dataset.uiBound) {
       menu.dataset.uiBound = "1";
       const close = () => {
