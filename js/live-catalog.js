@@ -299,7 +299,7 @@
         }
 
         homeRender();
-      });;
+      });
     }
 
     document.querySelectorAll(".filter-btn").forEach(btn => {
