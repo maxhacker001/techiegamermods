@@ -54,97 +54,107 @@
 
   <!-- HOME PAGE -->
   <div id="homePage">
-    <header>
-      <div class="nav">
-        <div class="logo">
-          <img src="images/logo.png" style="height:28px">
-          <span>TECHIE GAMER MODS</span>
+    <header class="tgm-header">
+      <div class="nav tgm-topbar">
+        <div class="tgm-brand">
+          <img src="images/logo.png" alt="Techie Gamer Mods">
+          <div class="tgm-brand-copy">
+            <strong><span>TECHIE</span> <b>GAMER MODS</b></strong>
+            <small>APPS • GAMES • TUTORIALS • UPDATES</small>
+          </div>
         </div>
+
+        <div class="tgm-top-search">
+          <span>⌕</span>
+          <input id="topSearchInput" placeholder="Search for apps, games, mods..." autocomplete="off">
+          <button id="topSearchBtn" aria-label="Search">⌕</button>
+        </div>
+
+        <nav class="tgm-main-nav" aria-label="Primary">
+          <a href="#" class="top-nav-link home active">⌂ <span>Home</span></a>
+          <a href="#" class="top-nav-link" data-category="apps">▣ <span>Apps</span></a>
+          <a href="#" class="top-nav-link" data-category="games">🎮 <span>Games</span></a>
+          <a href="#" class="top-nav-link" data-category="tutorials">▤ <span>Tutorials</span></a>
+          <a href="#" class="top-nav-link blog">◴ <span>Updates</span></a>
+          <button type="button" class="top-nav-theme mode-toggle" aria-label="Toggle theme">☼</button>
+        </nav>
       </div>
     </header>
 
-    <div class="hero">
-      <h1>Premium App Mods</h1>
-      <p>Apps • Games • Tutorials • Updates</p>
-
-      <div class="search-box">
-        <input id="searchInput" placeholder="Search mod..." autocomplete="off">
-        <button id="searchBtn">GO</button>
-      </div>
-    </div>
-
-    <!-- TRENDING MODS SECTION -->
-    <!-- Modyolo-inspired catalog hub: no News block, keeps Techie Gamer branding. -->
-    <div id="catalogHub" class="catalog-hub" aria-label="Featured catalog sections">
-      <section class="hub-section" id="essential-apps">
-        <div class="hub-heading"><h2>Essential Apps</h2><a href="#essential-apps" class="hub-more" data-home-section="essential-apps">View More</a></div>
-        <div class="hub-grid" id="essentialAppsGrid"></div>
-      </section>
-
-      <section class="hub-section" id="games-mod-latest">
-        <div class="hub-heading"><h2>Games Mod - Latest</h2><a href="#games-mod-latest" class="hub-more" data-home-section="games-mod-latest">View More</a></div>
-        <div class="hub-grid" id="gamesLatestGrid"></div>
-      </section>
-
-      <section class="hub-section" id="premium-apps-latest">
-        <div class="hub-heading"><h2>Premium Apps - Latest</h2><a href="#premium-apps-latest" class="hub-more" data-home-section="premium-apps-latest">View More</a></div>
-        <div class="hub-grid" id="premiumAppsGrid"></div>
-      </section>
-
-      <section class="hub-section" id="early-access" hidden>
-        <div class="hub-heading"><h2>Early Access</h2><a href="#early-access" class="hub-more" data-home-section="early-access">View More</a></div>
-        <div class="hub-grid" id="earlyAccessGrid"></div>
-      </section>
-
-      <section class="hub-section" id="catalog-categories">
-        <div class="hub-heading"><h2>Categories</h2></div>
-        <div class="hub-category-columns">
-          <div><h3>Apps</h3><div id="appCategoryLinks" class="hub-category-grid"></div></div>
-          <div><h3>Games</h3><div id="gameCategoryLinks" class="hub-category-grid"></div></div>
-        </div>
-      </section>
-    </div>
-
-
-    <div class="trending-section" id="trendingSection">
-      <h2 class="trending-title">🔥 Trending Mods</h2>
-      <div class="trending-grid">
-        <div class="trending-card">
-          <img src="images/spotify.png" alt="Spotify MOD">
-          <h3>Spotify MOD</h3>
-          <p>v8.9.18 • 45 MB • Premium Unlocked</p>
-          <a href="app.html?id=spotify-mod">View Mod</a>
-        </div>
-        <div class="trending-card">
-          <img src="images/capcut.png" alt="CapCut MOD">
-          <h3>CapCut MOD</h3>
-          <p>v12.3.0 • 78 MB • Pro Unlocked</p>
-          <a href="app.html?id=capcut-mod">View Mod</a>
-        </div>
-        <div class="trending-card">
-          <img src="images/freefire.png" alt="Free Fire MOD">
-          <h3>Free Fire MOD</h3>
-          <p>v1.104.1 • 650 MB • Unlimited Diamonds</p>
-          <a href="app.html?id=freefire-mod">View Mod</a>
-        </div>
-        <div class="trending-card">
-          <img src="images/pubg.png" alt="PUBG Mobile MOD">
-          <h3>PUBG Mobile MOD</h3>
-          <p>v3.5.0 • 1.2 GB • Wallhack + Aimbot</p>
-          <a href="app.html?id=pubg-mod">View Mod</a>
+    <div class="hero tgm-hero">
+      <div class="tgm-hero-copy">
+        <div class="tgm-kicker">WELCOME TO</div>
+        <h1><span>TECHIE</span> <em>GAMER</em> MODS</h1>
+        <p>Premium Mods <b>|</b> No ADS <b>|</b> Unlocked Features <b>|</b> Regular Updates</p>
+        <div class="search-box tgm-hero-search">
+          <span>⌕</span>
+          <input id="searchInput" placeholder="Search mods, apps, games..." autocomplete="off">
+          <button id="searchBtn">GO</button>
         </div>
       </div>
+      <div class="tgm-hero-art" aria-hidden="true"></div>
     </div>
 
-    <section>
-      <div class="filters" id="filtersSection">
-        <button class="filter-btn active" data-category="apps">App Mods</button>
-        <button class="filter-btn" data-category="games">Game Mods</button>
-        <button class="filter-btn" data-category="tutorials">Modding Tutorials</button>
-      </div>
+    <div id="catalogDashboard" class="tgm-dashboard">
+      <section class="tgm-catalog-section" id="trendingSection">
+        <div class="tgm-section-head">
+          <div class="tgm-section-title"><span>🤖</span><h2>Essential Apps</h2><p>Popular modded apps with premium features unlocked</p></div>
+          <a href="#essential-apps" class="tgm-view-more" data-home-section="essential-apps">View More <span>→</span></a>
+        </div>
+        <div class="tgm-two-col-grid" id="essentialAppsGrid"></div>
+      </section>
 
-      <div class="grid" id="appsContainer"></div>
-    </section>
+      <section class="tgm-catalog-section" id="games-mod-latest">
+        <div class="tgm-section-head">
+          <div class="tgm-section-title"><span>🎮</span><h2>Games Mod - Latest</h2><p>Latest modded games with unlimited resources</p></div>
+          <a href="#games-mod-latest" class="tgm-view-more" data-home-section="games-mod-latest">View More <span>→</span></a>
+        </div>
+        <div class="tgm-two-col-grid" id="gamesLatestGrid"></div>
+      </section>
+
+      <section class="tgm-catalog-section" id="premium-apps-latest">
+        <div class="tgm-section-head">
+          <div class="tgm-section-title"><span>♛</span><h2>Premium Apps - Latest</h2><p>Premium apps with unlocked features</p></div>
+          <a href="#premium-apps-latest" class="tgm-view-more" data-home-section="premium-apps-latest">View More <span>→</span></a>
+        </div>
+        <div class="tgm-two-col-grid" id="premiumAppsGrid"></div>
+      </section>
+
+      <section class="tgm-catalog-section" id="editors-choice">
+        <div class="tgm-section-head">
+          <div class="tgm-section-title"><span>★</span><h2>Editor's Choice</h2><p>Handpicked mods you shouldn't miss</p></div>
+          <a href="#editors-choice" class="tgm-view-more" data-home-section="editors-choice">View More <span>→</span></a>
+        </div>
+        <div class="tgm-two-col-grid" id="editorsChoiceGrid"></div>
+      </section>
+
+      <section class="tgm-catalog-section" id="early-access" hidden>
+        <div class="tgm-section-head">
+          <div class="tgm-section-title"><span>🚀</span><h2>Early Access</h2><p>New and early releases</p></div>
+          <a href="#early-access" class="tgm-view-more" data-home-section="early-access">View More <span>→</span></a>
+        </div>
+        <div class="tgm-two-col-grid" id="earlyAccessGrid"></div>
+      </section>
+
+      <section class="tgm-category-section" id="catalog-categories">
+        <div class="tgm-section-head">
+          <div class="tgm-section-title"><span>▦</span><h2>Categories</h2><p>Browse by agenda and genre</p></div>
+        </div>
+        <div class="tgm-category-columns">
+          <div><h3>Apps</h3><div id="appCategoryLinks" class="tgm-category-grid"></div></div>
+          <div><h3>Games</h3><div id="gameCategoryLinks" class="tgm-category-grid"></div></div>
+        </div>
+      </section>
+
+      <div id="legacySearchArea" class="legacy-search-area">
+        <div class="filters" id="filtersSection">
+          <button class="filter-btn active" data-category="apps">App Mods</button>
+          <button class="filter-btn" data-category="games">Game Mods</button>
+          <button class="filter-btn" data-category="tutorials">Modding Tutorials</button>
+        </div>
+        <div class="grid" id="appsContainer"></div>
+      </div>
+    </div>
   </div>
 
   <!-- CATEGORY PAGE (FULL SCREEN) -->
