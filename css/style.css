@@ -1559,3 +1559,98 @@ body.light .tgm-hero-features .tgm-slogan{color:#059669}
     margin-top:14px !important;
   }
 }
+
+
+/* =========================================================
+   MOBILE FINAL ALIGNMENT PASS
+   Reference-style spacing: one shared content rail for the
+   banner, catalog cards and section headings.
+   ========================================================= */
+@media(max-width:680px){
+  /* Shared mobile content rail */
+  .tgm-dashboard,
+  .tgm-hero{
+    width:94% !important;
+    max-width:94% !important;
+    margin-left:auto !important;
+    margin-right:auto !important;
+  }
+
+  /* The banner must sit on exactly the same rail as the cards. */
+  .tgm-hero{
+    margin-top:14px !important;
+    padding:0 !important;
+    overflow:hidden !important;
+  }
+
+  /* Keep the header brand in one straight horizontal row.
+     Drawer -> icon -> TECHIE GAMER MODS. */
+  .tgm-topbar{
+    padding:8px 20px 9px !important;
+  }
+
+  .tgm-brand{
+    width:auto !important;
+    min-width:0 !important;
+    flex:1 1 100% !important;
+    margin-left:60px !important;
+    margin-right:0 !important;
+    justify-content:flex-start !important;
+    align-items:center !important;
+  }
+
+  .tgm-header .tgm-brand img{
+    width:42px !important;
+    height:42px !important;
+    flex:0 0 42px !important;
+  }
+
+  .tgm-brand-copy{
+    min-width:0 !important;
+  }
+
+  .tgm-brand-copy strong{
+    font-size:24px !important;
+    line-height:1 !important;
+    white-space:nowrap !important;
+  }
+
+  /* Navigation begins on the same left rail as the catalog. */
+  .tgm-main-nav{
+    width:94vw !important;
+    margin-left:auto !important;
+    margin-right:auto !important;
+    padding:0 !important;
+    justify-content:flex-start !important;
+    gap:12px !important;
+  }
+
+  .tgm-main-nav a{
+    font-size:12px !important;
+  }
+
+  /* Remove the brightness/theme control from the top navigation.
+     Theme switching remains available inside the drawer. */
+  .tgm-main-nav .top-nav-theme{
+    display:none !important;
+  }
+
+  /* Header search: use viewport width so it is genuinely centered,
+     independent of the brand/nav flex sizing. */
+  .tgm-top-search{
+    width:76vw !important;
+    max-width:none !important;
+    flex:0 0 76vw !important;
+    margin:4px auto 0 !important;
+    align-self:center !important;
+  }
+
+  /* Keep the drawer comfortably close to the brand without touching it. */
+  #menuToggle{
+    top:14px !important;
+    left:20px !important;
+    width:44px !important;
+    height:44px !important;
+    font-size:24px !important;
+  }
+}
