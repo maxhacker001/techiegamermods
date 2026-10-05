@@ -140,15 +140,19 @@
         );
       if (!items.length) continue;
 
-      const heading = document.createElement("div");
-      heading.style.cssText = "grid-column:1/-1;margin:20px 0 2px;text-align:center;color:var(--neon);font-size:24px;font-weight:800;";
+      const group = document.createElement("section");
+      group.className = "tgm-search-group";
+
+      const heading = document.createElement("h3");
+      heading.className = "tgm-search-group-title";
       heading.textContent = title;
-      target.appendChild(heading);
+      group.appendChild(heading);
 
       const wrap = document.createElement("div");
-      wrap.style.cssText = "grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;";
+      wrap.className = "tgm-search-group-grid";
       items.forEach(app => wrap.appendChild(card(app, category === "tutorials")));
-      target.appendChild(wrap);
+      group.appendChild(wrap);
+      target.appendChild(group);
       shownGroups++;
     }
 
