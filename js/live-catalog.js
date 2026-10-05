@@ -319,9 +319,16 @@
     }
 
     setupNavigation();
+
     try {
-      const data = await window.TGMApi.listApps({ limit: 100 });
-      state.apps = (data.apps || []).map(window.TGMApi.normalizeListApp);
+      // data.js already boots the lightweight live catalog. Reuse that single
+      // request instead of issuing a second /api/apps request on page load.
+      if (window.TGM_LIVE_READY) {
+        await window.TGM_LIVE_READY;
+      }
+
+      const source = Array.isArray(window.apps) ? window.apps : [];
+      state.apps = source.slice();
 
       if (state.apps.length) {
         const hash = window.location.hash.replace(/^#/, "");
@@ -340,6 +347,18 @@
       }
     } catch (error) {
       console.warn("Live catalog unavailable:", error);
+
+      // If data.js populated apps despite another transient failure, render
+      // that cache rather than replacing the homepage with an error message.
+      const source = Array.isArray(window.apps) ? window.apps : [];
+      state.apps = source.slice();
+
+      if (state.apps.length) {
+        showPage("homePage");
+        homeRender();
+        return;
+      }
+
       if (grid) {
         grid.innerHTML =
           "<p style='grid-column:1/-1;text-align:center;color:var(--warn);margin:50px'>The live catalog could not be loaded. Please refresh the page.</p>";
