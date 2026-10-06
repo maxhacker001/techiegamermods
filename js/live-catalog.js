@@ -60,7 +60,9 @@
       link.classList.remove("active");
       const key = link.classList.contains("home")
         ? "home"
-        : (link.dataset.category || (link.classList.contains("blog") ? "blog" : ""));
+        : (link.dataset.category ||
+          (link.dataset.page === "updates" ? "updates" :
+          (link.classList.contains("blog") ? "blog" : "")));
       if (key === activeKey) link.classList.add("active");
     });
   };
@@ -279,6 +281,72 @@
     });
   };
 
+  const renderUpdatesPage = (focus = "blog") => {
+    const blogSource = $("blogPage");
+    const faqSource = $("faqPage");
+    const dashboard = $("catalogDashboard");
+    const legacySearch = $("legacySearchArea");
+    const grid = $("appsContainer");
+    const filters = $("filtersSection");
+    if (!blogSource || !faqSource || !dashboard || !legacySearch || !grid) return;
+
+    state.query = "";
+    state.searchResults = null;
+    state.category = "apps";
+
+    const input = $("searchInput");
+    const topInput = $("topSearchInput");
+    if (input) input.value = "";
+    if (topInput) topInput.value = "";
+
+    showPage("homePage");
+    setActiveNav("updates");
+
+    dashboard.style.display = "block";
+    dashboard.querySelectorAll(".tgm-catalog-section, .tgm-category-section")
+      .forEach(section => {
+        section.hidden = false;
+        section.style.display = "none";
+      });
+
+    if (filters) filters.style.display = "none";
+    legacySearch.style.display = "block";
+    grid.classList.remove("tgm-search-results-grid", "tgm-category-results-grid");
+    grid.style.display = "block";
+    grid.style.width = "100%";
+    grid.style.maxWidth = "100%";
+    grid.style.minWidth = "0";
+    grid.style.margin = "0";
+    grid.innerHTML = "";
+
+    const view = document.createElement("section");
+    view.className = "tgm-updates-view";
+
+    const addSource = (source, className) => {
+      const fragment = document.createElement("div");
+      fragment.className = className;
+      Array.from(source.children).forEach(child => {
+        if (child.tagName.toLowerCase() !== "header") {
+          fragment.appendChild(child.cloneNode(true));
+        }
+      });
+      view.appendChild(fragment);
+    };
+
+    addSource(blogSource, "tgm-update-blog");
+    addSource(faqSource, "tgm-update-faq");
+    grid.appendChild(view);
+
+    const targetId = focus === "faq" ? ".tgm-update-faq" : ".tgm-update-blog";
+    requestAnimationFrame(() => {
+      const target = view.querySelector(targetId);
+      const top = target
+        ? Math.max(0, target.getBoundingClientRect().top + window.scrollY - 10)
+        : 0;
+      window.scrollTo({ top, left: 0, behavior: "auto" });
+    });
+  };
+
   const renderStaticPage = (pageId) => {
     const source = $(pageId);
     const dashboard = $("catalogDashboard");
@@ -288,7 +356,7 @@
     if (!source || !dashboard || !legacySearch || !grid) return;
 
     showPage("homePage");
-    setActiveNav(pageId === "blogPage" ? "blog" : "");
+    setActiveNav(pageId === "blogPage" ? "blog" : "faq");
     dashboard.style.display = "block";
     dashboard.querySelectorAll(".tgm-catalog-section, .tgm-category-section")
       .forEach(section => {
@@ -298,10 +366,12 @@
 
     filters.style.display = "none";
     legacySearch.style.display = "block";
-    grid.classList.remove("tgm-search-results-grid");
+    grid.classList.remove("tgm-search-results-grid", "tgm-category-results-grid");
     grid.style.display = "block";
     grid.style.width = "100%";
+    grid.style.maxWidth = "100%";
     grid.style.minWidth = "0";
+    grid.style.margin = "0";
     grid.innerHTML = "";
 
     const view = document.createElement("section");
@@ -441,6 +511,8 @@
           if (input) input.value = "";
           if (topInput) topInput.value = "";
           categoryRender(item.dataset.category);
+        } else if (item.dataset.page === "updates") {
+          renderUpdatesPage("blog");
         } else if (item.classList.contains("blog")) {
           renderStaticPage("blogPage");
         }
@@ -584,6 +656,8 @@
         const hash = window.location.hash.replace(/^#/, "");
         if (["apps","games","tutorials"].includes(hash)) {
           categoryRender(hash);
+        } else if (hash === "updates") {
+          renderUpdatesPage("blog");
         } else if (hash === "blog") {
           renderStaticPage("blogPage");
         } else if (hash === "faq") {
