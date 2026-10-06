@@ -20,21 +20,21 @@
     "instagram-pro-insta-thunder": "https://play-lh.googleusercontent.com/yHi59jmO_lVamcyJ1i3rM1_E8bAiAspShnGjjURq05ipQQSUksO3QVEsXTegRSqul038-4YNA7O644XAcx251Q%3Dw240-h480",
     "twitter-x-gold-mod": "https://play-lh.googleusercontent.com/IsLsCD4eLC2CYvlkgTI6Z5TROj0BJIBgUF7BZ5eliTzyyTjqG_mbofeG4kw2s7oG_JZMSi5ErLz_qsDi169C8w%3Dw240-h480",
     "netflix-mod": "https://cdn.mos.cms.futurecdn.net/sZKx8M5MGrKjk7L7748Dkc.jpg",
-    "mobile-legends-mod": "https://apps.apple.com/ni/app/mobile-legends-bang-bang/id1160056295",
-    "subway-surfers-mod": "https://play-lh.googleusercontent.com/-b6afYVP9kkzaFgDT3bZpGy2ugh1AjzCiXS0o9aZw7bIZ5rCb3Bp8YAwIxyMjUGLjl1pD6ZFGxeKKGlXBw950g%3Dw240-h480",
+    "mobile-legends-mod": "https://play-lh.googleusercontent.com/MztmLpB1-_eFbHnqNzzvzl5zjiOH2BEb0D71uBxZYf_4BEmW3QEPWODhRtyqY7Qz4wRLwQ--Rg1RAjOFqtHSs-o%3Dw240-h480",
+    "subway-surfers-mod": "https://play-lh.googleusercontent.com/upYircnh6-mH07OxwtX7L0EPFd4_FNV71xd8w4gHiyLKopipJxwPzoupoQgpzgf8_Fk%3Dw240-h480",
     "candy-crush-saga-mod": "https://play-lh.googleusercontent.com/JvMhIxuwArVmcMReJQB8PIEB1MIQNMGf9j5i914JtkBrHrA55K-nMUIVlYCa7SXAdHtzLtsycEo6NpXeHFxLwvI%3Dw240-h480",
     "clash-of-clans-mod": "https://play-lh.googleusercontent.com/sFmWfYbYp_2ea7VRMTnwd3gjIBrPGXHj_d_ab1_k1q1p2OMk4riGMF1vqxdhONOtTYOt_BVpk7a4AYcKU68LNGQ%3Dw240-h480",
     "roblox-mod": "https://play-lh.googleusercontent.com/QqZj22aXblAyYDxLQw-Gg0ycW0QkKhrDnwqgERZU9BMRXZnMlgXfq-94sikG5mEpt_I0lzZxcUzfLblmQgwYzUE%3Dw240-h480",
-    "call-of-duty-mobile-mod": "https://apps.apple.com/jp/app/call-of-duty-mobile/id1287282214",
+    "call-of-duty-mobile-mod": "https://play-lh.googleusercontent.com/cKXlbU72_2wSXdjcD_zPWED3EVaaOQVqqHgiA9JoRQMprYen49arNUMTngcRc9UWLnv-ANT9gyQBDQpvAn61lg%3Dw240-h480",
     "among-us-mod": "https://play-lh.googleusercontent.com/pfGArJJx-vtMRVu2-ziedzAhTLsHgks6N3mNyyOC0oxRdsXINGwdd9h4ZutdTG7MfgiqlDXBXnk-kNo-Fns70Q%3Dw240-h480",
-    "stumble-guys-mod": "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/e6/19/cd/e619cd22-594b-2a59-7576-1a57d2c7932b/AppIcon-0-0-1x_U007emarketing-0-5-0-85-220.png/0x0ss-85.png",
+    "stumble-guys-mod": "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/f6/8c/c1/f68cc1c1-e5e2-82a8-c669-b21e18ce3d3b/Placeholder.mill/1024x1024wd.png",
     "brawl-stars-mod": "https://play-lh.googleusercontent.com/wEOIM7cYyXkMExNztvFYKHJLPegXp6h81-P_JQQ_9KQvDCWK49m2zpt1mTRXO5bA2qU_Bp4em_nfMsHXmq8Z%3Dw240-h480",
     "shadow-fight-3-mod": "https://apps.apple.com/us/app/shadow-fight-3-rpg-fighting/id964827011",
     "dream-league-soccer-mod": "https://is5-ssl.mzstatic.com/image/thumb/Purple62/v4/ed/cd/37/edcd3789-22b6-88ed-f2f6-4265718629e1/mzl.iysfrduj.png/1200x630wa.jpg",
     "hill-climb-racing-mod": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/d0/b2/3c/d0b23c6f-1b9e-3bb9-f147-2bcfd0ef86e2/AppIcon-0-0-1x_U007epad-0-1-0-85-220.png/640x640bb.webp",
     "8-ball-pool-mod": "https://play-lh.googleusercontent.com/F2_Kbn1-vQePDh_Y0qNCDhkmpEK5qdEyPwcJqwXho54ZVG4w6Szt32VHsyPzeVLPR2kfYI62-hGmNpQoDxS-wQ%3Ds48",
     "powerdirector-mod": "https://play-lh.googleusercontent.com/v0kLUsvwfgvcHJcHPcCRBmXaAwnvFVLiv0XVkuSIc6BCtqc6vBvPVZ5K5GqjC52hf4K0SLOYSKbplAzFxnr5qg%3Dw240-h480",
-    "snaptube-mod": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/d0/b2/3c/d0b23c6f-1b9e-3bb9-f147-2bcfd0ef86e2/AppIcon-0-0-1x_U007epad-0-1-0-85-220.png/640x640bb.webp"
+    "snaptube-mod": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Snaptube_Logo.png?width=512"
   };
 
 
