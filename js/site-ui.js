@@ -7,27 +7,39 @@
     const sidebar = document.getElementById("sidebar");
     const overlay = document.getElementById("overlay");
 
+    const drawer = {
+      open() {
+        if (!sidebar || !overlay) return;
+        sidebar.classList.add("open");
+        overlay.classList.add("open");
+        document.documentElement.classList.add("tgm-drawer-open");
+        document.body.classList.add("tgm-drawer-open");
+      },
+      close() {
+        if (sidebar) sidebar.classList.remove("open");
+        if (overlay) overlay.classList.remove("open");
+        document.documentElement.classList.remove("tgm-drawer-open");
+        document.body.classList.remove("tgm-drawer-open");
+      },
+      toggle() {
+        if (sidebar?.classList.contains("open")) this.close();
+        else this.open();
+      }
+    };
+    window.TGMDrawer = drawer;
+
     if (menu && window.matchMedia("(max-width:680px)").matches) {
       menu.style.position = "absolute";
-      menu.style.top = "14px";
+      menu.style.top = "3px";
       menu.style.left = "4px";
     }
 
     if (menu && sidebar && overlay && !menu.dataset.uiBound) {
       menu.dataset.uiBound = "1";
-      const close = () => {
-        sidebar.classList.remove("open");
-        overlay.classList.remove("open");
-      };
-      menu.addEventListener("click", () => {
-        sidebar.classList.toggle("open");
-        overlay.classList.toggle("open");
-      });
-      overlay.addEventListener("click", close);
+      menu.addEventListener("click", () => drawer.toggle());
+      overlay.addEventListener("click", () => drawer.close());
       sidebar.querySelectorAll("a").forEach(link => {
-        link.addEventListener("click", () => {
-          close();
-        });
+        link.addEventListener("click", () => drawer.close());
       });
     }
 
