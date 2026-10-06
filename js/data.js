@@ -16,8 +16,8 @@
     size: row.latest_size_bytes && window.TGMApi
       ? window.TGMApi.formatBytes(row.latest_size_bytes)
       : "—",
-    image: row.icon_url && window.TGMApi
-      ? window.TGMApi.imageUrl(row.icon_url)
+    image: window.TGMApi && window.TGMApi.imageForApp
+      ? window.TGMApi.imageForApp(row)
       : (row.icon_url || "images/logo.png"),
     icon_url: row.icon_url || "",
     modTitle: row.latest_mod_info || "Release information",
