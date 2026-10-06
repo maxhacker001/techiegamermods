@@ -2518,10 +2518,8 @@ html,body{
 
 /* =========================================================
    MOBILE FINAL RAIL + NAV CALCULATION
-   The visible catalog rail starts at 15px and ends at 15px,
-   preventing right-edge clipping while preserving the
-   approved left alignment. Primary navigation uses five
-   calculated slots: Home at left, Updates at right.
+   Keeps the approved 15px content rail while tightening the
+   primary navigation and aligning the drawer with the logo.
    ========================================================= */
 @media(max-width:680px){
   .tgm-hero,
@@ -2559,13 +2557,16 @@ html,body{
     max-width:44px !important;
   }
 
+  /* Five items share the row without the oversized gaps from
+     the previous equal-slot layout. */
   .tgm-main-nav{
-    width:100vw !important;
-    max-width:100vw !important;
-    display:grid !important;
-    grid-template-columns:repeat(5,minmax(0,1fr)) !important;
+    width:100% !important;
+    max-width:100% !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:space-between !important;
     gap:0 !important;
-    padding:0 !important;
+    padding:0 16px !important;
     margin:0 !important;
     box-sizing:border-box !important;
     overflow:hidden !important;
@@ -2573,18 +2574,28 @@ html,body{
 
   .tgm-main-nav a{
     min-width:0 !important;
+    flex:0 0 auto !important;
     margin:0 !important;
     padding:5px 0 8px !important;
     white-space:nowrap !important;
     text-align:center !important;
-    justify-self:center !important;
   }
 
   .tgm-main-nav a:first-child{
-    justify-self:start !important;
+    margin-left:0 !important;
   }
 
   .tgm-main-nav a.blog{
-    justify-self:end !important;
+    margin-right:0 !important;
+  }
+
+  /* Move only the drawer upward; keep its horizontal position. */
+  #menuToggle{
+    position:absolute !important;
+    top:3px !important;
+    left:4px !important;
+    width:44px !important;
+    height:44px !important;
+    z-index:1001 !important;
   }
 }
