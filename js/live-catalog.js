@@ -266,6 +266,7 @@
     if (legacySearch) legacySearch.style.display = "none";
     if (filters) filters.style.display = "none";
 
+    const grid = $("appsContainer");
     grid?.classList.remove("tgm-search-results-grid", "tgm-category-results-grid");
     setActiveNav("home");
 
