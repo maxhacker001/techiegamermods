@@ -177,16 +177,13 @@
       const grid = document.getElementById("recommendedGrid");
       if (!grid) return;
       grid.innerHTML = "";
-      const sourceGenre = String(window.__TGM_RELATED_GENRE || "").trim().toLowerCase();
       const sourceCategory = String(window.__TGM_RELATED_CATEGORY || "").trim().toLowerCase();
       const list = (items || [])
         .filter(item => (item.slug || item.id) !== currentId)
         .filter(item => {
-          if (!sourceGenre) return false;
-          const itemGenre = String(item.genre || "").trim().toLowerCase();
+          if (!sourceCategory) return false;
           const itemCategory = String(item.category_slug || "").trim().toLowerCase();
-          return itemGenre === sourceGenre &&
-            (!sourceCategory || !itemCategory || itemCategory === sourceCategory);
+          return !itemCategory || itemCategory === sourceCategory;
         })
         .slice(0, 4);
       list.forEach(rec => {
@@ -472,12 +469,16 @@
     window.__TGM_RELATED_GENRE = String(app.genre || "").trim().toLowerCase();
     window.__TGM_RELATED_CATEGORY = String(app.category || "").trim().toLowerCase();
 
+    const sourceText = [
+      app.name, app.genre, app.description, app.modTitle
+    ].join(" ").toLowerCase();
     const relatedLegacy = apps
-      .filter(a =>
-        a.id !== appId &&
-        a.category === app.category &&
-        String(a.genre || "").trim().toLowerCase() === window.__TGM_RELATED_GENRE
-      )
+      .filter(a => {
+        if (a.id === appId || a.category !== app.category) return false;
+        const text = [a.name, a.genre, a.description, a.modTitle].join(" ").toLowerCase();
+        const terms = sourceText.split(/\s+/).filter(word => word.length >= 5);
+        return terms.some(term => text.includes(term));
+      })
       .slice(0, 4)
       .map(a => ({
         id: a.id,
