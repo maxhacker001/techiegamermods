@@ -115,65 +115,175 @@ async function getRelatedApps(appId, env) {
   const normalize = (value) => String(value || "")
     .toLowerCase()
     .replace(/<[^>]*>/g, " ")
-    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/[^a-z0-9&]+/g, " ")
     .replace(/\s+/g, " ")
     .trim();
 
-  // Functional domains are the gate. A candidate must share at least one
-  // real app/game domain with the current release before generic features
-  // such as "premium", "online", or "unlocked" are allowed to boost it.
-  const domainGroups = [
-    ["video editing","video editor","video players & editors","video players and editors","video production","motion graphics","capcut","inshot","kinemaster","alight motion","vn video","powerdirector","videoleap"],
-    ["photo editing","photo editor","photography","photo & video","photo and video","picsart","lightroom","snapseed","photoshop","remini","photoroom"],
-    ["video downloader","downloader","download manager","snaptube","vidmate","tubemate"],
-    ["music & audio","music and audio","music player","audio player","music streaming","spotify","podcast"],
-    ["social media","social networking","social","communication","whatsapp","gbwhatsapp","telegram","instagram","facebook","messenger","twitter","tiktok"],
-    ["browser","web browser","firefox","chrome","edge","opera","brave"],
-    ["file manager","file explorer","zarchiver","archive","zip","rar"],
-    ["vpn","privacy","proxy","webrtc","dns"],
-    ["anime","manga","otaku","crunchyroll"],
-    ["shooter","first person shooter","fps","war","battle","battlefield","combat","shooting","battle royale","pubg","free fire","call of duty"],
-    ["football","soccer","fifa","efootball","dream league","football manager"],
-    ["racing","racing game","car game","asphalt","need for speed"],
-    ["strategy","strategy game","clash","warcraft","civilization","tactics"],
-    ["puzzle","puzzle game","word game","trivia","board game","card game","casino"],
-    ["simulation","simulation game","simulator","tycoon","sandbox","building"]
+  // A domain means the app's actual primary function. Brand names and
+  // descriptive copy are used as supporting signals, but incidental mentions
+  // (for example "make TikTok videos") must not turn a video editor into a
+  // social-media app.
+  const domainRules = [
+    {
+      id: "video-editing",
+      genre: /(video editing|video editor|video players? (and|&) editors?|video production|motion graphics)/,
+      name: /(capcut|inshot|kinemaster|alight motion|vn video|powerdirector|videoleap|filmora|viva video)/,
+      strong: /(video editor|video editing|edit (videos?|clips?)|video (effects?|transitions?|templates?)|motion design|timeline editing|video maker)/
+    },
+    {
+      id: "photo-editing",
+      genre: /(photo editing|photo editor|photography|photo & video|photo and video)/,
+      name: /(picsart|remini|lightroom|snapseed|photoshop|photoroom|pixlr)/,
+      strong: /(photo editor|photo editing|edit (photos?|pictures?)|photo retouch|image editor|portrait retouch|photo effects?)/
+    },
+    {
+      id: "video-downloading",
+      genre: /(video downloader|downloader|download manager)/,
+      name: /(snaptube|vidmate|tubemate|videoder)/,
+      strong: /(download videos?|video downloader|save videos?|media downloader)/
+    },
+    {
+      id: "music-audio",
+      genre: /(music|audio|music & audio|music player|audio player|music streaming)/,
+      name: /(spotify|audiomack|youtube music|soundcloud|poweramp|apple music|deezer)/,
+      strong: /(music player|audio player|music streaming|stream music|podcast|listen to music)/
+    },
+    {
+      id: "social-media",
+      genre: /(social|communication|social networking)/,
+      name: /(instagram|whatsapp|gbwhatsapp|telegram|facebook|messenger|twitter|twitter x|tiktok|snapchat)/,
+      strong: /(social media|social networking|messaging app|chat app|instant messaging)/
+    },
+    {
+      id: "browser",
+      genre: /(browser|web browser)/,
+      name: /(chrome|firefox|edge|opera|brave|browser)/,
+      strong: /(web browser|browse the web|private browsing|web surfing)/
+    },
+    {
+      id: "file-tools",
+      genre: /(file manager|file explorer|archive|utility)/,
+      name: /(zarchiver|file manager|file explorer|solid explorer|rar|7zip)/,
+      strong: /(file manager|file explorer|extract zip|archive manager|compress files?)/
+    },
+    {
+      id: "vpn-privacy",
+      genre: /(vpn|privacy|proxy)/,
+      name: /(vpn|protonvpn|nordvpn|surfshark|mullvad|warp)/,
+      strong: /(vpn|virtual private network|proxy|privacy protection|dns)/
+    },
+    {
+      id: "anime-manga",
+      genre: /(anime|manga|otaku)/,
+      name: /(crunchyroll|manga|anime)/,
+      strong: /(anime streaming|watch anime|read manga)/
+    },
+    {
+      id: "shooter-battle",
+      genre: /(fps|first person shooter|shooter|battle royale)/,
+      name: /(free fire|pubg|call of duty|cod mobile|blood strike|modern combat|standoff)/,
+      strong: /(battle royale|battlefield|combat game|shooting game|aimbot|wallhack|headshot|no recoil|gunfight|enemy|weapons?)/,
+    },
+    {
+      id: "football",
+      genre: /(football|soccer)/,
+      name: /(efootball|dream league|fifa|football manager)/,
+      strong: /(football game|soccer game|football match|football club)/
+    },
+    {
+      id: "racing",
+      genre: /(racing|racing game)/,
+      name: /(asphalt|need for speed|carx|hill climb)/,
+      strong: /(racing game|race cars?|driving game|street racing)/
+    },
+    {
+      id: "strategy",
+      genre: /(strategy|strategy game)/,
+      name: /(clash|warcraft|civilization|tactics)/,
+      strong: /(strategy game|tactical game|base building|real time strategy)/
+    },
+    {
+      id: "puzzle",
+      genre: /(puzzle|word game|trivia|board game|card game)/,
+      name: /(puzzle|trivia|solitaire|chess|sudoku)/,
+      strong: /(puzzle game|word game|brain game|logic puzzle)/
+    },
+    {
+      id: "simulation",
+      genre: /(simulation|simulator|tycoon)/,
+      name: /(simulator|tycoon|sandbox)/,
+      strong: /(simulation game|life simulator|city builder|management game)/
+    }
   ];
 
   const featureGroups = [
-    ["coins", "diamonds", "uc", "cp", "resources", "credits", "currency", "money", "gems", "cash"],
-    ["premium", "pro", "vip", "ad free", "no ads", "no watermark", "all unlocked", "all features"],
-    ["effects", "filters", "templates", "transitions", "keyframe", "chroma", "layers", "export"],
-    ["aimbot", "wallhack", "esp", "headshot", "no recoil", "magic bullet", "damage"],
-    ["offline", "online", "multiplayer", "battle royale", "pvp", "matches"],
-    ["skins", "characters", "weapons", "items", "royale pass"]
+    ["coins","diamonds","uc","cp","resources","credits","currency","money","gems","cash"],
+    ["aimbot","wallhack","esp","headshot","no recoil","magic bullet","damage"],
+    ["online","multiplayer","battle royale","pvp","matches"],
+    ["premium","pro","vip","ad free","no ads","no watermark","all unlocked"],
+    ["effects","filters","templates","transitions","keyframe","chroma","layers","export"],
+    ["skins","characters","weapons","items","royale pass"]
   ];
 
-  const findDomains = (text) => {
-    const hay = normalize(text);
-    return domainGroups
-      .map((group, index) => ({
-        index,
-        hits: group.filter(term => hay.includes(normalize(term)))
-      }))
-      .filter(group => group.hits.length > 0);
+  const domainsFor = (record) => {
+    const name = normalize(record.name);
+    const genre = normalize(record.genre);
+    const mod = normalize(record.latest_mod_info || record.mod_info);
+    const desc = normalize(record.description_html || record.description || "");
+    return domainRules.filter(rule =>
+      rule.genre.test(genre) ||
+      rule.name.test(name) ||
+      rule.strong.test([name, genre, mod, desc].join(" "))
+    ).map(rule => rule.id);
   };
 
-  const findFeatures = (text) => {
-    const hay = normalize(text);
-    return featureGroups
-      .map((group, index) => ({
-        index,
-        hits: group.filter(term => hay.includes(normalize(term)))
-      }))
-      .filter(group => group.hits.length > 0);
+  const featuresFor = (record) => {
+    const text = normalize([
+      record.name, record.genre, record.latest_mod_info || record.mod_info,
+      record.description_html || record.description || ""
+    ].join(" "));
+    return featureGroups.filter(group =>
+      group.some(term => text.includes(normalize(term)))
+    ).map(group => group.map(normalize));
   };
 
-  const tokenSet = (text) => new Set(
-    normalize(text)
-      .split(" ")
-      .filter(word => word.length >= 4)
-  );
+  const relatedScore = (source, candidate) => {
+    const sourceDomains = domainsFor(source);
+    const candidateDomains = domainsFor(candidate);
+    const sharedDomains = sourceDomains.filter(id => candidateDomains.includes(id));
+    if (!sharedDomains.length) return 0;
+
+    let score = sharedDomains.length * 1000;
+
+    const sourceGenre = normalize(source.genre);
+    const candidateGenre = normalize(candidate.genre);
+    if (sourceGenre && candidateGenre === sourceGenre) score += 250;
+
+    const sourceFeatures = featuresFor(source);
+    const candidateFeatures = featuresFor(candidate);
+    for (const sf of sourceFeatures) {
+      for (const cf of candidateFeatures) {
+        const shared = sf.filter(term => cf.includes(term));
+        score += Math.min(150, shared.length * 25);
+      }
+    }
+
+    // Small metadata boost only after a real domain match exists.
+    const sourceTokens = new Set(normalize([
+      source.name, source.genre, source.latest_mod_info || source.mod_info
+    ].join(" ")).split(" ").filter(word => word.length >= 5));
+    const candidateTokens = new Set(normalize([
+      candidate.name, candidate.genre, candidate.latest_mod_info || candidate.mod_info
+    ].join(" ")).split(" ").filter(word => word.length >= 5));
+
+    let sharedTokens = 0;
+    for (const token of candidateTokens) {
+      if (sourceTokens.has(token)) sharedTokens++;
+    }
+    score += Math.min(80, sharedTokens * 5);
+
+    return score;
+  };
 
   try {
     const current = await env.DB.prepare(`
@@ -192,20 +302,6 @@ async function getRelatedApps(appId, env) {
     `).bind(appId).first();
 
     if (!current) return [];
-
-    const sourceText = [
-      current.name,
-      current.genre,
-      current.description_html,
-      current.latest_mod_info
-    ].join(" ");
-
-    const sourceDomains = findDomains(sourceText);
-    const sourceFeatures = findFeatures(sourceText);
-    const sourceTokens = tokenSet(sourceText);
-    const sourceGenre = normalize(current.genre);
-
-    if (!sourceDomains.length) return [];
 
     const candidates = await env.DB.prepare(`
       SELECT
@@ -230,61 +326,22 @@ async function getRelatedApps(appId, env) {
     `).bind(appId, current.category_id).all();
 
     return (candidates.results || [])
-      .map(row => {
-        const candidateText = [
-          row.name,
-          row.genre,
-          row.description_html,
-          row.mod_info
-        ].join(" ");
-
-        const candidateDomains = findDomains(candidateText);
-        const candidateFeatures = findFeatures(candidateText);
-        const sharedDomainIds = sourceDomains
-          .filter(source => candidateDomains.some(candidate => candidate.index === source.index))
-          .map(source => source.index);
-
-        // Hard gate: unrelated functional areas do not become "related"
-        // merely because both are MOD/APK apps or both mention premium/online.
-        if (!sharedDomainIds.length) return null;
-
-        let score = 400 + (sharedDomainIds.length * 180);
-
-        if (sourceGenre && normalize(row.genre) === sourceGenre) {
-          score += 120;
-        }
-
-        for (const sourceFeature of sourceFeatures) {
-          const candidateFeature = candidateFeatures.find(item => item.index === sourceFeature.index);
-          if (!candidateFeature) continue;
-          const sharedFeatures = sourceFeature.hits.filter(term =>
-            candidateFeature.hits.includes(term)
-          );
-          score += Math.min(100, sharedFeatures.length * 25);
-        }
-
-        const candidateTokens = tokenSet(candidateText);
-        let sharedTokens = 0;
-        for (const word of candidateTokens) {
-          if (sourceTokens.has(word)) sharedTokens++;
-        }
-        score += Math.min(90, sharedTokens * 5);
-
-        return {
-          ...row,
-          version: row.version || "—",
-          size_bytes: Number(row.size_bytes || 0),
-          image: row.icon_url || null,
-          score
-        };
-      })
-      .filter(Boolean)
+      .map(row => ({
+        row,
+        score: relatedScore(current, row)
+      }))
+      .filter(item => item.score >= 1000)
       .sort((a,b) =>
         b.score - a.score ||
-        String(a.name || "").localeCompare(String(b.name || ""))
+        String(a.row.name || "").localeCompare(String(b.row.name || ""))
       )
       .slice(0,12)
-      .map(({score,description_html,mod_info,...row}) => row);
+      .map(({row}) => ({
+        ...row,
+        version: row.version || "—",
+        size_bytes: Number(row.size_bytes || 0),
+        image: row.icon_url || null
+      }));
   } catch (error) {
     console.error("Related apps lookup failed:", error);
     return [];
