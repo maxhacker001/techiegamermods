@@ -211,6 +211,7 @@
     if (legacySearch) legacySearch.style.display = "none";
 
     grid.classList.remove("tgm-search-results-grid", "tgm-category-results-grid");
+    resetViewMoreStates();
     grid.style.display = "";
     grid.style.width = "";
     grid.style.maxWidth = "";
@@ -232,6 +233,23 @@
       item.classList.toggle("active", item.dataset.category === state.category)
     );
   };
+  const resetViewMoreStates = () => {
+    document.querySelectorAll(".tgm-view-more").forEach(item => {
+      item.classList.remove("is-current");
+      item.removeAttribute("aria-disabled");
+      item.tabIndex = 0;
+    });
+  };
+
+  const setCurrentViewMore = (sectionId) => {
+    resetViewMoreStates();
+    const item = document.querySelector('.tgm-view-more[data-home-section="' + sectionId + '"]');
+    if (!item) return;
+    item.classList.add("is-current");
+    item.setAttribute("aria-disabled", "true");
+    item.tabIndex = -1;
+  };
+
   const renderSectionPage = (sectionId) => {
     const dashboard = $("catalogDashboard");
     const legacySearch = $("legacySearchArea");
@@ -271,6 +289,7 @@
     const grid = $("appsContainer");
     grid?.classList.remove("tgm-search-results-grid", "tgm-category-results-grid");
     setActiveNav("home");
+    setCurrentViewMore(sectionId);
 
     if (window.TGMHomeSections?.renderSection) {
       window.TGMHomeSections.renderSection(sectionId, state.apps);
@@ -538,6 +557,10 @@
       if (item.dataset.liveCatalogBound) return;
       item.dataset.liveCatalogBound = "1";
       item.addEventListener("click", event => {
+        if (item.classList.contains("is-current")) {
+          event.preventDefault();
+          return;
+        }
         event.preventDefault();
         const sectionId = item.dataset.homeSection;
         if (sectionId) renderSectionPage(sectionId);
