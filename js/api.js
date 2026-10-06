@@ -39,9 +39,19 @@
 
   const imageUrl = (value) => {
     if (!value) return "images/logo.png";
-    if (/^https?:\/\//i.test(value)) return value;
-    const clean = value.replace(/^\.\//, "").replace(/^\//, "");
+
+    const raw = String(value).trim();
+
+    // The API may return either a relative icon path or an old absolute
+    // GitHub Pages URL. Resolve both forms through the same fallback map.
+    let clean = raw.replace(/^\.\//, "").replace(/^\//, "");
+    try {
+      const parsed = new URL(raw, window.location.href);
+      clean = parsed.pathname.replace(/^\//, "");
+    } catch (_) {}
+
     if (iconFallbacks[clean]) return iconFallbacks[clean];
+    if (/^https?:\/\//i.test(raw)) return raw;
     return base + "/" + clean;
   };
 
