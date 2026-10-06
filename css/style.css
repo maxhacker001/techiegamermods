@@ -2667,3 +2667,70 @@ html,body{
     box-sizing:border-box !important;
   }
 }
+
+
+/* =========================================================
+   FRONTEND CATEGORY RESULT CLUSTERING
+   App Mods / Game Mods / Modding Tutorials use a compact
+   multi-column catalog instead of a single vertical strip.
+   ========================================================= */
+.tgm-category-results-grid{
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px !important;
+  width:100% !important;
+  max-width:100% !important;
+  min-width:0 !important;
+  box-sizing:border-box !important;
+}
+
+.tgm-category-results-grid .card{
+  width:100% !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  margin:0 !important;
+  box-sizing:border-box !important;
+}
+
+.tgm-category-results-grid .card img{
+  max-width:100%;
+}
+
+@media(max-width:680px){
+  .tgm-category-results-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:10px !important;
+  }
+
+  .tgm-category-results-grid .card{
+    padding:10px !important;
+    overflow:hidden !important;
+  }
+
+  .tgm-category-results-grid .card img{
+    width:56px !important;
+    height:56px !important;
+    margin-bottom:6px !important;
+  }
+
+  .tgm-category-results-grid .card h3,
+  .tgm-category-results-grid .card p{
+    min-width:0 !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+    white-space:nowrap !important;
+  }
+
+  .tgm-category-results-grid .card h3{
+    font-size:12px !important;
+  }
+
+  .tgm-category-results-grid .card p{
+    font-size:10px !important;
+  }
+
+  .tgm-category-results-grid .card a{
+    padding:6px 8px !important;
+    font-size:10px !important;
+  }
+}
