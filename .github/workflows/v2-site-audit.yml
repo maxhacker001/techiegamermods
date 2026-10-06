@@ -94,7 +94,7 @@ jobs:
       - name: Live GitHub Pages smoke test
         env:
           SITE_URL: https://maxhacker001.github.io/techiegamermods/
-          EXPECTED_ASSET_VERSION: 20261005-4
+          EXPECTED_ASSET_VERSION: 20261005-7
         run: |
           python - <<'PY'
           import os, re, sys, urllib.request
