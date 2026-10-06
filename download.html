@@ -173,19 +173,65 @@
       return;
     }
 
+    const normalizeRelated = value => String(value || "")
+      .toLowerCase()
+      .replace(/<[^>]*>/g, " ")
+      .replace(/[^a-z0-9&]+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    const relatedDomains = record => {
+      const name = normalizeRelated(record.name);
+      const genre = normalizeRelated(record.genre);
+      const mod = normalizeRelated(record.modTitle || record.mod_info);
+      const desc = normalizeRelated(record.description || record.description_html);
+
+      const rules = [
+        ["video-editing", /(video editing|video editor|video players? (and|&) editors?|video production|motion graphics)/, /(capcut|inshot|kinemaster|alight motion|vn video|powerdirector|videoleap|filmora|viva video)/, /(video editor|video editing|edit (videos?|clips?)|video effects?|video transitions?|motion design)/],
+        ["photo-editing", /(photo editing|photo editor|photography|photo & video|photo and video)/, /(picsart|remini|lightroom|snapseed|photoshop|photoroom|pixlr)/, /(photo editor|photo editing|edit (photos?|pictures?)|retouch|image editor|photo effects?)/],
+        ["video-downloader", /(video downloader|downloader|download manager)/, /(snaptube|vidmate|tubemate|videoder)/, /(video downloader|download videos?|save videos?|media downloader)/],
+        ["music-audio", /(music|audio|music & audio|music player|audio player|music streaming)/, /(spotify|audiomack|youtube music|soundcloud|poweramp|apple music|deezer)/, /(music player|audio player|music streaming|stream music|podcast)/],
+        ["social-media", /(social|communication|social networking)/, /(instagram|whatsapp|gbwhatsapp|telegram|facebook|messenger|twitter|twitter x|tiktok|snapchat)/, /(social media|social networking|messaging app|chat app|instant messaging)/],
+        ["browser", /(browser|web browser)/, /(chrome|firefox|edge|opera|brave|browser)/, /(web browser|private browsing|browse the web)/],
+        ["file-tools", /(file manager|file explorer|archive)/, /(zarchiver|file manager|file explorer|solid explorer|7zip|rar)/, /(file manager|file explorer|archive manager|compress files?)/],
+        ["vpn-privacy", /(vpn|privacy|proxy)/, /(vpn|protonvpn|nordvpn|surfshark|mullvad|warp)/, /(virtual private network|vpn|proxy|privacy protection|dns)/],
+        ["anime-manga", /(anime|manga|otaku)/, /(crunchyroll|anime|manga)/, /(anime streaming|watch anime|read manga)/],
+        ["shooter-battle", /(fps|first person shooter|shooter|battle royale)/, /(free fire|pubg|call of duty|cod mobile|blood strike|modern combat|standoff)/, /(battle royale|battlefield|combat game|shooting game|aimbot|wallhack|headshot|no recoil|gunfight)/],
+        ["football", /(football|soccer)/, /(efootball|dream league|fifa|football manager)/, /(football game|soccer game)/],
+        ["racing", /(racing|racing game)/, /(asphalt|need for speed|carx|hill climb)/, /(racing game|race cars?|driving game)/],
+        ["strategy", /(strategy|strategy game)/, /(clash|warcraft|civilization|tactics)/, /(strategy game|tactical game|base building)/],
+        ["puzzle", /(puzzle|word game|trivia|board game|card game)/, /(puzzle|trivia|solitaire|chess|sudoku)/, /(puzzle game|word game|brain game|logic puzzle)/],
+        ["simulation", /(simulation|simulator|tycoon)/, /(simulator|tycoon|sandbox)/, /(simulation game|life simulator|city builder)/]
+      ];
+
+      const text = [name, genre, mod, desc].join(" ");
+      return rules
+        .filter(([,genreRx,nameRx,strongRx]) =>
+          genreRx.test(genre) || nameRx.test(name) || strongRx.test(text)
+        )
+        .map(([id]) => id);
+    };
+
     const renderRelated = (items, currentId) => {
       const grid = document.getElementById("recommendedGrid");
       if (!grid) return;
       grid.innerHTML = "";
+
       const sourceCategory = String(window.__TGM_RELATED_CATEGORY || "").trim().toLowerCase();
+      const sourceDomains = new Set(window.__TGM_RELATED_DOMAINS || []);
+
       const list = (items || [])
         .filter(item => (item.slug || item.id) !== currentId)
         .filter(item => {
-          if (!sourceCategory) return false;
-          const itemCategory = String(item.category_slug || "").trim().toLowerCase();
-          return !itemCategory || itemCategory === sourceCategory;
+          if (sourceCategory &&
+              String(item.category_slug || "").trim().toLowerCase() !== sourceCategory) {
+            return false;
+          }
+          const candidateDomains = relatedDomains(item);
+          return candidateDomains.some(domain => sourceDomains.has(domain));
         })
         .slice(0, 4);
+
       list.forEach(rec => {
         const card = document.createElement("div");
         card.className = "card";
@@ -375,6 +421,13 @@
           const tutorialLink = tutorials.find(t => t.video_url);
           window.__TGM_RELATED_GENRE = String(app.genre || "").trim().toLowerCase();
           window.__TGM_RELATED_CATEGORY = String(app.category_slug || "").trim().toLowerCase();
+          window.__TGM_RELATED_CATEGORY = String(app.category_slug || "").trim().toLowerCase();
+          window.__TGM_RELATED_DOMAINS = relatedDomains({
+            name: app.name,
+            genre: app.genre,
+            mod_info: versions[0]?.mod_info || "",
+            description_html: app.description_html || ""
+          });
           renderRelated(live.related_apps || [], app.slug || app.id);
           
           if (tutorialLink) {
@@ -509,18 +562,20 @@
     );
     const sourceDomains = getDomains(sourceText);
 
+    window.__TGM_RELATED_CATEGORY = String(app.category || "").trim().toLowerCase();
+    window.__TGM_RELATED_DOMAINS = relatedDomains({
+      name: app.name,
+      genre: app.genre,
+      mod_info: app.modTitle || "",
+      description: app.description || ""
+    });
+
+    const sourceDomains = new Set(window.__TGM_RELATED_DOMAINS);
     const relatedLegacy = apps
       .filter(a => a.id !== appId && a.category === app.category)
       .map(a => {
-        const candidateText = normalizeRelated(
-          [a.name, a.genre, a.description, a.modTitle].join(" ")
-        );
-        const candidateDomains = getDomains(candidateText);
-        const sharedDomains = sourceDomains.filter(source =>
-          candidateDomains.some(candidate => candidate.index === source.index)
-        );
-        if (!sharedDomains.length) return null;
-
+        const candidateDomains = relatedDomains(a);
+        if (!candidateDomains.some(domain => sourceDomains.has(domain))) return null;
         return {
           id: a.id,
           slug: a.id,
@@ -529,17 +584,11 @@
           size: a.size,
           image: a.image,
           genre: a.genre,
-          category_slug: a.category,
-          _relatedScore: 100 + sharedDomains.length * 50
+          category_slug: a.category
         };
       })
       .filter(Boolean)
-      .sort((a,b) =>
-        b._relatedScore - a._relatedScore ||
-        String(a.name || "").localeCompare(String(b.name || ""))
-      )
-      .slice(0, 4)
-      .map(({_relatedScore, ...a}) => a);
+      .slice(0, 4);
     renderRelated(relatedLegacy, appId);
   });
 </script>
