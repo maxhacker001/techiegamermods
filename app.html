@@ -411,6 +411,25 @@
           const liveTutorial = (live.tutorials || []).find(t => t.video_url);
           relatedApps = Array.isArray(live.related_apps) ? live.related_apps : [];
 
+          // Public Related sections are controlled strictly by genre.
+          // Ignore any backend/manual relation that falls outside the
+          // current release's exact genre and catalog category.
+          const currentGenre = String(liveApp.genre || legacy.genre || "")
+            .trim()
+            .toLowerCase();
+          const currentCategory = String(liveApp.category_slug || legacy.category || "")
+            .trim()
+            .toLowerCase();
+          if (currentGenre) {
+            relatedApps = relatedApps.filter(rec =>
+              String(rec.genre || "").trim().toLowerCase() === currentGenre &&
+              (!currentCategory ||
+               String(rec.category_slug || "").trim().toLowerCase() === currentCategory)
+            );
+          } else {
+            relatedApps = [];
+          }
+
           // Keep the richer original catalog copy when a migrated database
           // record only contains a short summary. Combine feature lists so a
           // value such as "Pro Unlocked" cannot erase the original bullets.
