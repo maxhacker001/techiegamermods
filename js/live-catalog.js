@@ -209,6 +209,81 @@
       item.classList.toggle("active", item.dataset.category === state.category)
     );
   };
+  const renderSectionPage = (sectionId) => {
+    const dashboard = $("catalogDashboard");
+    const legacySearch = $("legacySearchArea");
+    const filters = $("filtersSection");
+    if (!dashboard) return;
+
+    state.query = "";
+    state.searchResults = null;
+
+    const input = $("searchInput");
+    const topInput = $("topSearchInput");
+    if (input) input.value = "";
+    if (topInput) topInput.value = "";
+
+    showPage("homePage");
+    dashboard.style.display = "block";
+
+    dashboard.querySelectorAll(".tgm-catalog-section, .tgm-category-section")
+      .forEach(section => {
+        const selected = section.id === sectionId;
+        const categories = section.id === "catalog-categories";
+        section.hidden = false;
+        section.style.display = (selected || categories) ? "" : "none";
+      });
+
+    if (legacySearch) legacySearch.style.display = "none";
+    if (filters) filters.style.display = "none";
+
+    if (window.TGMHomeSections?.renderSection) {
+      window.TGMHomeSections.renderSection(sectionId, state.apps);
+    }
+
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    });
+  };
+
+  const renderStaticPage = (pageId) => {
+    const source = $(pageId);
+    const dashboard = $("catalogDashboard");
+    const legacySearch = $("legacySearchArea");
+    const grid = $("appsContainer");
+    const filters = $("filtersSection");
+    if (!source || !dashboard || !legacySearch || !grid) return;
+
+    showPage("homePage");
+    dashboard.style.display = "block";
+    dashboard.querySelectorAll(".tgm-catalog-section, .tgm-category-section")
+      .forEach(section => {
+        section.hidden = false;
+        section.style.display = "none";
+      });
+
+    filters.style.display = "none";
+    legacySearch.style.display = "block";
+    grid.classList.remove("tgm-search-results-grid");
+    grid.style.display = "block";
+    grid.style.width = "100%";
+    grid.style.minWidth = "0";
+    grid.innerHTML = "";
+
+    const view = document.createElement("section");
+    view.className = "tgm-static-view";
+    Array.from(source.children).forEach(child => {
+      if (child.tagName.toLowerCase() !== "header") {
+        view.appendChild(child.cloneNode(true));
+      }
+    });
+    grid.appendChild(view);
+
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    });
+  };
+
   const categoryRender = (category) => {
     state.category = category;
     state.query = "";
@@ -324,7 +399,7 @@
           if (topInput) topInput.value = "";
           categoryRender(item.dataset.category);
         } else if (item.classList.contains("blog")) {
-          showPage("blogPage");
+          renderStaticPage("blogPage");
         }
       });
     });
@@ -343,6 +418,16 @@
         homeRender();
       });
     }
+
+    document.querySelectorAll(".tgm-view-more").forEach(item => {
+      if (item.dataset.liveCatalogBound) return;
+      item.dataset.liveCatalogBound = "1";
+      item.addEventListener("click", event => {
+        event.preventDefault();
+        const sectionId = item.dataset.homeSection;
+        if (sectionId) renderSectionPage(sectionId);
+      });
+    });
 
     document.querySelectorAll(".filter-btn").forEach(btn => {
       if (btn.dataset.liveCatalogBound) return;
@@ -394,15 +479,21 @@
         } else if (item.dataset.category) {
           categoryRender(item.dataset.category);
         } else if (item.classList.contains("blog")) {
-          showPage("blogPage");
+          renderStaticPage("blogPage");
         } else if (item.classList.contains("faq")) {
-          showPage("faqPage");
+          renderStaticPage("faqPage");
         }
 
-        const sidebar = $("sidebar");
-        const overlay = $("overlay");
-        if (sidebar) sidebar.classList.remove("open");
-        if (overlay) overlay.classList.remove("open");
+        if (window.TGMDrawer?.close) {
+          window.TGMDrawer.close();
+        } else {
+          const sidebar = $("sidebar");
+          const overlay = $("overlay");
+          if (sidebar) sidebar.classList.remove("open");
+          if (overlay) overlay.classList.remove("open");
+          document.documentElement.classList.remove("tgm-drawer-open");
+          document.body.classList.remove("tgm-drawer-open");
+        }
       });
     });
 
@@ -450,9 +541,9 @@
         if (["apps","games","tutorials"].includes(hash)) {
           categoryRender(hash);
         } else if (hash === "blog") {
-          showPage("blogPage");
+          renderStaticPage("blogPage");
         } else if (hash === "faq") {
-          showPage("faqPage");
+          renderStaticPage("faqPage");
         } else {
           showPage("homePage");
           homeRender();
