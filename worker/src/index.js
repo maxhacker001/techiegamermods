@@ -112,35 +112,98 @@ async function listApps(request, env) {
 }
 
 async function getRelatedApps(appId, env) {
-  const normalizeGenre = (value) => String(value || "")
+  const normalize = (value) => String(value || "")
     .toLowerCase()
+    .replace(/<[^>]*>/g, " ")
+    .replace(/[^a-z0-9]+/g, " ")
     .replace(/\s+/g, " ")
     .trim();
+
+  const stopWords = new Set([
+    "the","and","for","with","from","that","this","your","you","are","was","were",
+    "into","more","most","only","all","every","without","after","before","have",
+    "has","had","get","use","using","used","new","full","premium","mod","apk",
+    "app","apps","game","games","version","latest","unlock","unlocked","free"
+  ]);
+
+  const topicGroups = [
+    ["video","editing","editor","video editing","video players","capcut","inshot","kinemaster","alight motion","vn video","videoleap"],
+    ["photo","photography","photo editor","photo editing","lightroom","picsart","snapseed","photoshop","remini"],
+    ["music","music & audio","audio","player","sound","streaming","spotify","music player","podcast"],
+    ["downloader","download","video downloader","snaptube","vidmate","tubemate","download manager"],
+    ["social","whatsapp","telegram","instagram","facebook","messenger","tiktok"],
+    ["browser","firefox","chrome","edge","opera","web browser"],
+    ["file","file manager","file explorer","zarchiver","archive","zip","rar"],
+    ["vpn","privacy","proxy","webrtc","dns"],
+    ["anime","manga","otaku","crunchyroll"],
+    ["shooter","fps","war","battle","battlefield","combat","shooting","aimbot","wallhack","headshot","recoil","multiplayer","online","battle royale","pubg","free fire","call of duty"],
+    ["football","soccer","fifa","efootball","dream league","dls","football manager"],
+    ["racing","car","cars","asphalt","need for speed"],
+    ["strategy","clash","warcraft","civilization","tactics"],
+    ["puzzle","word","trivia","board","card","casino"],
+    ["simulation","simulator","tycoon","sandbox","building"]
+  ];
+
+  const featureGroups = [
+    ["coins","diamonds","uc","cp","resources","credits","currency","money","gems","cash"],
+    ["premium","pro","vip","ad free","no ads","no watermark","all unlocked","all features"],
+    ["effects","filters","templates","transitions","keyframe","chroma","layers","export"],
+    ["aimbot","wallhack","esp","headshot","no recoil","magic bullet","damage"],
+    ["offline","online","multiplayer","battle royale","pvp","matches"],
+    ["skins","characters","weapons","items","royale pass"]
+  ];
+
+  const groupHits = (text, groups) => {
+    const hay = normalize(text);
+    return groups
+      .filter(group => group.some(term => hay.includes(normalize(term))))
+      .map(group => group.map(normalize));
+  };
+
+  const tokenSet = (text) => new Set(
+    normalize(text)
+      .split(" ")
+      .filter(word => word.length >= 4 && !stopWords.has(word))
+  );
 
   try {
     const current = await env.DB.prepare(`
       SELECT a.id, a.category_id, c.slug AS category_slug,
-             a.name, a.genre
+             a.name, a.genre, a.description_html,
+             v.mod_info AS latest_mod_info
       FROM apps a
       JOIN categories c ON c.id=a.category_id
+      LEFT JOIN versions v ON v.id=(
+        SELECT vv.id FROM versions vv
+        WHERE vv.app_id=a.id AND vv.status='published'
+        ORDER BY datetime(vv.updated_at) DESC LIMIT 1
+      )
       WHERE a.id=? AND a.status='published'
       LIMIT 1
     `).bind(appId).first();
 
     if (!current) return [];
 
-    const genre = normalizeGenre(current.genre);
-    if (!genre) return [];
+    const sourceText = [
+      current.name,
+      current.genre,
+      current.description_html,
+      current.latest_mod_info
+    ].join(" ");
 
-    // Related releases are based ONLY on the current release's genre,
-    // while retaining the same catalog type/category. No name, description,
-    // topic-group, keyword, or manual-relation scoring is used.
+    const sourceTokens = tokenSet(sourceText);
+    const sourceTopicGroups = groupHits(sourceText, topicGroups);
+    const sourceFeatureGroups = groupHits(sourceText, featureGroups);
+    const sourceGenre = normalize(current.genre);
+
     const candidates = await env.DB.prepare(`
       SELECT
-        a.id, a.slug, a.name, a.publisher, a.genre, a.icon_url,
+        a.id, a.slug, a.name, a.publisher, a.genre, a.description_html, a.icon_url,
         c.slug AS category_slug,
         v.version_name AS version,
-        v.size_bytes AS size_bytes
+        v.size_bytes AS size_bytes,
+        v.mod_info AS mod_info,
+        a.updated_at
       FROM apps a
       JOIN categories c ON c.id=a.category_id
       LEFT JOIN versions v ON v.id=(
@@ -151,17 +214,67 @@ async function getRelatedApps(appId, env) {
       WHERE a.id<>?
         AND a.status='published'
         AND a.category_id=?
-        AND lower(trim(COALESCE(a.genre,'')))=?
       ORDER BY datetime(a.updated_at) DESC, a.name ASC
-      LIMIT 12
-    `).bind(appId, current.category_id, genre).all();
+      LIMIT 100
+    `).bind(appId, current.category_id).all();
 
-    return (candidates.results || []).map(row => ({
-      ...row,
-      version: row.version || "—",
-      size_bytes: Number(row.size_bytes || 0),
-      image: row.icon_url || null
-    }));
+    return (candidates.results || [])
+      .map(row => {
+        const candidateText = [
+          row.name,
+          row.genre,
+          row.description_html,
+          row.mod_info
+        ].join(" ");
+
+        const candidateTokens = tokenSet(candidateText);
+        const candidateTopicGroups = groupHits(candidateText, topicGroups);
+        const candidateFeatureGroups = groupHits(candidateText, featureGroups);
+
+        let score = 0;
+
+        // Exact genre is still the strongest single signal, but it is only
+        // one part of the match. Cross-genre but functionally related apps
+        // can still rank highly.
+        if (sourceGenre && normalize(row.genre) === sourceGenre) score += 300;
+
+        for (const sourceGroup of sourceTopicGroups) {
+          for (const candidateGroup of candidateTopicGroups) {
+            const shared = sourceGroup.filter(term => candidateGroup.includes(term));
+            if (shared.length) score += Math.min(180, shared.length * 60);
+          }
+        }
+
+        for (const sourceGroup of sourceFeatureGroups) {
+          for (const candidateGroup of candidateFeatureGroups) {
+            const shared = sourceGroup.filter(term => candidateGroup.includes(term));
+            if (shared.length) score += Math.min(120, shared.length * 40);
+          }
+        }
+
+        let sharedTokens = 0;
+        for (const word of candidateTokens) {
+          if (sourceTokens.has(word)) sharedTokens++;
+        }
+        score += Math.min(180, sharedTokens * 15);
+
+        // Related releases should have a meaningful relationship, not just
+        // happen to be in the same broad catalog category.
+        return {
+          ...row,
+          version: row.version || "—",
+          size_bytes: Number(row.size_bytes || 0),
+          image: row.icon_url || null,
+          score
+        };
+      })
+      .filter(row => row.score >= 40)
+      .sort((a,b) =>
+        b.score - a.score ||
+        String(a.name || "").localeCompare(String(b.name || ""))
+      )
+      .slice(0,12)
+      .map(({score,description_html,mod_info,...row}) => row);
   } catch (error) {
     console.error("Related apps lookup failed:", error);
     return [];
