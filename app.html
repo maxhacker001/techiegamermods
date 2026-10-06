@@ -8,7 +8,7 @@
   <meta name="robots" content="index,follow">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0b0f0c">
-  <link rel="stylesheet" href="css/style.css?v=20261005-6">
+  <link rel="stylesheet" href="css/style.css?v=20261005-7">
   <link rel="icon" type="image/webp" href="images/techie-gamer-icon.webp?v=20261005-logo2">
 </head>
 
@@ -25,7 +25,6 @@
 
 <!-- SIDEBAR DRAWER -->
 <div id="sidebar">
-  <a href="index.html" class="sidebar-item home">🏠 Home</a>
   <a href="index.html#apps" class="sidebar-item apps">📱 App Mods</a>
   <a href="index.html#games" class="sidebar-item games">🎮 Game Mods</a>
   <a href="index.html#tutorials" class="sidebar-item tutorials">🔧 Modding Tutorials</a>
@@ -231,7 +230,7 @@
   © 2026 TECHIE GAMER MODS • All Rights Reserved
 </footer>
 
-<script src="js/pwa.js?v=20261005-4"></script>
+<script src="js/pwa.js?v=20261005-7"></script>
 <script src="js/site-config.js"></script>
 <script src="js/api.js"></script>
 <script src="js/data.js"></script>
@@ -278,19 +277,21 @@
 
       if (menuToggle && window.matchMedia("(max-width:680px)").matches) {
         menuToggle.style.position = "absolute";
-        menuToggle.style.top = "14px";
+        menuToggle.style.top = "3px";
         menuToggle.style.left = "4px";
       }
 
       if (menuToggle && sidebar && overlay) {
+        const setDrawer = (open) => {
+          sidebar.classList.toggle("open", open);
+          overlay.classList.toggle("open", open);
+          document.documentElement.classList.toggle("tgm-drawer-open", open);
+          document.body.classList.toggle("tgm-drawer-open", open);
+        };
         menuToggle.addEventListener("click", () => {
-          sidebar.classList.toggle("open");
-          overlay.classList.toggle("open");
+          setDrawer(!sidebar.classList.contains("open"));
         });
-        overlay.addEventListener("click", () => {
-          sidebar.classList.remove("open");
-          overlay.classList.remove("open");
-        });
+        overlay.addEventListener("click", () => setDrawer(false));
       }
 
       const modeToggle = document.querySelector(".mode-toggle");
