@@ -411,23 +411,17 @@
           const liveTutorial = (live.tutorials || []).find(t => t.video_url);
           relatedApps = Array.isArray(live.related_apps) ? live.related_apps : [];
 
-          // Public Related sections are controlled strictly by genre.
-          // Ignore any backend/manual relation that falls outside the
-          // current release's exact genre and catalog category.
-          const currentGenre = String(liveApp.genre || legacy.genre || "")
-            .trim()
-            .toLowerCase();
+          // The Worker ranks Related releases by what the current app
+          // actually does: genre, functional topics, features and use-case.
+          // Keep only the same catalog type here; do not reduce the result
+          // back to exact genre after the semantic ranking has happened.
           const currentCategory = String(liveApp.category_slug || legacy.category || "")
             .trim()
             .toLowerCase();
-          if (currentGenre) {
+          if (currentCategory) {
             relatedApps = relatedApps.filter(rec =>
-              String(rec.genre || "").trim().toLowerCase() === currentGenre &&
-              (!currentCategory ||
-               String(rec.category_slug || "").trim().toLowerCase() === currentCategory)
+              String(rec.category_slug || "").trim().toLowerCase() === currentCategory
             );
-          } else {
-            relatedApps = [];
           }
 
           // Keep the richer original catalog copy when a migrated database
