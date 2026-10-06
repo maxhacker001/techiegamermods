@@ -177,7 +177,18 @@
       const grid = document.getElementById("recommendedGrid");
       if (!grid) return;
       grid.innerHTML = "";
-      const list = (items || []).filter(item => (item.slug || item.id) !== currentId).slice(0, 4);
+      const sourceGenre = String(window.__TGM_RELATED_GENRE || "").trim().toLowerCase();
+      const sourceCategory = String(window.__TGM_RELATED_CATEGORY || "").trim().toLowerCase();
+      const list = (items || [])
+        .filter(item => (item.slug || item.id) !== currentId)
+        .filter(item => {
+          if (!sourceGenre) return false;
+          const itemGenre = String(item.genre || "").trim().toLowerCase();
+          const itemCategory = String(item.category_slug || "").trim().toLowerCase();
+          return itemGenre === sourceGenre &&
+            (!sourceCategory || !itemCategory || itemCategory === sourceCategory);
+        })
+        .slice(0, 4);
       list.forEach(rec => {
         const card = document.createElement("div");
         card.className = "card";
@@ -365,6 +376,8 @@
           }
 
           const tutorialLink = tutorials.find(t => t.video_url);
+          window.__TGM_RELATED_GENRE = String(app.genre || "").trim().toLowerCase();
+          window.__TGM_RELATED_CATEGORY = String(app.category_slug || "").trim().toLowerCase();
           renderRelated(live.related_apps || [], app.slug || app.id);
           
           if (tutorialLink) {
@@ -456,8 +469,15 @@
       originalVersions.appendChild(box);
     }
 
+    window.__TGM_RELATED_GENRE = String(app.genre || "").trim().toLowerCase();
+    window.__TGM_RELATED_CATEGORY = String(app.category || "").trim().toLowerCase();
+
     const relatedLegacy = apps
-      .filter(a => a.id !== appId && a.category === app.category)
+      .filter(a =>
+        a.id !== appId &&
+        a.category === app.category &&
+        String(a.genre || "").trim().toLowerCase() === window.__TGM_RELATED_GENRE
+      )
       .slice(0, 4)
       .map(a => ({
         id: a.id,
