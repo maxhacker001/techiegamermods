@@ -2734,3 +2734,87 @@ html,body{
     font-size:10px !important;
   }
 }
+
+
+/* =========================================================
+   BLOG / FAQ / UPDATES FRONTEND VIEWS
+   Keep the homepage header + hero while giving static content
+   a stable full-width mobile layout.
+   ========================================================= */
+.tgm-static-view,
+.tgm-updates-view{
+  width:100% !important;
+  max-width:100% !important;
+  min-width:0 !important;
+  margin:0 !important;
+  padding:18px 15px 30px !important;
+  box-sizing:border-box !important;
+}
+
+.tgm-static-view > h2,
+.tgm-updates-view h2{
+  width:100% !important;
+  max-width:100% !important;
+  box-sizing:border-box !important;
+  text-align:center !important;
+  margin:8px 0 20px !important;
+}
+
+.tgm-static-view > div,
+.tgm-updates-view > div > div{
+  width:100% !important;
+  max-width:900px !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+  box-sizing:border-box !important;
+}
+
+.tgm-updates-view{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:24px !important;
+}
+
+.tgm-updates-view > div{
+  width:100% !important;
+  max-width:100% !important;
+  box-sizing:border-box !important;
+}
+
+@media(max-width:680px){
+  .tgm-static-view,
+  .tgm-updates-view{
+    width:100% !important;
+    max-width:100% !important;
+    margin:0 !important;
+    padding:20px 15px 30px !important;
+  }
+
+  .tgm-static-view > div,
+  .tgm-updates-view > div > div{
+    width:100% !important;
+    max-width:none !important;
+    margin:0 !important;
+    padding:18px !important;
+    box-sizing:border-box !important;
+  }
+
+  .tgm-static-view > h2,
+  .tgm-updates-view h2{
+    font-size:clamp(28px,7vw,36px) !important;
+  }
+
+  .tgm-static-view > div h3,
+  .tgm-updates-view > div h3{
+    font-size:22px !important;
+    line-height:1.2 !important;
+    overflow-wrap:anywhere !important;
+  }
+
+  .tgm-static-view > div p,
+  .tgm-updates-view > div p{
+    font-size:16px !important;
+    line-height:1.6 !important;
+    overflow-wrap:anywhere !important;
+  }
+}
