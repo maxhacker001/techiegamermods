@@ -521,6 +521,7 @@
           const sourceRecord = {
             name: liveApp.name || legacy.name,
             genre: liveApp.genre || legacy.genre,
+            category: liveApp.category_slug || legacy.category,
             mod_info: latest?.mod_info || legacy.modTitle,
             description_html: liveApp.description_html || ""
           };
@@ -799,83 +800,43 @@
       ? "🎬 Videos Related to This"
       : "🔥 Apps Related to This";
     if (!relatedApps.length) {
-      // Keep the local fallback consistent with the Worker: Related releases
-      // must share the app's actual functional domain. Incidental words in a
-      // description (for example "Instagram Reels" in a video editor) must
-      // never make social apps appear as video-editing recommendations.
-      const normalizeRelated = (value) => String(value || "")
-        .toLowerCase()
-        .replace(/<[^>]*>/g, " ")
-        .replace(/[^a-z0-9&]+/g, " ")
-        .replace(/\s+/g, " ")
-        .trim();
-
-      const domainRules = [
-        { id:"video-editing", genre:/(video editing|video editor|video players? (and|&) editors?|video production|motion graphics)/, name:/(capcut|inshot|kinemaster|alight motion|vn video|powerdirector|videoleap|filmora|viva video)/, strong:/(video editor|video editing|edit (videos?|clips?)|video (effects?|transitions?|templates?)|motion design|video maker)/ },
-        { id:"photo-editing", genre:/(photo editing|photo editor|photography|photo & video|photo and video)/, name:/(picsart|remini|lightroom|snapseed|photoshop|photoroom|pixlr)/, strong:/(photo editor|photo editing|edit (photos?|pictures?)|photo retouch|image editor|photo effects?)/ },
-        { id:"video-downloading", genre:/(video downloader|downloader|download manager)/, name:/(snaptube|vidmate|tubemate|videoder)/, strong:/(download videos?|video downloader|save videos?|media downloader)/ },
-        { id:"music-audio", genre:/(music|audio|music & audio|music player|audio player|music streaming)/, name:/(spotify|audiomack|youtube music|soundcloud|poweramp|apple music|deezer)/, strong:/(music player|audio player|music streaming|stream music|podcast|listen to music)/ },
-        { id:"social-media", genre:/(social|communication|social networking)/, name:/(instagram|whatsapp|gbwhatsapp|telegram|facebook|messenger|twitter|twitter x|tiktok|snapchat)/, strong:/(social media|social networking|messaging app|chat app|instant messaging)/ },
-        { id:"browser", genre:/(browser|web browser)/, name:/(chrome|firefox|edge|opera|brave|browser)/, strong:/(web browser|browse the web|private browsing)/ },
-        { id:"file-tools", genre:/(file manager|file explorer|archive|utility)/, name:/(zarchiver|file manager|file explorer|solid explorer|rar|7zip)/, strong:/(file manager|file explorer|extract zip|archive manager|compress files?)/ },
-        { id:"vpn-privacy", genre:/(vpn|privacy|proxy)/, name:/(vpn|protonvpn|nordvpn|surfshark|mullvad|warp)/, strong:/(vpn|virtual private network|proxy|privacy protection|dns)/ },
-        { id:"anime-manga", genre:/(anime|manga|otaku)/, name:/(crunchyroll|manga|anime)/, strong:/(anime streaming|watch anime|read manga)/ },
-        { id:"shooter-battle", genre:/(fps|first person shooter|shooter|battle royale|action)/, name:/(free fire|pubg|call of duty|cod mobile|blood strike|modern combat|standoff)/, strong:/(battle royale|combat game|shooting game|aimbot|wallhack|headshot|no recoil|gunfight|enemy|weapons?)/ },
-        { id:"football", genre:/(football|soccer)/, name:/(efootball|dream league|fifa|football manager)/, strong:/(football game|soccer game|football match|football club)/ },
-        { id:"racing", genre:/(racing|racing game)/, name:/(asphalt|need for speed|carx|hill climb)/, strong:/(racing game|race cars?|driving game|street racing)/ },
-        { id:"strategy", genre:/(strategy|strategy game)/, name:/(clash|warcraft|civilization|tactics)/, strong:/(strategy game|tactical game|base building|real time strategy)/ }
-      ];
-
-      const domainsFor = (record) => {
-        const name = normalizeRelated(record.name);
-        const genre = normalizeRelated(record.genre);
-        const text = normalizeRelated([
-          record.name, record.genre, record.description, record.modTitle
-        ].join(" "));
-        return domainRules.filter(rule =>
-          rule.genre.test(genre) || rule.name.test(name) || rule.strong.test(text)
-        ).map(rule => rule.id);
+      const currentCategory = String(app.category || "").trim().toLowerCase();
+      const sourceFallback = {
+        name: app.name,
+        genre: app.genre,
+        category: currentCategory,
+        mod_info: app.modTitle
       };
+      const sourceDomains = new Set(relatedDomains(sourceFallback));
 
-      const sourceDomains = domainsFor(app);
-      if (sourceDomains.length) {
-        relatedApps = catalogApps
-          .filter(candidate =>
-            candidate.id !== appId &&
-            normalizeRelated(candidate.category) === normalizeRelated(app.category)
-          )
-          .map(candidate => {
-            const candidateDomains = domainsFor(candidate);
-            const shared = sourceDomains.filter(domain => candidateDomains.includes(domain));
-            if (!shared.length) return null;
-
-            let score = shared.length * 1000;
-            if (normalizeRelated(candidate.genre) === normalizeRelated(app.genre)) score += 250;
-
-            return {
-              id: candidate.id,
-              slug: candidate.id,
-              name: candidate.name,
-              version: candidate.version,
-              size: candidate.size,
-              image: candidate.image,
-              genre: candidate.genre,
-              category_slug: candidate.category,
-              _relatedScore: score
-            };
-          })
-          .filter(Boolean)
-          .sort((a,b) =>
-            b._relatedScore - a._relatedScore ||
-            String(a.name || "").localeCompare(String(b.name || ""))
-          )
-          .slice(0, 12)
-          .map(({_relatedScore, ...candidate}) => candidate);
-      } else {
-        relatedApps = [];
-      }
+      relatedApps = sourceDomains.size
+        ? catalogApps
+            .filter(candidate =>
+              candidate.id !== appId &&
+              String(candidate.category || "").trim().toLowerCase() === currentCategory
+            )
+            .filter(candidate => {
+              const candidateDomains = relatedDomains({
+                name: candidate.name,
+                genre: candidate.genre,
+                category: candidate.category,
+                mod_info: candidate.modTitle
+              });
+              return candidateDomains.some(domain => sourceDomains.has(domain));
+            })
+            .slice(0, 12)
+            .map(a => ({
+              id: a.id,
+              slug: a.id,
+              name: a.name,
+              version: a.version,
+              size: a.size,
+              image: a.image,
+              genre: a.genre,
+              category_slug: a.category
+            }))
+        : [];
     }
-
     // Show the full ranked related set returned by the live API.
     relatedApps.slice(0, 12).forEach(rec => {
       const card = document.createElement('div');
