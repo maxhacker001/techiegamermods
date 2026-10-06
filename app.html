@@ -8,7 +8,7 @@
   <meta name="robots" content="index,follow">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0b0f0c">
-  <link rel="stylesheet" href="css/style.css?v=20261005-15">
+  <link rel="stylesheet" href="css/style.css?v=20261005-16">
   <link rel="icon" type="image/webp" href="images/techie-gamer-icon.webp?v=20261005-logo2">
 </head>
 
@@ -692,91 +692,87 @@
         .replace(/\s+/g, " ")
         .trim();
 
-      const relatedGroups = [
-        ["video","editing","editor","capcut","inshot","kinemaster","alight motion","vn video"],
-        ["photo","photography","photo editor","photo editing","lightroom","picsart","snapseed","photoshop","remini"],
-        ["music","audio","player","sound","streaming","spotify","podcast"],
-        ["downloader","download","snaptube","vidmate","tubemate","download manager"],
-        ["social","whatsapp","telegram","instagram","facebook","messenger","tiktok"],
-        ["shooter","fps","war","battle","battlefield","combat","aimbot","wallhack","headshot","recoil","multiplayer","online","battle royale","pubg","free fire","call of duty"],
-        ["football","soccer","fifa","efootball","dream league","dls"],
-        ["racing","car","cars","asphalt","need for speed"],
-        ["strategy","clash","warcraft","civilization","tactics"],
-        ["anime","manga","otaku","crunchyroll"]
+      const domainGroups = [
+        ["video editing","video editor","video players editors","video players","video","editing","editor","capcut","inshot","kinemaster","alight motion","vn video","powerdirector","videoleap"],
+        ["photo editing","photo editor","photography","photo","picsart","lightroom","snapseed","photoshop","remini","photoroom"],
+        ["video downloader","downloader","download manager","snaptube","vidmate","tubemate"],
+        ["music","music audio","music player","audio player","audio","streaming","spotify","podcast"],
+        ["social media","social","communication","whatsapp","telegram","instagram","facebook","messenger","twitter","tiktok"],
+        ["browser","web browser","firefox","chrome","edge","opera","brave"],
+        ["file manager","file explorer","zarchiver","archive","zip","rar"],
+        ["vpn","privacy","proxy","webrtc","dns"],
+        ["anime","manga","otaku","crunchyroll"],
+        ["shooter","fps","war","battle","combat","shooting","battle royale","pubg","free fire","call of duty"],
+        ["football","soccer","fifa","efootball","dream league","football manager"],
+        ["racing","car game","racing game","asphalt","need for speed"],
+        ["strategy","strategy game","clash","warcraft","civilization","tactics"],
+        ["puzzle","word game","trivia","board game","card game","casino"],
+        ["simulation","simulator","tycoon","sandbox","building"]
       ];
 
-      const featureTerms = [
-        "coins","diamonds","uc","cp","resources","credits","currency","money","gems",
-        "aimbot","wallhack","esp","headshot","no recoil","magic bullet",
-        "premium","pro","vip","ad free","no ads","no watermark","all unlocked",
-        "effects","filters","templates","transitions","keyframe","chroma","layers",
-        "online","multiplayer","battle royale","matches"
-      ];
+      const getDomains = (text) => {
+        const hay = normalizeRelated(text);
+        return domainGroups
+          .map((group, index) => ({
+            index,
+            hits: group.filter(term => hay.includes(normalizeRelated(term)))
+          }))
+          .filter(item => item.hits.length);
+      };
 
       const sourceText = normalizeRelated(
         [app.name, app.genre, app.description, app.modTitle].join(" ")
       );
+      const sourceDomains = getDomains(sourceText);
+      const sourceGenre = normalizeRelated(app.genre);
 
-      const groupHits = relatedGroups.filter(group =>
-        group.some(term => sourceText.includes(normalizeRelated(term)))
-      );
+      if (sourceDomains.length) {
+        relatedApps = catalogApps
+          .filter(candidate =>
+            candidate.id !== appId &&
+            normalizeRelated(candidate.category) === normalizeRelated(app.category)
+          )
+          .map(candidate => {
+            const text = normalizeRelated(
+              [candidate.name, candidate.genre, candidate.description, candidate.modTitle].join(" ")
+            );
+            const candidateDomains = getDomains(text);
+            const sharedDomains = sourceDomains.filter(source =>
+              candidateDomains.some(candidateDomain => candidateDomain.index === source.index)
+            );
 
-      const sourceTokens = new Set(
-        sourceText.split(" ").filter(token => token.length >= 4)
-      );
+            if (!sharedDomains.length) return null;
 
-      relatedApps = catalogApps
-        .filter(candidate =>
-          candidate.id !== appId &&
-          normalizeRelated(candidate.category) === normalizeRelated(app.category)
-        )
-        .map(candidate => {
-          const text = normalizeRelated(
-            [candidate.name, candidate.genre, candidate.description, candidate.modTitle].join(" ")
-          );
-          let score = 0;
+            let score = 400 + sharedDomains.length * 180;
+            if (sourceGenre && normalizeRelated(candidate.genre) === sourceGenre) score += 120;
 
-          if (sourceText && normalizeRelated(candidate.genre) === normalizeRelated(app.genre)) {
-            score += 300;
-          }
+            const sharedWords = sourceText.split(" ")
+              .filter(word => word.length >= 5)
+              .filter(word => text.includes(word)).length;
+            score += Math.min(80, sharedWords * 5);
 
-          for (const group of groupHits) {
-            const shared = group.filter(term => text.includes(normalizeRelated(term)));
-            if (shared.length) score += Math.min(180, shared.length * 60);
-          }
-
-          for (const term of featureTerms) {
-            if (sourceText.includes(normalizeRelated(term)) && text.includes(normalizeRelated(term))) {
-              score += 35;
-            }
-          }
-
-          const candidateTokens = new Set(text.split(" ").filter(token => token.length >= 4));
-          let sharedTokens = 0;
-          for (const token of candidateTokens) {
-            if (sourceTokens.has(token)) sharedTokens++;
-          }
-          score += Math.min(120, sharedTokens * 10);
-
-          return {
-            id: candidate.id,
-            slug: candidate.id,
-            name: candidate.name,
-            version: candidate.version,
-            size: candidate.size,
-            image: candidate.image,
-            genre: candidate.genre,
-            category_slug: candidate.category,
-            _relatedScore: score
-          };
-        })
-        .filter(candidate => candidate._relatedScore >= 40)
-        .sort((a,b) =>
-          b._relatedScore - a._relatedScore ||
-          String(a.name || "").localeCompare(String(b.name || ""))
-        )
-        .slice(0, 12)
-        .map(({_relatedScore, ...candidate}) => candidate);
+            return {
+              id: candidate.id,
+              slug: candidate.id,
+              name: candidate.name,
+              version: candidate.version,
+              size: candidate.size,
+              image: candidate.image,
+              genre: candidate.genre,
+              category_slug: candidate.category,
+              _relatedScore: score
+            };
+          })
+          .filter(Boolean)
+          .sort((a,b) =>
+            b._relatedScore - a._relatedScore ||
+            String(a.name || "").localeCompare(String(b.name || ""))
+          )
+          .slice(0, 12)
+          .map(({_relatedScore, ...candidate}) => candidate);
+      } else {
+        relatedApps = [];
+      }
     }
 
     // Show the full ranked related set returned by the live API.
