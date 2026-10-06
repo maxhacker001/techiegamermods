@@ -55,6 +55,16 @@
     });
   };
 
+  const setActiveNav = (activeKey) => {
+    document.querySelectorAll(".top-nav-link").forEach(link => {
+      link.classList.remove("active");
+      const key = link.classList.contains("home")
+        ? "home"
+        : (link.dataset.category || (link.classList.contains("blog") ? "blog" : ""));
+      if (key === activeKey) link.classList.add("active");
+    });
+  };
+
   const renderTrending = () => {
     const target = $("trendingGrid");
     const section = $("trendingSection");
@@ -185,15 +195,26 @@
       if (legacySearch) legacySearch.style.display = "block";
       const filters = $("filtersSection");
       if (filters) filters.style.display = "none";
+      grid.classList.remove("tgm-category-results-grid");
+      setActiveNav("home");
       renderGroupedSearch(grid, list);
       return;
     }
 
     dashboard.style.display = "block";
     dashboardSections.forEach(section => {
+      section.hidden = false;
       section.style.display = "";
     });
     if (legacySearch) legacySearch.style.display = "none";
+
+    grid.classList.remove("tgm-search-results-grid", "tgm-category-results-grid");
+    grid.style.display = "";
+    grid.style.width = "";
+    grid.style.maxWidth = "";
+    grid.style.gridTemplateColumns = "";
+    grid.style.gap = "";
+    setActiveNav("home");
 
     if (window.TGMHomeSections?.render) {
       window.TGMHomeSections.render(state.apps);
@@ -226,9 +247,17 @@
     showPage("homePage");
     dashboard.style.display = "block";
 
+    const sectionDomId = {
+      "essential-apps": "trendingSection",
+      "games-mod-latest": "games-mod-latest",
+      "premium-apps-latest": "premium-apps-latest",
+      "editors-choice": "editors-choice",
+      "early-access": "early-access"
+    }[sectionId] || sectionId;
+
     dashboard.querySelectorAll(".tgm-catalog-section, .tgm-category-section")
       .forEach(section => {
-        const selected = section.id === sectionId;
+        const selected = section.id === sectionDomId;
         const categories = section.id === "catalog-categories";
         section.hidden = false;
         section.style.display = (selected || categories) ? "" : "none";
@@ -236,6 +265,9 @@
 
     if (legacySearch) legacySearch.style.display = "none";
     if (filters) filters.style.display = "none";
+
+    grid?.classList.remove("tgm-search-results-grid", "tgm-category-results-grid");
+    setActiveNav("home");
 
     if (window.TGMHomeSections?.renderSection) {
       window.TGMHomeSections.renderSection(sectionId, state.apps);
@@ -255,6 +287,7 @@
     if (!source || !dashboard || !legacySearch || !grid) return;
 
     showPage("homePage");
+    setActiveNav(pageId === "blogPage" ? "blog" : "");
     dashboard.style.display = "block";
     dashboard.querySelectorAll(".tgm-catalog-section, .tgm-category-section")
       .forEach(section => {
@@ -310,14 +343,22 @@
     }
     if (legacySearch) legacySearch.style.display = "block";
     if (filters) filters.style.display = "none";
-    render(grid, list, category === "tutorials");
 
-    document.querySelectorAll(".top-nav-link").forEach(link => {
-      link.classList.toggle(
-        "active",
-        link.classList.contains("home") ? false : link.dataset.category === category
-      );
-    });
+    if (grid) {
+      grid.classList.remove("tgm-search-results-grid");
+      grid.classList.add("tgm-category-results-grid");
+      grid.style.display = "grid";
+      grid.style.width = "100%";
+      grid.style.maxWidth = "100%";
+      grid.style.minWidth = "0";
+      grid.style.gridTemplateColumns = window.matchMedia("(max-width:680px)").matches
+        ? "repeat(2,minmax(0,1fr))"
+        : "repeat(3,minmax(0,1fr))";
+      grid.style.gap = "10px";
+    }
+
+    render(grid, list, category === "tutorials");
+    setActiveNav(category);
 
     requestAnimationFrame(() => {
       window.scrollTo({ top: 0, left: 0, behavior: "auto" });
@@ -387,6 +428,7 @@
           if (input) input.value = "";
           if (topInput) topInput.value = "";
           showPage("homePage");
+          setActiveNav("home");
           homeRender();
           requestAnimationFrame(() => {
             const trending = $("trendingSection");
@@ -471,6 +513,7 @@
           // Explicitly restore the Home page so Home works even when the
           // current view was created by live search.
           showPage("homePage");
+          setActiveNav("home");
           homeRender();
 
           requestAnimationFrame(() => {
