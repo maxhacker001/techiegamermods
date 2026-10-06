@@ -133,7 +133,7 @@ async function getRelatedApps(appId, env) {
     {
       id: "photo-editing",
       genre: /(photo editing|photo editor|photography|photo & video|photo and video)/,
-      name: /(picsart|remini|lightroom|snapseed|photoshop|photoroom|pixlr)/,
+      name: /(capcut|inshot|picsart|remini|lightroom|snapseed|photoshop|photoroom|pixlr)/,
       strong: /(photo editor|photo editing|edit (photos?|pictures?)|photo retouch|image editor|portrait retouch|photo effects?)/
     },
     {
