@@ -212,23 +212,85 @@
         .map(([id]) => id);
     };
 
-    const renderRelated = (items, currentId) => {
+    const relatedDomains = record => {
+      const norm = value => String(value || "")
+        .toLowerCase()
+        .replace(/[^a-z0-9&]+/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+
+      const name = norm(record.name);
+      const genre = norm(record.genre);
+      const mod = norm(record.mod_info || record.modTitle);
+      const category = norm(record.category_slug || record.category);
+      const domains = [];
+
+      if (category === "games") {
+        const text = name + " " + genre + " " + mod;
+        if (
+          /free fire|pubg|call of duty|cod mobile|blood strike|modern combat|standoff/.test(name) ||
+          /fps|first person shooter|shooter|battle royale/.test(genre) ||
+          /aimbot|wallhack|headshot|no recoil|magic bullet/.test(text)
+        ) domains.push("shooter-battle");
+        if (/efootball|dream league|fifa|football manager/.test(name) || /football|soccer/.test(genre)) domains.push("football");
+        if (/asphalt|need for speed|carx|hill climb/.test(name) || /racing/.test(genre)) domains.push("racing");
+        if (/clash|warcraft|civilization|tactics/.test(name) || /strategy/.test(genre)) domains.push("strategy");
+        if (/puzzle|trivia|solitaire|chess|sudoku/.test(name) || /puzzle|word|trivia|board|card/.test(genre)) domains.push("puzzle");
+        if (/online|multiplayer|pvp|battle royale/.test(text)) domains.push("online-multiplayer");
+        return [...new Set(domains)];
+      }
+
+      if (
+        /inshot|capcut|kinemaster|alight motion|vn video|powerdirector|videoleap|filmora|viva video/.test(name) ||
+        /video editing|video editor|video players? (and|&) editors?|video production|motion graphics/.test(genre)
+      ) domains.push("video-editing");
+
+      if (
+        /inshot|picsart|remini|lightroom|snapseed|photoshop|photoroom|pixlr|canva/.test(name) ||
+        /photo editing|photo editor|photography/.test(genre)
+      ) domains.push("photo-editing");
+
+      if (
+        /snaptube|vidmate|tubemate|videoder/.test(name) ||
+        /video downloader|downloader|download manager/.test(genre)
+      ) domains.push("video-downloader");
+
+      if (
+        /spotify|audiomack|youtube music|soundcloud|poweramp|apple music|deezer/.test(name) ||
+        /music|audio|music player|audio player|music streaming/.test(genre)
+      ) domains.push("music-audio");
+
+      if (
+        /instagram|whatsapp|gbwhatsapp|telegram|facebook|messenger|twitter|twitter x|tiktok|snapchat/.test(name) ||
+        /social|communication|social networking/.test(genre)
+      ) domains.push("social-media");
+
+      if (/chrome|firefox|edge|opera|brave|browser/.test(name) || /browser|web browser/.test(genre)) domains.push("browser");
+      if (/zarchiver|file manager|file explorer|solid explorer|7zip|rar/.test(name) || /file manager|file explorer|archive/.test(genre)) domains.push("file-tools");
+      if (/vpn|protonvpn|nordvpn|surfshark|mullvad|warp/.test(name) || /vpn|privacy|proxy/.test(genre)) domains.push("vpn-privacy");
+      if (/crunchyroll|anime|manga/.test(name) || /anime|manga|otaku/.test(genre)) domains.push("anime-manga");
+
+      return [...new Set(domains)];
+    };
+
+    const renderRelated = (items, currentId, sourceApp) => {
       const grid = document.getElementById("recommendedGrid");
       if (!grid) return;
       grid.innerHTML = "";
 
-      const sourceCategory = String(window.__TGM_RELATED_CATEGORY || "").trim().toLowerCase();
-      const sourceDomains = new Set(window.__TGM_RELATED_DOMAINS || []);
+      const sourceDomains = new Set(relatedDomains(sourceApp || {}));
+      const sourceCategory = String((sourceApp || {}).category_slug || (sourceApp || {}).category || "")
+        .trim().toLowerCase();
 
       const list = (items || [])
         .filter(item => (item.slug || item.id) !== currentId)
         .filter(item => {
-          if (sourceCategory &&
-              String(item.category_slug || "").trim().toLowerCase() !== sourceCategory) {
-            return false;
-          }
-          const candidateDomains = relatedDomains(item);
-          return candidateDomains.some(domain => sourceDomains.has(domain));
+          const itemCategory = String(item.category_slug || item.category || "")
+            .trim().toLowerCase();
+          if (sourceCategory && itemCategory && itemCategory !== sourceCategory) return false;
+          if (!sourceDomains.size) return false;
+          const itemDomains = relatedDomains(item);
+          return itemDomains.some(domain => sourceDomains.has(domain));
         })
         .slice(0, 4);
 
@@ -428,7 +490,7 @@
             mod_info: versions[0]?.mod_info || "",
             description_html: app.description_html || ""
           });
-          renderRelated(live.related_apps || [], app.slug || app.id);
+          renderRelated(live.related_apps || [], app.slug || app.id, app);
           
           if (tutorialLink) {
             const social = document.querySelector(".social-section");
@@ -589,7 +651,7 @@
       })
       .filter(Boolean)
       .slice(0, 4);
-    renderRelated(relatedLegacy, appId);
+    renderRelated(relatedLegacy, appId, app);
   });
 </script>
 
