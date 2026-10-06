@@ -121,6 +121,85 @@
     });
   };
 
+  const sectionApps = (sectionId, apps) => {
+    const published = apps.filter(a => a && a.id).slice().sort((a,b) =>
+      String(b.updated || "").localeCompare(String(a.updated || ""))
+    );
+    const appRows = published.filter(a => a.category === "apps");
+    const gameRows = published.filter(a => a.category === "games");
+
+    if (sectionId === "essential-apps") {
+      return appRows
+        .filter(a => scoreForEssential(a) > 0)
+        .sort((a,b) =>
+          scoreForEssential(b) - scoreForEssential(a) ||
+          String(a.name).localeCompare(String(b.name))
+        );
+    }
+
+    if (sectionId === "games-mod-latest") {
+      return gameRows;
+    }
+
+    if (sectionId === "premium-apps-latest") {
+      return appRows.filter(a =>
+        /premium|pro|unlocked|ad.?free|no ads|mod/i.test(
+          [a.modTitle,a.description,a.genre].join(" ")
+        )
+      );
+    }
+
+    if (sectionId === "editors-choice") {
+      const essential = new Set(
+        appRows.filter(a => scoreForEssential(a) > 0).map(a => a.id)
+      );
+      const premium = new Set(
+        appRows.filter(a =>
+          /premium|pro|unlocked|ad.?free|no ads|mod/i.test(
+            [a.modTitle,a.description,a.genre].join(" ")
+          )
+        ).map(a => a.id)
+      );
+      const games = new Set(gameRows.map(a => a.id));
+      return published.filter(a =>
+        !essential.has(a.id) && !premium.has(a.id) && !games.has(a.id)
+      );
+    }
+
+    if (sectionId === "early-access") {
+      return published.filter(a =>
+        /early access|beta|early-access|preview|test build/i.test(
+          [a.name,a.genre,a.description].join(" ")
+        )
+      );
+    }
+
+    return [];
+  };
+
+  const renderSection = (sectionId, apps) => {
+    const gridBySection = {
+      "essential-apps": "essentialAppsGrid",
+      "games-mod-latest": "gamesLatestGrid",
+      "premium-apps-latest": "premiumAppsGrid",
+      "editors-choice": "editorsChoiceGrid",
+      "early-access": "earlyAccessGrid"
+    };
+    const gridId = gridBySection[sectionId];
+    if (!gridId) return [];
+
+    const matches = sectionApps(sectionId, apps);
+    const labels = {
+      "essential-apps": "No essential app releases yet.",
+      "games-mod-latest": "No game releases yet.",
+      "premium-apps-latest": "No premium app releases yet.",
+      "editors-choice": "No editor's choice releases yet.",
+      "early-access": "No early-access releases yet."
+    };
+    renderGrid(gridId, matches, labels[sectionId]);
+    return matches;
+  };
+
   const render = (apps) => {
     if (!Array.isArray(apps)) return;
 
@@ -169,5 +248,5 @@
     renderCategories(published);
   };
 
-  window.TGMHomeSections = { render };
+  window.TGMHomeSections = { render, renderSection, sectionApps };
 })();
