@@ -469,25 +469,77 @@
     window.__TGM_RELATED_GENRE = String(app.genre || "").trim().toLowerCase();
     window.__TGM_RELATED_CATEGORY = String(app.category || "").trim().toLowerCase();
 
-    const sourceText = [
-      app.name, app.genre, app.description, app.modTitle
-    ].join(" ").toLowerCase();
+    const normalizeRelated = (value) => String(value || "")
+      .toLowerCase()
+      .replace(/<[^>]*>/g, " ")
+      .replace(/[^a-z0-9]+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    const domainGroups = [
+      ["video editing","video editor","video players & editors","video players and editors","video production","motion graphics","capcut","inshot","kinemaster","alight motion","vn video","powerdirector","videoleap"],
+      ["photo editing","photo editor","photography","photo & video","photo and video","picsart","lightroom","snapseed","photoshop","remini","photoroom"],
+      ["video downloader","downloader","download manager","snaptube","vidmate","tubemate"],
+      ["music & audio","music and audio","music player","audio player","music streaming","spotify","podcast"],
+      ["social media","social networking","social","communication","whatsapp","gbwhatsapp","telegram","instagram","facebook","messenger","twitter","tiktok"],
+      ["browser","web browser","firefox","chrome","edge","opera","brave"],
+      ["file manager","file explorer","zarchiver","archive","zip","rar"],
+      ["vpn","privacy","proxy","webrtc","dns"],
+      ["anime","manga","otaku","crunchyroll"],
+      ["shooter","first person shooter","fps","war","battle","battlefield","combat","shooting","battle royale","pubg","free fire","call of duty"],
+      ["football","soccer","fifa","efootball","dream league","football manager"],
+      ["racing","racing game","car game","asphalt","need for speed"],
+      ["strategy","strategy game","clash","warcraft","civilization","tactics"],
+      ["puzzle","puzzle game","word game","trivia","board game","card game","casino"],
+      ["simulation","simulation game","simulator","tycoon","sandbox","building"]
+    ];
+
+    const getDomains = (value) => {
+      const hay = normalizeRelated(value);
+      return domainGroups
+        .map((group, index) => ({
+          index,
+          hits: group.filter(term => hay.includes(normalizeRelated(term)))
+        }))
+        .filter(item => item.hits.length);
+    };
+
+    const sourceText = normalizeRelated(
+      [app.name, app.genre, app.description, app.modTitle].join(" ")
+    );
+    const sourceDomains = getDomains(sourceText);
+
     const relatedLegacy = apps
-      .filter(a => {
-        if (a.id === appId || a.category !== app.category) return false;
-        const text = [a.name, a.genre, a.description, a.modTitle].join(" ").toLowerCase();
-        const terms = sourceText.split(/\s+/).filter(word => word.length >= 5);
-        return terms.some(term => text.includes(term));
+      .filter(a => a.id !== appId && a.category === app.category)
+      .map(a => {
+        const candidateText = normalizeRelated(
+          [a.name, a.genre, a.description, a.modTitle].join(" ")
+        );
+        const candidateDomains = getDomains(candidateText);
+        const sharedDomains = sourceDomains.filter(source =>
+          candidateDomains.some(candidate => candidate.index === source.index)
+        );
+        if (!sharedDomains.length) return null;
+
+        return {
+          id: a.id,
+          slug: a.id,
+          name: a.name,
+          version: a.version,
+          size: a.size,
+          image: a.image,
+          genre: a.genre,
+          category_slug: a.category,
+          _relatedScore: 100 + sharedDomains.length * 50
+        };
       })
+      .filter(Boolean)
+      .sort((a,b) =>
+        b._relatedScore - a._relatedScore ||
+        String(a.name || "").localeCompare(String(b.name || ""))
+      )
       .slice(0, 4)
-      .map(a => ({
-        id: a.id,
-        slug: a.id,
-        name: a.name,
-        version: a.version,
-        size: a.size,
-        image: a.image
-      }));
+      .map(({_relatedScore, ...a}) => a);
     renderRelated(relatedLegacy, appId);
   });
 </script>
