@@ -356,13 +356,10 @@
     addSource(faqSource, "tgm-update-faq");
     grid.appendChild(view);
 
-    const targetId = focus === "faq" ? ".tgm-update-faq" : ".tgm-update-blog";
+    // Keep the normal homepage starting position so the header and
+    // banner remain visible above Blog, then let the user scroll downward.
     requestAnimationFrame(() => {
-      const target = view.querySelector(targetId);
-      const top = target
-        ? Math.max(0, target.getBoundingClientRect().top + window.scrollY - 10)
-        : 0;
-      window.scrollTo({ top, left: 0, behavior: "auto" });
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
     });
   };
 
