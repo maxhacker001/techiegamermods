@@ -2599,3 +2599,71 @@ html,body{
     z-index:1001 !important;
   }
 }
+
+
+/* =========================================================
+   MOBILE DRAWER PERFORMANCE + PAGE LOCK
+   Keeps the approved visual drawer, but removes expensive
+   blur/hover work and prevents the page underneath from scrolling.
+   ========================================================= */
+@media(max-width:680px){
+  html.tgm-drawer-open,
+  body.tgm-drawer-open{
+    overflow:hidden !important;
+    overscroll-behavior:none !important;
+  }
+
+  body.tgm-drawer-open{
+    touch-action:none !important;
+  }
+
+  #sidebar{
+    left:0 !important;
+    transform:translate3d(-105%,0,0) !important;
+    transition:transform .16s ease-out !important;
+    will-change:transform !important;
+    backdrop-filter:none !important;
+    -webkit-backdrop-filter:none !important;
+    box-shadow:8px 0 24px rgba(0,0,0,.28) !important;
+  }
+
+  #sidebar.open{
+    left:0 !important;
+    transform:translate3d(0,0,0) !important;
+  }
+
+  #overlay{
+    transition:opacity .12s linear !important;
+    backdrop-filter:none !important;
+    -webkit-backdrop-filter:none !important;
+  }
+
+  .sidebar-item{
+    transition:none !important;
+    box-shadow:none !important;
+  }
+
+  .sidebar-item:hover{
+    transform:none !important;
+    box-shadow:none !important;
+  }
+
+  .tgm-static-view{
+    width:100% !important;
+    max-width:100% !important;
+    margin:18px 0 0 !important;
+    box-sizing:border-box !important;
+  }
+
+  .tgm-static-view > h2{
+    color:var(--neon) !important;
+    text-align:center !important;
+    margin:8px 0 20px !important;
+  }
+
+  .tgm-static-view > div{
+    width:100% !important;
+    max-width:100% !important;
+    box-sizing:border-box !important;
+  }
+}
