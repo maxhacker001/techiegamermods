@@ -356,11 +356,23 @@
     addSource(faqSource, "tgm-update-faq");
     grid.appendChild(view);
 
-    // Keep the normal homepage starting position so the header and
-    // banner remain visible above Blog, then let the user scroll downward.
+    // Always open Updates at the true top of the document. Some mobile
+    // browsers restore the previous scroll position after the DOM swap,
+    // so reset every possible scrolling root more than once.
+    const resetUpdatesScroll = () => {
+      const root = document.scrollingElement || document.documentElement;
+      root.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      window.scrollTo(0, 0);
+    };
+
+    resetUpdatesScroll();
     requestAnimationFrame(() => {
-      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+      resetUpdatesScroll();
+      requestAnimationFrame(resetUpdatesScroll);
     });
+    setTimeout(resetUpdatesScroll, 0);
   };
 
   const renderStaticPage = (pageId) => {
