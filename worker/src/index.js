@@ -123,21 +123,21 @@ async function getRelatedApps(appId, env) {
   // real app/game domain with the current release before generic features
   // such as "premium", "online", or "unlocked" are allowed to boost it.
   const domainGroups = [
-    ["video editing", "video editor", "video players editors", "video players", "video editing", "capcut", "inshot", "kinemaster", "alight motion", "vn video", "powerdirector", "videoleap"],
-    ["photo editing", "photo editor", "photography", "photo", "picsart", "lightroom", "snapseed", "photoshop", "remini", "photoroom"],
-    ["video downloader", "downloader", "download manager", "snaptube", "vidmate", "tubemate"],
-    ["music", "music audio", "music player", "audio player", "streaming", "spotify", "podcast"],
-    ["social media", "social", "communication", "whatsapp", "telegram", "instagram", "facebook", "messenger", "twitter", "tiktok"],
-    ["browser", "web browser", "firefox", "chrome", "edge", "opera", "brave"],
-    ["file manager", "file explorer", "zarchiver", "archive", "zip", "rar"],
-    ["vpn", "privacy", "proxy", "webrtc", "dns"],
-    ["anime", "manga", "otaku", "crunchyroll"],
-    ["shooter", "fps", "war", "battle", "battlefield", "combat", "shooting", "battle royale", "pubg", "free fire", "call of duty"],
-    ["football", "soccer", "fifa", "efootball", "dream league", "football manager"],
-    ["racing", "racing game", "car game", "asphalt", "need for speed"],
-    ["strategy", "strategy game", "clash", "warcraft", "civilization", "tactics"],
-    ["puzzle", "word game", "trivia", "board game", "card game", "casino"],
-    ["simulation", "simulator", "tycoon", "sandbox", "building"]
+    ["video editing","video editor","video players & editors","video players and editors","video production","motion graphics","capcut","inshot","kinemaster","alight motion","vn video","powerdirector","videoleap"],
+    ["photo editing","photo editor","photography","photo & video","photo and video","picsart","lightroom","snapseed","photoshop","remini","photoroom"],
+    ["video downloader","downloader","download manager","snaptube","vidmate","tubemate"],
+    ["music & audio","music and audio","music player","audio player","music streaming","spotify","podcast"],
+    ["social media","social networking","social","communication","whatsapp","gbwhatsapp","telegram","instagram","facebook","messenger","twitter","tiktok"],
+    ["browser","web browser","firefox","chrome","edge","opera","brave"],
+    ["file manager","file explorer","zarchiver","archive","zip","rar"],
+    ["vpn","privacy","proxy","webrtc","dns"],
+    ["anime","manga","otaku","crunchyroll"],
+    ["shooter","first person shooter","fps","war","battle","battlefield","combat","shooting","battle royale","pubg","free fire","call of duty"],
+    ["football","soccer","fifa","efootball","dream league","football manager"],
+    ["racing","racing game","car game","asphalt","need for speed"],
+    ["strategy","strategy game","clash","warcraft","civilization","tactics"],
+    ["puzzle","puzzle game","word game","trivia","board game","card game","casino"],
+    ["simulation","simulation game","simulator","tycoon","sandbox","building"]
   ];
 
   const featureGroups = [
