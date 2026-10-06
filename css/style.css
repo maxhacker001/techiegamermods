@@ -2818,3 +2818,16 @@ html,body{
     overflow-wrap:anywhere !important;
   }
 }
+
+
+/* Current section View More is informational, not clickable. */
+.tgm-view-more.is-current,
+.tgm-view-more.is-current:hover{
+  background:transparent !important;
+  color:var(--muted) !important;
+  border-color:rgba(159,191,177,.28) !important;
+  cursor:default !important;
+  pointer-events:none !important;
+  box-shadow:none !important;
+  text-decoration:none !important;
+}
